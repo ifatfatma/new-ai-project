@@ -11,7 +11,23 @@
 
     <li class="nav-item nav-category">Management</li>
 
-    <!-- Direct Add Prompt Link -->
+    <!-- Categories CRUD -->
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('admin.categories.index') }}">
+        <i class="menu-icon mdi mdi-folder-outline"></i>
+        <span class="menu-title">Categories</span>
+      </a>
+    </li>
+
+    <!-- All Prompts List -->
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('admin.prompts.index') }}">
+        <i class="menu-icon mdi mdi-format-list-bulleted"></i>
+        <span class="menu-title">All Prompts</span>
+      </a>
+    </li>
+
+    <!-- Add New Prompt -->
     <li class="nav-item">
       <a class="nav-link" href="{{ route('admin.prompts.create') }}">
         <i class="menu-icon mdi mdi-plus-box-outline"></i>
@@ -19,19 +35,14 @@
       </a>
     </li>
 
-    <!-- Prompt Categories Dropdown -->
-    <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="collapse" href="#categoryMenu" aria-expanded="false" aria-controls="categoryMenu">
-        <i class="menu-icon mdi mdi-folder-outline"></i>
-        <span class="menu-title">Prompt Categories</span>
-        <i class="menu-arrow"></i>
+    
       </a>
-      <div class="collapse" id="categoryMenu">
-        <ul class="nav flex-column sub-menu">
+      <div class="collapse" id="categoryQuickMenu">
+        <ul class="nav flex-column sub-menu ps-3 py-2">
           @foreach(\App\Models\Category::all() as $category)
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                {{ $category->name }}
+            <li class="nav-item mb-1">
+              <a class="nav-link py-1 text-muted" href="{{ route('admin.categories.index') }}">
+                <i class="mdi mdi-circle-small me-1"></i> {{ $category->name }}
               </a>
             </li>
           @endforeach

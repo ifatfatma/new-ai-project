@@ -14,9 +14,9 @@ class Prompt extends Model
         'title',
         'label',
         'prompt_text',
+        'image',
     ];
 
-    
     public function category()
     {
         return $this->belongsTo(Category::class);

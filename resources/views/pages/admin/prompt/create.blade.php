@@ -10,10 +10,13 @@
         <p class="card-description">Select category and enter multiple prompts using the <strong>Add More</strong> option.</p>
 
         @if(session('success'))
-          <div class="alert alert-success">{{ session('success') }}</div>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
         @endif
 
-        <form action="{{ route('admin.prompts.store') }}" method="POST">
+        <form action="{{ route('admin.prompts.store') }}" method="POST" enctype="multipart/form-data">
           @csrf
 
           <div class="row">
@@ -52,9 +55,14 @@
                 <input type="text" name="prompts[0][label]" class="form-control" placeholder="e.g. Step 1: Catchy Headline Generator">
               </div>
 
-              <div class="form-group mb-0">
+              <div class="form-group mb-2">
                 <label>Prompt Text <span class="text-danger">*</span></label>
                 <textarea name="prompts[0][text]" class="form-control" rows="3" placeholder="Write your complete prompt here..." required></textarea>
+              </div>
+
+              <div class="form-group mb-0">
+                <label>Example Output Image (Optional)</label>
+                <input type="file" name="prompts[0][image]" class="form-control" accept="image/*">
               </div>
             </div>
 
@@ -63,7 +71,7 @@
           <!-- Add More Button -->
           <div class="mb-4">
             <button type="button" id="add-more-btn" class="btn btn-outline-primary btn-sm fw-bold">
-              <i class="mdi mdi-plus"></i>  Add More Prompt
+              <i class="mdi mdi-plus"></i> Add More Prompt
             </button>
           </div>
 
@@ -80,11 +88,9 @@
 <script>
   let count = 1;
 
-  // 1. Add Button Par Click
   document.getElementById('add-more-btn').addEventListener('click', function () {
-    count++; // Step counter 2, 3, 4... karega
+    count++;
 
-    // HTML Structure jo naya box banayega
     let newPromptBox = `
       <div class="prompt-card border rounded p-3 mb-3 bg-light" id="box-${count}">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -97,18 +103,21 @@
           <input type="text" name="prompts[${count - 1}][label]" class="form-control" placeholder="e.g. Step ${count}: Content Rephraser">
         </div>
 
-        <div class="form-group mb-0">
+        <div class="form-group mb-2">
           <label>Prompt Text <span class="text-danger">*</span></label>
           <textarea name="prompts[${count - 1}][text]" class="form-control" rows="3" placeholder="Write your complete prompt here..." required></textarea>
+        </div>
+
+        <div class="form-group mb-0">
+          <label>Example Output Image (Optional)</label>
+          <input type="file" name="prompts[${count - 1}][image]" class="form-control" accept="image/*">
         </div>
       </div>
     `;
 
-    // Direct container mein HTML add kar do
     document.getElementById('prompts-container').insertAdjacentHTML('beforeend', newPromptBox);
   });
 
-  // 2. Remove Button Par Click (Box Delete karne ke liye)
   function deleteBox(boxId) {
     document.getElementById(boxId).remove();
   }

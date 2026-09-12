@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('prompts', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->nullable();
-            $table->text('description')->nullable();
+            // Category id foreign key connection
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->string('label')->nullable();
+            $table->text('prompt_text');
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('prompts');
     }
 };
