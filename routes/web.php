@@ -2,11 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\HomeController;
+use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PromptController;
+use App\Http\Controllers\FrontendController;
 
-// Admin Routes Group
+// 1. PUBLIC / FRONTEND ROUTE (Direct 127.0.0.1:8000 ke liye)
+Route::get('/', [FrontendController::class, 'index'])->name('home');
+
+
+// 2. ADMIN ROUTES GROUP (127.0.0.1:8000/admin ke liye)
 Route::prefix('admin')->group(function () {
 
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
@@ -15,7 +20,7 @@ Route::prefix('admin')->group(function () {
 
     // Protected Admin Routes 
     Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
+        Route::get('/dashboard', [AdminHomeController::class, 'index'])->name('admin.dashboard');
         Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
         // Category Management Routes
@@ -31,10 +36,9 @@ Route::prefix('admin')->group(function () {
         Route::get('/prompts/create', [PromptController::class, 'create'])->name('admin.prompts.create');
         Route::post('/prompts/store', [PromptController::class, 'store'])->name('admin.prompts.store');
         
-        // Naye Edit & Update Routes
+        // Edit & Update Routes
         Route::get('/prompts/{id}/edit', [PromptController::class, 'edit'])->name('admin.prompts.edit');
         Route::put('/prompts/{id}', [PromptController::class, 'update'])->name('admin.prompts.update');
-        
         Route::delete('/prompts/{id}', [PromptController::class, 'destroy'])->name('admin.prompts.destroy');
     });
 
