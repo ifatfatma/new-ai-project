@@ -20,7 +20,6 @@
           @csrf
 
           <div class="row">
-            <!-- Category Selection -->
             <div class="col-md-6 form-group mb-3">
               <label class="fw-bold">Select Category</label>
               <select name="category_id" class="form-control" required>
@@ -31,7 +30,6 @@
               </select>
             </div>
 
-            <!-- Collection Title -->
             <div class="col-md-6 form-group mb-3">
               <label class="fw-bold">Prompt Collection / Topic Title</label>
               <input type="text" name="title" class="form-control" placeholder="e.g. SEO Article Blueprint" required>
@@ -40,7 +38,6 @@
 
           <hr class="my-3">
 
-          <!-- Prompts Section -->
           <h5 class="mb-3 fw-bold">Prompts List</h5>
           <div id="prompts-container">
             
@@ -62,20 +59,21 @@
 
               <div class="form-group mb-0">
                 <label>Example Output Image (Optional)</label>
-                <input type="file" name="prompts[0][image]" class="form-control" accept="image/*">
+                <div class="input-group">
+                  <input type="file" name="prompts[0][image]" id="img_0" class="form-control" accept="image/*">
+                  <button type="button" class="btn btn-outline-secondary" onclick="clearInput('img_0')">Clear Image</button>
+                </div>
               </div>
             </div>
 
           </div>
 
-          <!-- Add More Button -->
           <div class="mb-4">
             <button type="button" id="add-more-btn" class="btn btn-outline-primary btn-sm fw-bold">
               <i class="mdi mdi-plus"></i> Add More Prompt
             </button>
           </div>
 
-          <!-- Submit Button -->
           <button type="submit" class="btn btn-success text-white">Save All Prompts</button>
         </form>
 
@@ -84,33 +82,36 @@
   </div>
 </div>
 
-<!-- Dynamic Add More JavaScript -->
 <script>
   let count = 1;
 
   document.getElementById('add-more-btn').addEventListener('click', function () {
+    let index = count;
     count++;
 
     let newPromptBox = `
-      <div class="prompt-card border rounded p-3 mb-3 bg-light" id="box-${count}">
+      <div class="prompt-card border rounded p-3 mb-3 bg-light" id="box-${index}">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <span class="badge bg-primary">Prompt #${count}</span>
-          <button type="button" class="btn btn-danger btn-sm text-white" onclick="deleteBox('box-${count}')">Remove</button>
+          <span class="badge bg-primary">Prompt #${index + 1}</span>
+          <button type="button" class="btn btn-danger btn-sm text-white" onclick="deleteBox('box-${index}')">Remove Box</button>
         </div>
 
         <div class="form-group mb-2">
           <label>Prompt Step / Title (Optional)</label>
-          <input type="text" name="prompts[${count - 1}][label]" class="form-control" placeholder="e.g. Step ${count}: Content Rephraser">
+          <input type="text" name="prompts[${index}][label]" class="form-control" placeholder="e.g. Step ${index + 1}: Content Rephraser">
         </div>
 
         <div class="form-group mb-2">
           <label>Prompt Text <span class="text-danger">*</span></label>
-          <textarea name="prompts[${count - 1}][text]" class="form-control" rows="3" placeholder="Write your complete prompt here..." required></textarea>
+          <textarea name="prompts[${index}][text]" class="form-control" rows="3" placeholder="Write your complete prompt here..." required></textarea>
         </div>
 
         <div class="form-group mb-0">
           <label>Example Output Image (Optional)</label>
-          <input type="file" name="prompts[${count - 1}][image]" class="form-control" accept="image/*">
+          <div class="input-group">
+            <input type="file" name="prompts[${index}][image]" id="img_${index}" class="form-control" accept="image/*">
+            <button type="button" class="btn btn-outline-secondary" onclick="clearInput('img_${index}')">Clear Image</button>
+          </div>
         </div>
       </div>
     `;
@@ -120,6 +121,10 @@
 
   function deleteBox(boxId) {
     document.getElementById(boxId).remove();
+  }
+
+  function clearInput(inputId) {
+    document.getElementById(inputId).value = "";
   }
 </script>
 @endsection

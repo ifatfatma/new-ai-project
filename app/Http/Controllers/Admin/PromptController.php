@@ -61,37 +61,45 @@ class PromptController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $prompt = Prompt::findOrFail($id);
+{
+    $prompt = Prompt::findOrFail($id);
 
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title'       => 'required|string|max:255',
-            'label'       => 'nullable|string|max:255',
-            'prompt_text' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-        ]);
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'title'       => 'required|string|max:255',
+        'label'       => 'nullable|string|max:255',
+        'prompt_text' => 'required|string',
+        'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+    ]);
 
-        $imagePath = $prompt->image;
+    $imagePath = $prompt->image;
 
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($prompt->image && Storage::disk('public')->exists($prompt->image)) {
-                Storage::disk('public')->delete($prompt->image);
-            }
-            $imagePath = $request->file('image')->store('prompts', 'public');
+    // Check if user requested to remove existing image
+    if ($request->has('remove_image') && $request->remove_image == 1) {
+        if ($prompt->image && Storage::disk('public')->exists($prompt->image)) {
+            Storage::disk('public')->delete($prompt->image);
         }
-
-        $prompt->update([
-            'category_id' => $request->category_id,
-            'title'       => $request->title,
-            'label'       => $request->label,
-            'prompt_text' => $request->prompt_text,
-            'image'       => $imagePath,
-        ]);
-
-        return redirect()->route('admin.prompts.index')->with('success', 'Prompt updated successfully!');
+        $imagePath = null;
     }
+
+    // Upload new image if provided
+    if ($request->hasFile('image')) {
+        if ($prompt->image && Storage::disk('public')->exists($prompt->image)) {
+            Storage::disk('public')->delete($prompt->image);
+        }
+        $imagePath = $request->file('image')->store('prompts', 'public');
+    }
+
+    $prompt->update([
+        'category_id' => $request->category_id,
+        'title'       => $request->title,
+        'label'       => $request->label,
+        'prompt_text' => $request->prompt_text,
+        'image'       => $imagePath,
+    ]);
+
+    return redirect()->route('admin.prompts.index')->with('success', 'Prompt updated successfully!');
+}
 
     public function destroy($id)
     {
