@@ -16,8 +16,8 @@
       <span class="fw-bold">Help : +91 8240112233</span>
     </div>
 
-    <!-- Right Side: Search, Mail, Bell & Profile -->
-    <ul class="navbar-nav ms-auto d-flex align-items-center gap-3">
+    <!-- Right Side: Search, Bell, Mail, Globe & Profile -->
+    <ul class="navbar-nav ms-auto d-flex align-items-center justify-content-end gap-3" style="margin-right: 0 !important;">
       
       <!-- Search Field -->
       <li class="nav-item">
@@ -37,6 +37,13 @@
       <li class="nav-item dropdown">
         <a class="nav-link count-indicator" href="#">
           <i class="mdi mdi-email-outline" style="font-size: 20px;"></i>
+        </a>
+      </li>
+
+      <!-- Globe (Live Website) Icon -->
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('/') }}" target="_blank" title="Visit Live Website">
+          <i class="mdi mdi-earth" style="font-size: 20px;"></i>
         </a>
       </li>
 

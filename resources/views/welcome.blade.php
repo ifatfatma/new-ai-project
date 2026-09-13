@@ -126,6 +126,81 @@
         </div>
     </div>
 
+<!-- Footer Container 
+<div class="container-fluid px-0 mt-5">
+    <footer class="text-center text-lg-start text-white" style="background-color: #1c2331">
+        
+        Section: Social media 
+        <section class="d-flex justify-content-between p-4" style="background-color: #6351ce">
+            <div class="me-5 d-none d-md-block">
+                <span>Get connected with us on social networks:</span>
+            </div>
+            <div>
+                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-facebook"></i></a>
+                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-twitter"></i></a>
+                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-google"></i></a>
+                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-instagram"></i></a>
+                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-linkedin"></i></a>
+                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-github"></i></a>
+            </div>
+        </section>
+
+        Section: Links 
+        <section>
+            <div class="container text-center text-md-start mt-5">
+                <div class="row mt-3">
+                    
+                     Col 1: Project Info 
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold">AI Prompt Hub</h6>
+                        <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #7c4dff; height: 2px" />
+                        <p class="small text-white-50">
+                            Discover, copy, and organize the best AI prompts for ChatGPT, Midjourney, and copywriting to boost your daily workflow and productivity.
+                        </p>
+                    </div>
+
+                     Col 2: Top Categories 
+                     Col 2: Top Categories (Updated & Expanded)
+<div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
+    <h6 class="text-uppercase fw-bold">Categories</h6>
+    <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #7c4dff; height: 2px" />
+    
+    <div class="row">
+        <div class="col-6">
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Content & Blog</a></p>
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Social Media</a></p>
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Coding Prompts</a></p>
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">SEO & Marketing</a></p>
+        </div>
+        <div class="col-6">
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Creative Writing</a></p>
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Business & Work</a></p>
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Image Prompts</a></p>
+            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Productivity</a></p>
+        </div>
+    </div>
+</div>
+                     Col 4: Contact Info 
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <h6 class="text-uppercase fw-bold">Contact</h6>
+                        <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #7c4dff; height: 2px" />
+                        <p class="small text-white-50"><i class="mdi mdi-home me-2"></i> Kolkata, India</p>
+                        <p class="small text-white-50"><i class="mdi mdi-email me-2"></i> support@aiprompthub.com</p>
+                        <p class="small text-white-50"><i class="mdi mdi-phone me-2"></i> +91 8240112233</p>
+                    </div>
+
+                </div>
+            </div>
+        </section> -->
+
+        <!-- Copyright -->
+        <div class="text-center p-3 small" style="background-color: rgba(0, 0, 0, 0.2)">
+            © {{ date('Y') }} Copyright:
+            <a class="text-white fw-bold text-decoration-none" href="{{ route('home') }}">AI Prompt Hub</a>. All rights reserved.
+        </div>
+    </footer>
+</div>
+
     <!-- JS for Clipboard Copy -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\HomeController as AdminHomeController;
+use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PromptController;
 use App\Http\Controllers\FrontendController;
@@ -20,7 +20,7 @@ Route::prefix('admin')->group(function () {
 
     // Protected Admin Routes 
     Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', [AdminHomeController::class, 'index'])->name('admin.dashboard');
+        Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
         Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
         // Category Management Routes
