@@ -10,15 +10,16 @@
 
   <!-- Navbar Menu Wrapper -->
   <div class="navbar-menu-wrapper d-flex align-items-center justify-content-between">
-    
+
     <!-- Left Side: Help Number -->
     <div class="d-flex align-items-center">
       <span class="fw-bold">Help : +91 8240112233</span>
     </div>
 
     <!-- Right Side: Search, Bell, Mail, Globe & Profile -->
-    <ul class="navbar-nav ms-auto d-flex align-items-center justify-content-end gap-3" style="margin-right: 0 !important;">
-      
+    <ul class="navbar-nav ms-auto d-flex align-items-center justify-content-end gap-3"
+      style="margin-right: 0 !important;">
+
       <!-- Search Field -->
       <li class="nav-item">
         <form class="search-form" action="#">
@@ -48,42 +49,45 @@
       </li>
 
       <!-- User Profile Dropdown -->
-      <li class="nav-item dropdown d-none d-xl-inline-block user-dropdown">
-        <a class="nav-link dropdown-toggle d-flex align-items-center" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-          <img class="img-xs rounded-circle me-2" src="{{ asset('admin/assets/images/faces/face8.jpg') }}" alt="Profile image"> 
-          <span class="font-weight-semibold">Admin</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
-          <div class="dropdown-header text-center">
-            <img class="img-md rounded-circle" src="{{ asset('admin/assets/images/faces/face8.jpg') }}" alt="Profile image">
-            <p class="mb-1 mt-3 font-weight-semibold">Admin User</p>
-            <p class="font-weight-light text-muted mb-0">admin@aiprompthub.com</p>
-          </div>
-          
-          <!-- Dropdown Options -->
-          <a class="dropdown-item" href="#">
-            <i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile
-          </a>
-          <a class="dropdown-item" href="#">
-            <i class="dropdown-item-icon mdi mdi-cog-outline text-primary me-2"></i> Settings
-          </a>
-          
-          <hr class="dropdown-divider">
-
-          <!-- Logout Action -->
-          <form action="{{ route('admin.logout') }}" method="POST" id="logout-form">
-            @csrf
-            <button type="submit" class="dropdown-item text-danger font-weight-bold py-2" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left;">
-              <i class="dropdown-item-icon mdi mdi-power text-danger me-2"></i> Log Out
-            </button>
-          </form>
+   <li class="nav-item dropdown">
+    <!-- Dropdown Toggle Button -->
+    <a class="nav-link dropdown-toggle d-flex align-items-center" id="profileDropdown" href="javascript:void(0);" data-bs-toggle="dropdown" data-toggle="dropdown" aria-expanded="false">
+        <img class="img-xs rounded-circle me-2" src="https://ui-avatars.com/api/?name=Admin+User&background=0D6EFD&color=fff" alt="Profile image" style="width: 35px; height: 35px; object-fit: cover;">
+        <span class="font-weight-bold ms-1">Admin</span>
+    </a>
+    
+    <!-- Dropdown Card -->
+    <div class="dropdown-menu dropdown-menu-end navbar-dropdown p-3 shadow-lg border-0" aria-labelledby="profileDropdown" style="min-width: 250px;">
+        <div class="text-center pb-3 border-bottom mb-2">
+            <img class="img-md rounded-circle mb-2" src="https://ui-avatars.com/api/?name=Admin+User&background=0D6EFD&color=fff" alt="Profile image" style="width: 70px; height: 70px; object-fit: cover;">
+            <h6 class="mb-0 font-weight-bold">Admin User</h6>
+            <small class="text-muted">admin@aiprompthub.com</small>
         </div>
-      </li>
+        
+        <a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
+            <i class="mdi mdi-account-outline text-primary me-2"></i> My Profile
+        </a>
+        
+        <a class="dropdown-item py-2" href="#">
+            <i class="mdi mdi-cog-outline text-primary me-2"></i> Settings
+        </a>
+        
+        <div class="dropdown-divider"></div>
+        
+        <form method="POST" action="{{ route('admin.logout') }}">
+            @csrf
+            <button type="submit" class="dropdown-item py-2 text-danger">
+                <i class="mdi mdi-power text-danger me-2"></i> Log Out
+            </button>
+        </form>
+    </div>
+</li>
 
     </ul>
 
     <!-- Mobile Menu Toggle Button -->
-    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+      data-toggle="offcanvas">
       <span class="mdi mdi-menu"></span>
     </button>
   </div>

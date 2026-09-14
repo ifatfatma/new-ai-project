@@ -12,7 +12,6 @@
 
 <body>
 
-
     <div class="container-scroller">
         <div class="container-fluid page-body-wrapper full-page-wrapper">
             <div class="content-wrapper d-flex align-items-center auth auth-bg-1 theme-one">
@@ -29,6 +28,7 @@
                                 </div>
                             @endif
 
+                            {{-- Success Alert --}}
                             @if(session('success'))  
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                                     {{ session('success') }}
@@ -42,7 +42,7 @@
                                     <label class="label">Email Address</label>
                                     <div class="input-group">
                                         <input type="email" name="email" class="form-control"
-                                            placeholder="test@example.com" value="{{ old('email','test@example.com') }}" required>
+                                            placeholder="test@example.com" value="{{ old('email', 'test@example.com') }}" required>
                                     </div>
                                 </div>
 
@@ -65,7 +65,6 @@
             </div>
         </div>
     </div>
-
 
     {{-- JS Partials --}}
     @include('layouts.partials.js')

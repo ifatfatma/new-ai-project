@@ -11,14 +11,15 @@
 
     <li class="nav-item nav-category">Management</li>
 
-    <!-- Categories Dropdown Menu -->
+    <!-- Categories Dropdown -->
     <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#manageCategoryMenu" aria-expanded="false" aria-controls="manageCategoryMenu">
+      <a class="nav-link collapsed" id="categoryToggleBtn" href="javascript:void(0);" style="cursor: pointer;">
         <i class="menu-icon mdi mdi-folder-cog-outline"></i>
-        <span class="menu-title">Categories</span>
-        <i class="menu-arrow"></i>
+        <span class="menu-title">Prompts</span>
+        <i class="menu-arrow mdi mdi-chevron-down ms-auto"></i>
       </a>
-      <div class="collapse" id="manageCategoryMenu">
+      
+      <div class="collapse" id="manageCategoryMenu" style="display: none;">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.categories.index') }}">
@@ -27,17 +28,59 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.prompts.index') }}">
-              <i class="mdi mdi-text-box-multiple-outline me-2"></i> All Prompts
+              <i class="mdi mdi-format-list-bulleted me-2"></i> All Prompts
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ route('admin.prompts.create') }}">
-              <i class="mdi mdi-plus-box-outline me-2"></i> Add New Prompt
-            </a>
-          </li>
+          
         </ul>
       </div>
     </li>
 
+
+         <li class="nav-item">
+  <a class="nav-link d-flex align-items-center" href="#">
+    <svg class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+    Settings
+  </a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{{ route('admin.logout') }}" 
+     onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
+    <i class="mdi mdi-power me-2 text-danger"></i> Log-out
+  </a>
+</li>
+
+<!-- Hidden Logout Form -->
+<form id="logout-form-sidebar" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
   </ul>
 </nav>
+
+<!-- Pure JS Script to handle Toggle guaranteed -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('categoryToggleBtn');
+    const targetMenu = document.getElementById('manageCategoryMenu');
+
+    if (toggleBtn && targetMenu) {
+      toggleBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        // Toggle visibility directly
+        if (targetMenu.style.display === "none" || targetMenu.style.display === "") {
+          targetMenu.style.display = "block";
+          targetMenu.classList.add('show');
+          toggleBtn.classList.remove('collapsed');
+        } else {
+          targetMenu.style.display = "none";
+          targetMenu.classList.remove('show');
+          toggleBtn.classList.add('collapsed');
+        }
+      });
+    }
+  });
+</script>

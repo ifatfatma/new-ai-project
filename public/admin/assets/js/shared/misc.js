@@ -53,7 +53,7 @@ var lightColor = getComputedStyle(document.body).getPropertyValue('--light');
       $("#sidebar > .nav > .nav-item").find('.collapse.show').collapse('hide');
     });
 
-    function appendBanner() {
+    /* function appendBanner() {
 
         $("body").addClass("purchase-banner-active");
         $("body").prepend('\
@@ -71,7 +71,7 @@ var lightColor = getComputedStyle(document.body).getPropertyValue('--light');
         });
     }
 
-    appendBanner();
+    appendBanner(); */
 
     //checkbox and radios
     $(".form-check label,.form-radio label").append('<i class="input-helper"></i>');

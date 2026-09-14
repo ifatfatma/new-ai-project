@@ -13,3 +13,5 @@
 <script src="{{ asset('admin/assets/js/demo_1/dashboard.js') }}"></script>
 <!-- End custom js for this page-->
 {{-- <script src="{{ asset('admin/assets/js/shared/jquery.cookie.js') }}" type="text/javascript"></script> --}}
+<script src="{{ asset('admin/assets/js/hoverable-collapse.js') }}"></script>
+<script src="{{ asset('admin/assets/js/template.js') }}"></script>

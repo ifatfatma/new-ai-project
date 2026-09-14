@@ -7,32 +7,64 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .hero-section { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 60px 0; }
-        .prompt-card { transition: transform 0.2s; border: 1px solid #e5e7eb; }
-        .prompt-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-        .prompt-text-box { background: #f8fafc; font-family: monospace; font-size: 0.9rem; max-height: 120px; overflow-y: auto; }
-    </style>
-</head>
-<body class="bg-light">
+    .hero-section { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); 
+        color: white; 
+        padding: 60px 0; 
+    }
 
-    <!-- Hero Header & Search -->
+    /* Modern Dark Theme Button Style */
+    .btn-hero-search {
+        background-color: #6366f1;
+        color: #ffffff;
+        border: 1px solid #4f46e5;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-hero-search:hover {
+        background-color: #4f46e5;
+        color: #ffffff;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .prompt-card { transition: transform 0.2s; border: 1px solid #e5e7eb; }
+    .prompt-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+    .prompt-text-box { background: #f8fafc; font-family: monospace; font-size: 0.9rem; max-height: 120px; overflow-y: auto; }
+    #suggestions-box .dropdown-item:hover { background-color: #f1f5f9; cursor: pointer; }
+</style>
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <!-- Hero Header & Live Search -->
     <div class="hero-section text-center mb-5">
         <div class="container">
             <h1 class="fw-bold display-5 mb-3">Find & Copy Premium AI Prompts</h1>
             <p class="lead mb-4">Explore curated prompts for ChatGPT, Midjourney, and LLMs.</p>
             
-            <form action="{{ route('home') }}" method="GET" class="row g-2 justify-content-center">
-                <div class="col-md-6">
-                    <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-lg" placeholder="Search prompts (e.g. SEO, Email, Marketing)...">
+            <div class="row justify-content-center">
+                <div class="col-md-8 position-relative">
+                    <!-- Search Form Section -->
+<form action="{{ route('home') }}" method="GET" class="row g-2 justify-content-center">
+    <div class="col-md-9 position-relative">
+        <input type="text" id="prompt-search" name="search" value="{{ request('search') }}" 
+               class="form-control form-control-lg shadow-sm" 
+               placeholder="Search prompts (e.g. SEO, Email, Marketing)..." 
+               autocomplete="off">
+        
+        <div id="suggestions-box" class="dropdown-menu w-100 shadow-lg border-0 rounded-3 mt-1 overflow-hidden" 
+             style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 350px; overflow-y: auto;">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <!-- Purane btn-warning ko hata kar btn-hero-search use kiya gaya hai -->
+        <button type="submit" class="btn btn-hero-search btn-lg w-100 fw-bold">Search</button>
+    </div>
+</form>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold">Search</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
-    <div class="container mb-5">
+    <div class="container mb-5 flex-grow-1">
         <!-- Category Filter Pills -->
         <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
             <a href="{{ route('home') }}" class="btn btn-sm {{ !request('category') ? 'btn-dark' : 'btn-outline-dark' }}">All Prompts</a>
@@ -85,26 +117,27 @@
                     </div>
                 </div>
 
-                <!-- Public View Modal -->
+                <!-- Static Grid Prompt Modal -->
                 <div class="modal fade" id="publicModal{{ $prompt->id }}" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title fw-bold">{{ $prompt->title }}</h5>
+                        <div class="modal-content border-0 shadow-lg rounded-4">
+                            <div class="modal-header border-0 pb-0">
+                                <span class="badge bg-primary fs-6">{{ $prompt->category->name ?? 'General' }}</span>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body p-4">
+                                <h4 class="fw-bold text-dark mb-3">{{ $prompt->title }}</h4>
                                 @if($prompt->image)
                                     <div class="text-center mb-3">
-                                        <img src="{{ asset('storage/' . $prompt->image) }}" class="img-fluid rounded border" style="max-height: 350px;">
+                                        <img src="{{ asset('storage/' . $prompt->image) }}" class="img-fluid rounded border" style="max-height: 300px;">
                                     </div>
                                 @endif
-                                <label class="fw-bold mb-1">Prompt Text:</label>
-                                <div class="p-3 bg-light rounded border text-start">
-                                    <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">{{ $prompt->prompt_text }}</pre>
+                                <label class="fw-bold mb-1 text-muted small">PROMPT TEXT:</label>
+                                <div class="p-3 bg-light rounded border">
+                                    <pre style="white-space: pre-wrap; font-family: monospace; margin: 0;">{{ $prompt->prompt_text }}</pre>
                                 </div>
                             </div>
-                            <div class="modal-footer">
+                            <div class="modal-footer border-0 pt-0">
                                 <button class="btn btn-success fw-bold" onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this)">
                                     <i class="bi bi-clipboard"></i> Copy Prompt
                                 </button>
@@ -126,84 +159,50 @@
         </div>
     </div>
 
-<!-- Footer Container 
-<div class="container-fluid px-0 mt-5">
-    <footer class="text-center text-lg-start text-white" style="background-color: #1c2331">
-        
-        Section: Social media 
-        <section class="d-flex justify-content-between p-4" style="background-color: #6351ce">
-            <div class="me-5 d-none d-md-block">
-                <span>Get connected with us on social networks:</span>
-            </div>
-            <div>
-                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-facebook"></i></a>
-                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-twitter"></i></a>
-                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-google"></i></a>
-                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-instagram"></i></a>
-                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-linkedin"></i></a>
-                <a href="#" class="text-white me-4 text-decoration-none"><i class="mdi mdi-github"></i></a>
-            </div>
-        </section>
-
-        Section: Links 
-        <section>
-            <div class="container text-center text-md-start mt-5">
-                <div class="row mt-3">
+    <!-- Live Suggestion Dynamic Popup Modal -->
+    <div class="modal fade" id="liveSearchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <span id="live-modal-category" class="badge bg-primary fs-6">Category</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <h4 id="live-modal-title" class="fw-bold text-dark mb-3">Prompt Title</h4>
                     
-                     Col 1: Project Info 
-                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-                        <h6 class="text-uppercase fw-bold">AI Prompt Hub</h6>
-                        <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #7c4dff; height: 2px" />
-                        <p class="small text-white-50">
-                            Discover, copy, and organize the best AI prompts for ChatGPT, Midjourney, and copywriting to boost your daily workflow and productivity.
-                        </p>
+                    <div id="live-modal-img-container" class="text-center mb-3" style="display: none;">
+                        <img id="live-modal-img" src="" class="img-fluid rounded border" style="max-height: 300px;">
                     </div>
 
-                     Col 2: Top Categories 
-                     Col 2: Top Categories (Updated & Expanded)
-<div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
-    <h6 class="text-uppercase fw-bold">Categories</h6>
-    <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #7c4dff; height: 2px" />
-    
-    <div class="row">
-        <div class="col-6">
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Content & Blog</a></p>
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Social Media</a></p>
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Coding Prompts</a></p>
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">SEO & Marketing</a></p>
-        </div>
-        <div class="col-6">
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Creative Writing</a></p>
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Business & Work</a></p>
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Image Prompts</a></p>
-            <p><a href="{{ route('home') }}" class="text-white-50 text-decoration-none">Productivity</a></p>
-        </div>
-    </div>
-</div>
-                     Col 4: Contact Info 
-                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-                        <h6 class="text-uppercase fw-bold">Contact</h6>
-                        <hr class="mb-4 mt-0 d-inline-block mx-auto" style="width: 60px; background-color: #7c4dff; height: 2px" />
-                        <p class="small text-white-50"><i class="mdi mdi-home me-2"></i> Kolkata, India</p>
-                        <p class="small text-white-50"><i class="mdi mdi-email me-2"></i> support@aiprompthub.com</p>
-                        <p class="small text-white-50"><i class="mdi mdi-phone me-2"></i> +91 8240112233</p>
+                    <label class="fw-bold mb-1 text-muted small">PROMPT TEXT:</label>
+                    <div class="p-3 bg-light rounded border">
+                        <pre id="live-modal-text" style="white-space: pre-wrap; font-family: monospace; margin: 0;"></pre>
                     </div>
-
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button id="live-modal-copy-btn" class="btn btn-success fw-bold">
+                        <i class="bi bi-clipboard"></i> Copy Prompt
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
-        </section> -->
-
-        <!-- Copyright -->
-        <div class="text-center p-3 small" style="background-color: rgba(0, 0, 0, 0.2)">
-            © {{ date('Y') }} Copyright:
-            <a class="text-white fw-bold text-decoration-none" href="{{ route('home') }}">AI Prompt Hub</a>. All rights reserved.
         </div>
-    </footer>
-</div>
+    </div>
 
-    <!-- JS for Clipboard Copy -->
+    <!-- Footer -->
+    <div class="container-fluid px-0 mt-5">
+        <footer class="text-center text-lg-start text-white" style="background-color: #1c2331">
+            <div class="text-center p-3 small" style="background-color: rgba(0, 0, 0, 0.2)">
+                © {{ date('Y') }} Copyright:
+                <a class="text-white fw-bold text-decoration-none" href="{{ route('home') }}">AI Prompt Hub</a>. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <!-- JS Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Copy to Clipboard Script
         function copyPrompt(elementId, btnElement) {
             const textToCopy = document.getElementById(elementId).value;
             navigator.clipboard.writeText(textToCopy).then(() => {
@@ -221,6 +220,90 @@
                 console.error('Failed to copy: ', err);
             });
         }
+
+        // Live Auto-Suggest Search Logic
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('prompt-search');
+            const suggestionsBox = document.getElementById('suggestions-box');
+            const liveModal = new bootstrap.Modal(document.getElementById('liveSearchModal'));
+
+            searchInput.addEventListener('input', function () {
+                const query = this.value.trim();
+
+                if (query.length < 2) {
+                    suggestionsBox.style.display = 'none';
+                    return;
+                }
+
+                fetch(`{{ route('search.suggestions') }}?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsBox.innerHTML = '';
+
+                        if (data.length === 0) {
+                            suggestionsBox.innerHTML = `<div class="dropdown-item text-muted small py-2">No prompts found</div>`;
+                        } else {
+                            data.forEach(item => {
+                                const catName = item.category ? item.category.name : 'General';
+                                const option = document.createElement('div');
+                                option.className = 'dropdown-item py-2 border-bottom d-flex justify-content-between align-items-center';
+                                option.innerHTML = `
+                                    <div>
+                                        <strong class="d-block text-dark small">${item.title}</strong>
+                                        <span class="text-muted" style="font-size: 0.8rem;">${item.prompt_text.substring(0, 45)}...</span>
+                                    </div>
+                                    <span class="badge bg-light text-primary border ms-2">${catName}</span>
+                                `;
+
+                                // Click suggestion to open dynamic popup modal
+                                option.addEventListener('click', function () {
+                                    openLiveModal(item);
+                                    suggestionsBox.style.display = 'none';
+                                });
+
+                                suggestionsBox.appendChild(option);
+                            });
+                        }
+                        suggestionsBox.style.display = 'block';
+                    });
+            });
+
+            function openLiveModal(item) {
+                document.getElementById('live-modal-title').innerText = item.title;
+                document.getElementById('live-modal-category').innerText = item.category ? item.category.name : 'General';
+                document.getElementById('live-modal-text').innerText = item.prompt_text;
+
+                const imgContainer = document.getElementById('live-modal-img-container');
+                const imgElement = document.getElementById('live-modal-img');
+
+                if (item.image) {
+                    imgElement.src = `{{ asset('storage') }}/${item.image}`;
+                    imgContainer.style.display = 'block';
+                } else {
+                    imgContainer.style.display = 'none';
+                }
+
+                const copyBtn = document.getElementById('live-modal-copy-btn');
+                copyBtn.onclick = function () {
+                    navigator.clipboard.writeText(item.prompt_text);
+                    copyBtn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+                    copyBtn.classList.replace('btn-success', 'btn-dark');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copy Prompt';
+                        copyBtn.classList.replace('btn-dark', 'btn-success');
+                    }, 2000);
+                };
+
+                liveModal.show();
+            }
+
+            // Close suggestion list on clicking outside
+            document.addEventListener('click', function (e) {
+                if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
