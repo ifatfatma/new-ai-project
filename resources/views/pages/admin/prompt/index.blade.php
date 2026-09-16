@@ -31,6 +31,7 @@
             <th>Step Label</th>
             <th>Prompt Text</th>
             <th class="text-center">Actions</th>
+            <th>Copies</th>
           </tr>
         </thead>
         <tbody>
@@ -55,6 +56,14 @@
               <td style="max-width: 250px;">
                 {{ \Illuminate\Support\Str::limit($prompt->prompt_text, 50) }}
               </td>
+
+              <td>
+    <span class="badge bg-light text-primary border font-weight-bold">
+        <i class="mdi mdi-content-copy me-1 text-info"></i> {{ $prompt->copies_count ?? 0 }}
+    </span>
+</td>
+
+
               
               <td class="text-center">
                 <div class="btn-group" role="group">

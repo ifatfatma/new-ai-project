@@ -66,23 +66,27 @@
             </div>
         </div>
 
-        <!-- Card 4: Views Today -->
-        <div class="col-xl-3 col-sm-6 grid-margin stretch-card mb-4">
-            <div class="card border-0 shadow-sm rounded-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <p class="text-muted mb-1 font-weight-bold">Views Today</p>
-                            <h3 class="mb-0 font-weight-bold text-info">{{ $stats['views_today'] ?? 0 }}</h3>
-                        </div>
-                        <div class="icon-shape bg-info text-white rounded-circle p-3">
-                            <i class="mdi mdi-eye-outline mdi-24px"></i>
-                        </div>
+        
+
+    <!-- Card 4: Total Copied Prompts (Clickable to Graph Page) -->
+<div class="col-xl-3 col-sm-6 grid-margin stretch-card mb-4">
+    <a href="{{ route('admin.analytics.copies') }}" class="text-decoration-none w-100">
+        <div class="card border-0 shadow-sm rounded-3 hover-shadow transition">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted mb-1 font-weight-bold">Total Copies</p>
+                        <h3 class="mb-0 font-weight-bold text-info">{{ $stats['total_copies'] ?? 0 }}</h3>
+                        <small class="text-primary font-weight-bold">View Analytics &rarr;</small>
+                    </div>
+                    <div class="icon-shape bg-info text-white rounded-circle p-3">
+                        <i class="mdi mdi-content-copy mdi-24px"></i>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </a>
+</div>
 
     <!-- Recent Prompts Table Section -->
     <div class="row">

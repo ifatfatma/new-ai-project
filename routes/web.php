@@ -7,10 +7,25 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PromptController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Prompt;
+use App\Models\PromptCopy;
 
-// 1. PUBLIC / FRONTEND ROUTE
+// 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
+
+// Frontend AJAX / Copy Track Route (Public)
+Route::post('/prompts/{id}/copy-track', function ($id) {
+    $prompt = Prompt::findOrFail($id);
+    $prompt->increment('copies_count');
+
+    PromptCopy::create([
+        'prompt_id'   => $prompt->id,
+        'copied_date' => now()->toDateString(),
+    ]);
+
+    return response()->json(['success' => true, 'total_copies' => $prompt->copies_count]);
+})->name('prompts.copy.track');
 
 
 // 2. ADMIN ROUTES GROUP (/admin)
@@ -24,8 +39,9 @@ Route::prefix('admin')->group(function () {
     // Protected Admin Routes (Requires Auth)
     Route::middleware('auth')->group(function () {
         
-        // Dashboard
+        // Dashboard & Analytics
         Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
+        Route::get('/analytics/copies', [HomeController::class, 'copyAnalytics'])->name('admin.analytics.copies');
         Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
         // Admin Profile Settings Routes
