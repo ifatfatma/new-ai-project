@@ -9,47 +9,89 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Prompt;
 use App\Models\PromptCopy;
+use App\Http\Controllers\FrontendAuthController;
 
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
 
-// Frontend AJAX / Copy Track Route (Public)
+// Frontend Email OTP Login Routes (Ab ye bilkul bahar aur safe hain)
+Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('frontend.login');
+Route::post('/send-otp', [FrontendAuthController::class, 'sendOtp'])->name('frontend.send.otp');
+Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])->name('frontend.otp.verify.form');
+Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
+Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
+
+
+// Strict User-Only Copy Tracking Route (1 Email = 1 Count per Day)
 Route::post('/prompts/{id}/copy-track', function ($id) {
-    $prompt = Prompt::findOrFail($id);
-    $prompt->increment('copies_count');
+    // 1. Mandatory Login Check
+    if (!auth()->check()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Please login to copy and track prompts.'
+        ], 401);
+    }
 
-    PromptCopy::create([
-        'prompt_id'   => $prompt->id,
-        'copied_date' => now()->toDateString(),
+    $prompt = Prompt::find($id);
+    if (!$prompt) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Prompt not found.'
+        ], 404);
+    }
+
+    $userEmail = auth()->user()->email;
+    $today = now()->toDateString();
+
+    // 2. Thread-safe DB Check & Insert
+    $copyRecord = PromptCopy::firstOrCreate(
+        [
+            'prompt_id'   => $prompt->id,
+            'email'       => $userEmail,
+            'copied_date' => $today,
+        ]
+    );
+
+    // 3. Agar aaj pehli baar create hua hai
+    if ($copyRecord->wasRecentlyCreated) {
+        $prompt->increment('copies_count');
+
+        return response()->json([
+            'success'      => true,
+            'counted'      => true,
+            'message'      => 'Copy count updated for today!',
+            'total_copies' => (int) $prompt->copies_count
+        ]);
+    }
+
+    // 4. Aaj pehle se counted hai (Skip Increment)
+    return response()->json([
+        'success'      => true,
+        'counted'      => false,
+        'message'      => 'Already counted for today.',
+        'total_copies' => (int) $prompt->copies_count
     ]);
-
-    return response()->json(['success' => true, 'total_copies' => $prompt->copies_count]);
-})->name('prompts.copy.track');
+})->middleware('auth')->name('prompts.copy.track');
 
 
 // 2. ADMIN ROUTES GROUP (/admin)
 Route::prefix('admin')->group(function () {
 
-    // Guest / Authentication Routes
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AuthController::class, 'login'])->name('admin.login.submit');
 
-    // Protected Admin Routes (Requires Auth)
     Route::middleware('auth')->group(function () {
         
-        // Dashboard & Analytics
         Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
         Route::get('/analytics/copies', [HomeController::class, 'copyAnalytics'])->name('admin.analytics.copies');
         Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-        // Admin Profile Settings Routes
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-        // Category Management Routes
         Route::resource('categories', CategoryController::class)->names([
             'index'   => 'admin.categories.index',
             'store'   => 'admin.categories.store',
@@ -57,7 +99,6 @@ Route::prefix('admin')->group(function () {
             'destroy' => 'admin.categories.destroy',
         ]);
 
-        // Prompts Management Routes
         Route::get('/prompts', [PromptController::class, 'index'])->name('admin.prompts.index');
         Route::get('/prompts/create', [PromptController::class, 'create'])->name('admin.prompts.create');
         Route::post('/prompts/store', [PromptController::class, 'store'])->name('admin.prompts.store');

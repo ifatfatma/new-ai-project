@@ -43,7 +43,11 @@
             options: {
                 responsive: true,
                 scales: {
-                    y: { beginAtZero: true, ticks: { precision: 0 } }
+                    y: { 
+                        beginAtZero: true, 
+                        suggestedMax: 5,
+                        ticks: { precision: 0 } 
+                    }
                 }
             }
         });

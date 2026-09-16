@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Storage;
 class PromptController extends Controller
 {
     public function index()
-    {
-        $prompts = Prompt::with('category')->latest()->paginate(10);
-        return view('pages.admin.prompt.index', compact('prompts'));
-    }
+{
+    $prompts = Prompt::with('category')->latest()->paginate(10);
+    $categories = Category::all(); // Categories load karein
+
+    return view('pages.admin.prompt.index', compact('prompts', 'categories'));
+}
 
     public function create()
     {

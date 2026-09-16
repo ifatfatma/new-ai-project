@@ -41,6 +41,7 @@ class HomeController extends Controller
         $dates = $analytics->pluck('date')->toArray();
         $counts = $analytics->pluck('total')->toArray();
 
+        // Empty graph prevention check
         if (empty($dates)) {
             $dates = [now()->format('Y-m-d')];
             $counts = [0];

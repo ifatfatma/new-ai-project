@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PromptCopy extends Model
 {
-    protected $fillable = ['prompt_id', 'copied_date'];
+    protected $fillable = ['prompt_id', 'email' , 'copied_date'];
 
     public function prompt()
     {

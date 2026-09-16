@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         // 1. Overall copies count column in prompts table
@@ -23,15 +20,17 @@ return new class extends Migration
             Schema::create('prompt_copies', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('prompt_id')->constrained()->onDelete('cascade');
+                $table->string('email');
                 $table->date('copied_date');
                 $table->timestamps();
+
+                // 🔴 CRITICAL FOR 1 DAY = 1 COUNT LIMIT
+                // Ye line ek same email + prompt + date combination ko duplicate hone se rokegi
+                $table->unique(['prompt_id', 'email', 'copied_date'], 'unique_user_daily_copy');
             });
         }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('prompts', function (Blueprint $table) {

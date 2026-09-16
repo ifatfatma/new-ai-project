@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Admin Login</title>
 
-    {{-- CSS Partials --}}
     @include('layouts.partials.css')
 </head>
 
@@ -42,7 +41,7 @@
                                     <label class="label">Email Address</label>
                                     <div class="input-group">
                                         <input type="email" name="email" class="form-control"
-                                            placeholder="test@example.com" value="{{ old('email', 'test@example.com') }}" required>
+                                            placeholder="test@gmail.com" value="{{ old('email', 'test@gmail.com') }}" required>
                                     </div>
                                 </div>
 
@@ -50,7 +49,7 @@
                                     <label class="label">Password</label>
                                     <div class="input-group">
                                         <input type="password" name="password" class="form-control"
-                                            placeholder="********" value="12345678" required>
+                                            value="12345678" placeholder="********" required>
                                     </div>
                                 </div>
 
@@ -66,7 +65,6 @@
         </div>
     </div>
 
-    {{-- JS Partials --}}
     @include('layouts.partials.js')
 
 </body>
