@@ -5,19 +5,33 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Prompt;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+
 class PromptController extends Controller
 {
-    public function index()
+   public function index(Request $request)
 {
-    $prompts = Prompt::with('category')->latest()->paginate(10);
-    $categories = Category::all(); // Categories load karein
+    $query = Prompt::with('user', 'category');
 
-    return view('pages.admin.prompt.index', compact('prompts', 'categories'));
+    // 1. Filter by user
+    if ($request->filled('user_id')) {
+        $query->where('user_id', $request->user_id);
+    }
+
+    // 2. Filter by date
+    if ($request->filled('date')) {
+        $query->whereDate('created_at', $request->date);
+    }
+
+    // Pagination with query strings so filters persist across pages
+    $prompts = $query->paginate(10)->withQueryString();
+$users = User::all();
+
+    return view('pages.admin.prompt.index', compact('prompts', 'users'));
 }
-
     public function create()
     {
         $categories = Category::all();
@@ -25,41 +39,34 @@ class PromptController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // Strict Validation with Security Rules & Error Messages
-        $request->validate([
-            'category_id'     => 'required|exists:categories,id',
-            'title'           => 'required|string|max:255',
-            'prompts'         => 'required|array|min:1',
-            'prompts.*.text'  => 'required|string',
-            'prompts.*.label' => 'nullable|string|max:255',
-            'prompts.*.image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048|dimensions:max_width=3000,max_height=3000',
-        ], [
-            'prompts.*.image.image'      => 'The uploaded file must be a valid image.',
-            'prompts.*.image.mimes'      => 'Only JPG, JPEG, PNG, and WEBP image formats are allowed.',
-            'prompts.*.image.max'        => 'The image size must not exceed 2MB (2048KB).',
-            'prompts.*.image.dimensions' => 'The image dimensions must not exceed 3000x3000 pixels.',
-        ]);
+{
+    // 1. Validation for single prompt form
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'title'       => 'required|string|max:255',
+        'prompt_text' => 'required|string',
+        'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+    ]);
 
-        foreach ($request->prompts as $index => $promptData) {
-            $imagePath = null;
+    $imagePath = null;
 
-            if ($request->hasFile("prompts.{$index}.image")) {
-                $file = $request->file("prompts.{$index}.image");
-                $imagePath = $file->store('prompts', 'public');
-            }
-
-            Prompt::create([
-                'category_id' => $request->category_id,
-                'title'       => $request->title,
-                'label'       => $promptData['label'] ?? null,
-                'prompt_text' => $promptData['text'],
-                'image'       => $imagePath,
-            ]);
-        }
-
-        return redirect()->route('admin.prompts.index')->with('success', 'All prompts created successfully!');
+    // 2. Handle image upload if present
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $imagePath = $file->store('prompts', 'public');
     }
+
+    // 3. Save data into the database along with user_id
+    Prompt::create([
+        'user_id'     => auth()->id(), // ✅ Logged-in user ki ID
+        'category_id' => $request->category_id,
+        'title'       => $request->title,
+        'prompt_text' => $request->prompt_text,
+        'image'       => $imagePath,
+    ]);
+
+    return redirect()->route('admin.prompts.index')->with('success', 'Prompt created successfully!');
+}
 
     public function edit($id)
     {

@@ -14,6 +14,9 @@ use App\Http\Controllers\FrontendAuthController;
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
+// Contact Us Routes
+Route::get('/contact-us', [FrontendController::class, 'contactUs'])->name('contact.us');
+Route::post('/contact-us/submit', [FrontendController::class, 'submitContact'])->name('contact.submit');
 
 // Frontend Email OTP Login Routes (Ab ye bilkul bahar aur safe hain)
 Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('frontend.login');
@@ -21,6 +24,9 @@ Route::post('/send-otp', [FrontendAuthController::class, 'sendOtp'])->name('fron
 Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])->name('frontend.otp.verify.form');
 Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
+
+// Frontend User Add Prompt Route (Added here)
+Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 
 
 // Strict User-Only Copy Tracking Route (1 Email = 1 Count per Day)

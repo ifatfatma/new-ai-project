@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Prompt;
 use Illuminate\Http\Request;
 
+
 class FrontendController extends Controller
 {
     public function index(Request $request)
@@ -29,4 +30,23 @@ class FrontendController extends Controller
 
         return view('welcome', compact('prompts', 'categories'));
     }
+
+    public function contactUs()
+{
+    return view('pages.front.contact'); // ✅ 'pages' folder ko bhi include karna padega
+}
+
+// Contact Form Submit handle karne ke liye
+public function submitContact(Request $request)
+{
+    $request->validate([
+        'name'    => 'required|string|max:255',
+        'email'   => 'required|email|max:255',
+        'message' => 'required|string',
+    ]);
+
+    // Yahan aap mail send karne ka logic ya database me save karne ka code likh sakte hain
+
+    return back()->with('success', 'Thank you! Your message has been sent successfully.');
+}
 }

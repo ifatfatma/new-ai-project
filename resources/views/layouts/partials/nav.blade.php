@@ -9,7 +9,7 @@
       </a>
     </li>
 
-    <li class="nav-item nav-category">Management</li>
+    
 
     <!-- Categories Dropdown -->
     <li class="nav-item">

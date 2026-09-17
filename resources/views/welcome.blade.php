@@ -35,6 +35,63 @@
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
 
+    <!-- Navbar Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{{ route('home') }}">
+                <i class="bi bi-cpu-fill text-primary me-1"></i> AI Prompt Hub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+    <!-- Home Link -->
+    <li class="nav-item me-3">
+        <a class="nav-link text-white fw-semibold" href="{{ route('home') }}">Home</a>
+    </li>
+
+    <!-- ✅ Contact Us Link (Yeh classes lagani hain) -->
+    <li class="nav-item me-3">
+        <a class="nav-link text-white fw-semibold" href="{{ route('contact.us') }}">Contact Us</a>
+    </li>
+
+    <!-- Add Prompt Button -->
+    <li class="nav-item">
+        <button type="button" class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#addPromptModal">
+        + Add Prompt
+    </button>
+    </li>
+</ul>
+
+                <!-- Profile Dropdown on Right -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-white fw-semibold" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-5 me-2 text-primary"></i> My Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item py-2" href="#">
+                                    <i class="bi bi-person me-2 text-muted"></i> My Profile
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{{ route('frontend.logout') }}" method="POST">
+    @csrf
+    <button type="submit" class="dropdown-item py-2 text-danger fw-semibold">
+        <i class="bi bi-box-arrow-right me-2"></i> Logout
+    </button>
+</form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <!-- Hero Header & Search -->
     <div class="hero-section text-center mb-5">
         <div class="container">
@@ -94,7 +151,6 @@
                             </div>
 
                             <div class="mt-auto d-flex gap-2">
-                                <!-- Clean Copy Button (No Number Badge) -->
                                 <button class="btn btn-success btn-sm w-100 fw-bold copy-btn" 
                                         onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
                                     <i class="bi bi-clipboard"></i> Copy Prompt
@@ -149,6 +205,48 @@
         <!-- Pagination -->
         <div class="d-flex justify-content-center mt-4">
             {{ $prompts->links() }}
+        </div>
+    </div>
+
+    <!-- Add Prompt Modal (Static Backdrop - won't close on outside click) -->
+    <div class="modal fade" id="addPromptModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white px-4">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2"></i>Add New Prompt</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Prompt Title</label>
+                            <input type="text" name="title" class="form-control" required placeholder="e.g. SEO Meta Description Generator">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <select name="category_id" class="form-select" required>
+                                <option value="">Select Category</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Prompt Text</label>
+                            <textarea name="prompt_text" class="form-control" rows="4" required placeholder="Write your prompt content here..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Image / Output Example (Optional)</label>
+                            <input type="file" name="image" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 px-4 pb-4">
+                        <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary fw-bold px-4">Save Prompt</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

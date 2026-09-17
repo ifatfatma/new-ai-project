@@ -81,11 +81,14 @@ class FrontendAuthController extends Controller
     }
 
     // Logout
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('home')->with('success', 'Logged out successfully.');
-    }
+   public function logout(Request $request) 
+{
+    Auth::logout(); // User session clear karein
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    // ✅ Ab user logout hone ke baad seedha Login Page par jayega
+    return redirect()->route('frontend.login')->with('success', 'You have been successfully logged out.');
+}
 }
