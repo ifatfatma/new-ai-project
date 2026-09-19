@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('prompts', function (Blueprint $table) {
-            $table->string('image')->nullable()->after('prompt_text');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('logo')->nullable();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('prompts', function (Blueprint $table) {
-            $table->dropColumn('image');
+        Schema::table('users', function (Blueprint $table) {
+            //
         });
     }
-}; 
+};

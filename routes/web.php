@@ -26,10 +26,8 @@ Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('fronten
 // Frontend User Add Prompt Route
 Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 
-
 // Strict User-Only Copy Tracking Route (1 Email = 1 Count per Day)
 Route::post('/prompts/{id}/copy-track', function ($id) {
-    // 1. Mandatory Login Check
     if (!auth()->check()) {
         return response()->json([
             'success' => false,
@@ -48,7 +46,6 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
     $userEmail = auth()->user()->email;
     $today = now()->toDateString();
 
-    // 2. Thread-safe DB Check & Insert
     $copyRecord = PromptCopy::firstOrCreate(
         [
             'prompt_id'   => $prompt->id,
@@ -57,7 +54,6 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
         ]
     );
 
-    // 3. Agar aaj pehli baar create hua hai
     if ($copyRecord->wasRecentlyCreated) {
         $prompt->increment('copies_count');
 
@@ -69,7 +65,6 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
         ]);
     }
 
-    // 4. Aaj pehle se counted hai (Skip Increment)
     return response()->json([
         'success'      => true,
         'counted'      => false,
@@ -96,9 +91,10 @@ Route::prefix('admin')->group(function () {
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-        // Admin Settings Routes (Yeh naya sahi tarika hai)
+        // Admin Settings Routes
         Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
         Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('admin.settings.profile.update');
+        Route::post('/settings/logo', [SettingsController::class, 'updateLogo'])->name('admin.settings.logo.update');
         Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('admin.settings.password.update');
 
         Route::resource('categories', CategoryController::class)->names([

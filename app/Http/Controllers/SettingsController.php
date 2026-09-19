@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Hash;
 class SettingsController extends Controller
 {
     public function index()
-{
-    return view('pages.admin.setting');
-}
+    {
+        return view('pages.admin.setting');
+    }
 
     public function updateProfile(Request $request)
     {
@@ -25,7 +25,32 @@ class SettingsController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        return back()->with('success', 'Profile updated successfully!');
+        return back()->with('success', 'Profile information updated successfully!');
+    }
+
+    public function updateLogo(Request $request)
+    {
+        $request->validate([
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = auth()->user();
+
+        if ($request->hasFile('logo')) {
+            // Folder check and auto creation if not exists
+            $destinationPath = public_path('uploads/logos');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            $imageName = time() . '.' . $request->logo->extension();  
+            $request->logo->move($destinationPath, $imageName);
+            
+            $user->logo = 'uploads/logos/' . $imageName;
+            $user->save();
+        }
+
+        return back()->with('success', 'Profile logo updated successfully!');
     }
 
     public function updatePassword(Request $request)

@@ -12,11 +12,11 @@
     <!-- Navbar -->
     <nav class="navbar navbar-dark bg-dark px-4 shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{{ route('home') }}">
+            <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
                 <i class="bi bi-cpu-fill text-primary me-1"></i> AI Prompt Hub
             </a>
-            <a href="{{ route('home') }}" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-arrow-left"></i> Back to Home
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
             </a>
         </div>
     </nav>
@@ -44,16 +44,15 @@
                     </div>
                 @endif
 
-                <!-- Profile Information Card -->
+                <!-- 1. Profile Information Card (Name & Email) -->
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-header bg-white border-0 pt-4 px-4">
-                        <h4 class="fw-bold mb-0"><i class="bi bi-person-gear text-primary me-2"></i>Profile Settings</h4>
-                        <p class="text-muted small">Update your account profile information (Name and Email).</p>
+                        <h4 class="fw-bold mb-0"><i class="bi bi-person-gear text-primary me-2"></i>Profile Information</h4>
+                        <p class="text-muted small">Update your account name and email address.</p>
                     </div>
                     <div class="card-body p-4">
                         <form action="{{ route('admin.settings.profile.update') }}" method="POST">
                             @csrf
-                            
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Full Name</label>
                                 <input type="text" name="name" class="form-control" value="{{ auth()->user()->name }}" required>
@@ -69,7 +68,37 @@
                     </div>
                 </div>
 
-                <!-- Password Reset Card -->
+                <!-- 2. Profile Logo / Avatar Card -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h4 class="fw-bold mb-0"><i class="bi bi-image text-primary me-2"></i>Profile Logo / Avatar</h4>
+                        <p class="text-muted small">Update your profile logo or dummy avatar anytime.</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="{{ route('admin.settings.logo.update') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            
+                            <!-- Current Logo Preview -->
+                            <div class="mb-3 text-center">
+                                @if(auth()->user()->logo)
+                                    <img src="{{ asset(auth()->user()->logo) }}" alt="Logo" class="rounded-circle shadow-sm mb-2" width="90" height="90" style="object-fit: cover;">
+                                @else
+                                    <img src="https://via.placeholder.com/90" alt="Dummy Logo" class="rounded-circle shadow-sm mb-2" width="90" height="90">
+                                @endif
+                                <div><small class="text-muted">Current Logo</small></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Choose New Logo</label>
+                                <input type="file" name="logo" class="form-control" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-success fw-bold px-4">Upload / Change Logo</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 3. Password Reset Card -->
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-header bg-white border-0 pt-4 px-4">
                         <h4 class="fw-bold mb-0"><i class="bi bi-shield-lock text-primary me-2"></i>Change Password</h4>
