@@ -35,9 +35,13 @@
     <!-- Navbar Header -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{{ route('home') }}">
-                <i class="bi bi-cpu-fill text-primary me-1"></i> AI Prompt Hub
-            </a>
+            <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+    <!-- Agar admin/user ka logo database me hai toh woh show hoga -->
+    @if(auth()->check() && auth()->user()->logo)
+        <img src="{{ asset(auth()->user()->logo) }}" alt="Logo" class="rounded-circle me-2" width="35" height="35" style="object-fit: cover;">
+    @endif
+    <span class="fw-bold">AI Prompt Hub</span>
+</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -59,6 +63,11 @@
                                     <i class="bi bi-person me-2 text-muted"></i> My Profile
                                 </a>
                             </li>
+
+                            <a class="dropdown-item py-2 px-3" href="{{ route('user.prompts') }}">
+        <i class="bi bi-collection me-2"></i> My Prompts
+    </a>
+    <div class="dropdown-divider"></div>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('frontend.logout') }}" method="POST">

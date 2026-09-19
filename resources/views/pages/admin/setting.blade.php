@@ -1,137 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Settings - AI Prompt Hub</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@extends('layouts.backlayout')
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark px-4 shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-cpu-fill text-primary me-1"></i> AI Prompt Hub
-            </a>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-arrow-left"></i> Back to Dashboard
-            </a>
+@section('content')
+<div class="content-wrapper">
+    <div class="page-header">
+        <h3 class="page-title"> Account Profile Settings </h3>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
         </div>
-    </nav>
+    @endif
 
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                
-                <!-- Success / Error Messages -->
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+    <div class="row">
+        <!-- 1. Personal Details Form -->
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-primary"><i class="mdi mdi-account-edit me-2"></i>Personal Details</h4>
+                    <p class="card-description"> Update your account personal information </p>
+                    
+                    <form action="{{ route('admin.settings.profile.update') }}" method="POST">
+                        @csrf
 
-                @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <ul class="mb-0">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+                        <div class="form-group mb-3">
+                            <label for="name" class="fw-bold">Full Name</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                            @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
 
-                <!-- 1. Profile Information Card (Name & Email) -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header bg-white border-0 pt-4 px-4">
-                        <h4 class="fw-bold mb-0"><i class="bi bi-person-gear text-primary me-2"></i>Profile Information</h4>
-                        <p class="text-muted small">Update your account name and email address.</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <form action="{{ route('admin.settings.profile.update') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Full Name</label>
-                                <input type="text" name="name" class="form-control" value="{{ auth()->user()->name }}" required>
-                            </div>
+                        <div class="form-group mb-4">
+                            <label for="email" class="fw-bold">Email Address</label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                            @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Email Address</label>
-                                <input type="email" name="email" class="form-control" value="{{ auth()->user()->email }}" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary fw-bold px-4">Save Changes</button>
-                        </form>
-                    </div>
+                        <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+                    </form>
                 </div>
+            </div>
+        </div>
 
-                <!-- 2. Profile Logo / Avatar Card -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header bg-white border-0 pt-4 px-4">
-                        <h4 class="fw-bold mb-0"><i class="bi bi-image text-primary me-2"></i>Profile Logo / Avatar</h4>
-                        <p class="text-muted small">Update your profile logo or dummy avatar anytime.</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <form action="{{ route('admin.settings.logo.update') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            
-                            <!-- Current Logo Preview -->
-                            <div class="mb-3 text-center">
-                                @if(auth()->user()->logo)
-                                    <img src="{{ asset(auth()->user()->logo) }}" alt="Logo" class="rounded-circle shadow-sm mb-2" width="90" height="90" style="object-fit: cover;">
-                                @else
-                                    <img src="https://via.placeholder.com/90" alt="Dummy Logo" class="rounded-circle shadow-sm mb-2" width="90" height="90">
-                                @endif
-                                <div><small class="text-muted">Current Logo</small></div>
-                            </div>
+        <!-- 2. Change Password Form -->
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-danger"><i class="mdi mdi-lock-reset me-2"></i>Change Password</h4>
+                    <p class="card-description"> Ensure your account is using a strong password </p>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Choose New Logo</label>
-                                <input type="file" name="logo" class="form-control" required>
-                            </div>
+                    <form action="{{ route('admin.settings.password.update') }}" method="POST">
+                        @csrf
 
-                            <button type="submit" class="btn btn-success fw-bold px-4">Upload / Change Logo</button>
-                        </form>
-                    </div>
+                        <div class="form-group mb-3">
+                            <label for="current_password" class="fw-bold">Current Password</label>
+                            <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password" name="current_password" required>
+                            @error('current_password') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="password" class="fw-bold">New Password</label>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                            @error('password') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="password_confirmation" class="fw-bold">Confirm New Password</label>
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger me-2">Update Password</button>
+                    </form>
                 </div>
-
-                <!-- 3. Password Reset Card -->
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 pt-4 px-4">
-                        <h4 class="fw-bold mb-0"><i class="bi bi-shield-lock text-primary me-2"></i>Change Password</h4>
-                        <p class="text-muted small">Ensure your account is using a secure password.</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <form action="{{ route('admin.settings.password.update') }}" method="POST">
-                            @csrf
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Current Password</label>
-                                <input type="password" name="current_password" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">New Password</label>
-                                <input type="password" name="password" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Confirm New Password</label>
-                                <input type="password" name="password_confirmation" class="form-control" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-dark fw-bold px-4">Update Password</button>
-                        </form>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <!-- 3. Profile Picture & Website Logo Cards -->
+    <div class="row">
+        <!-- Profile Picture Card -->
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-info"><i class="mdi mdi-account-circle me-2"></i>Profile Picture</h4>
+                    <p class="card-description"> Update your personal profile avatar </p>
+
+                    <form action="{{ route('profile.image.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <div class="row align-items-center mb-3">
+                            <div class="col-md-3 text-center">
+                                @if(isset($user->profile_image) && $user->profile_image)
+                                    <img src="{{ asset($user->profile_image) }}" alt="Profile" class="rounded-circle shadow-sm" width="70" height="70" style="object-fit: cover;">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=0D6EFD&color=fff" alt="Profile" class="rounded-circle shadow-sm" width="70" height="70" style="object-fit: cover;">
+                                @endif
+                            </div>
+                            <div class="col-md-9">
+                                <label for="profile_image" class="fw-bold">Choose Profile Image</label>
+                                <input type="file" class="form-control @error('profile_image') is-invalid @enderror" id="profile_image" name="profile_image" required>
+                                @error('profile_image') <span class="text-danger small">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-info text-white me-2">Update Profile Picture</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Website Logo Card -->
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-success"><i class="mdi mdi-image-edit me-2"></i>Website Logo</h4>
+                    <p class="card-description"> Update your brand logo shown on the header navbar </p>
+
+                    <form action="{{ route('admin.settings.logo.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <div class="row align-items-center mb-3">
+                            <div class="col-md-3 text-center">
+                                @if($user->logo)
+                                    <img src="{{ asset($user->logo) }}" alt="Logo" class="shadow-sm" style="max-height: 50px; max-width: 80px; object-fit: contain;">
+                                @else
+                                    <span class="text-muted small">No Logo</span>
+                                @endif
+                            </div>
+                            <div class="col-md-9">
+                                <label for="logo" class="fw-bold">Choose Brand Logo</label>
+                                <input type="file" class="form-control @error('logo') is-invalid @enderror" id="logo" name="logo" required>
+                                @error('logo') <span class="text-danger small">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success me-2">Update Website Logo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

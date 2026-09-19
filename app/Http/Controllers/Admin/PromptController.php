@@ -53,11 +53,12 @@ $users = User::all();
         'category_id' => $request->category_id,
         'prompt_text' => $request->prompt_text,
         'user_id' => auth()->id(), // user attribution
+        'status' => 'pending',
         // baaki fields...
     ]);
 
     // ✅ Yahan badlaav karein: Admin page ki jagah wapas frontend par bhejien success message ke sath
-    return redirect()->back()->with('success', 'Prompt added successfully!');
+    return redirect()->back()->with('success', 'Your prompt has been submitted for admin approval!');
     
     // Ya agar aap kisi specific frontend route par bhejna chahti hain:
     // return redirect()->route('home')->with('success', 'Prompt added successfully!');
@@ -127,4 +128,23 @@ $users = User::all();
         $prompt->delete();
         return redirect()->back()->with('success', 'Prompt deleted successfully!');
     }
+
+    public function approve($id)
+{
+    $prompt = Prompt::findOrFail($id);
+    $prompt->status = 'approved';
+    $prompt->save();
+
+    return redirect()->back()->with('success', 'Prompt successfully approved and published!');
+}
+
+public function reject($id)
+{
+    $prompt = Prompt::findOrFail($id);
+    $prompt->status = 'rejected'; // Status ko rejected set kar rahe hain
+    $prompt->save();
+
+    return back()->with('error', 'Prompt has been rejected.');
+}
+
 }

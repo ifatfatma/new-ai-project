@@ -73,6 +73,14 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
     ]);
 })->middleware('auth')->name('prompts.copy.track');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/my-prompts', [FrontendController::class, 'myPrompts'])->name('user.prompts');
+    // User Prompt Edit aur Delete routes
+    Route::get('/my-prompts/{id}/edit', [FrontendController::class, 'editPrompt'])->name('user.prompts.edit');
+    Route::put('/my-prompts/{id}', [FrontendController::class, 'updatePrompt'])->name('user.prompts.update');
+    Route::delete('/my-prompts/{id}', [FrontendController::class, 'destroyPrompt'])->name('user.prompts.destroy');
+});
+
 
 // 2. ADMIN ROUTES GROUP (/admin)
 Route::prefix('admin')->group(function () {
@@ -90,6 +98,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('/admin/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update');
 
         // Admin Settings Routes
         Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
@@ -110,6 +119,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/prompts/{id}/edit', [PromptController::class, 'edit'])->name('admin.prompts.edit');
         Route::put('/prompts/{id}', [PromptController::class, 'update'])->name('admin.prompts.update');
         Route::delete('/prompts/{id}', [PromptController::class, 'destroy'])->name('admin.prompts.destroy');
-        
+        Route::post('/admin/prompts/{id}/approve', [App\Http\Controllers\Admin\PromptController::class, 'approve'])->name('admin.prompts.approve');
+        Route::post('/admin/prompts/{id}/reject', [App\Http\Controllers\Admin\PromptController::class, 'reject'])->name('admin.prompts.reject');
     });
 });

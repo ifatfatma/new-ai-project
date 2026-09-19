@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Hash;
 
 class SettingsController extends Controller
 {
-    public function index()
+   public function index()
     {
-        return view('pages.admin.setting');
+        $user = auth()->user(); 
+        return view('pages.admin.setting', compact('user')); 
     }
 
     public function updateProfile(Request $request)
@@ -37,7 +38,6 @@ class SettingsController extends Controller
         $user = auth()->user();
 
         if ($request->hasFile('logo')) {
-            // Folder check and auto creation if not exists
             $destinationPath = public_path('uploads/logos');
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0755, true);
@@ -50,7 +50,7 @@ class SettingsController extends Controller
             $user->save();
         }
 
-        return back()->with('success', 'Profile logo updated successfully!');
+        return back()->with('success', 'Website logo updated successfully!');
     }
 
     public function updatePassword(Request $request)

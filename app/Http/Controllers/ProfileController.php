@@ -33,6 +33,33 @@ class ProfileController extends Controller
         return back()->with('success', 'Profile details updated successfully!');
     }
 
+    // Update Profile Picture / Avatar
+    public function updateProfileImage(Request $request)
+    {
+        $request->validate([
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+
+        if ($request->hasFile('profile_image')) {
+            $destinationPath = public_path('uploads/profile');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            $image = $request->file('profile_image');
+            $imageName = time() . '_profile.' . $image->getClientOriginalExtension();
+            $image->move($destinationPath, $imageName);
+            
+            $user->update([
+                'profile_image' => 'uploads/profile/' . $imageName
+            ]);
+        }
+
+        return back()->with('success', 'Profile picture updated successfully!');
+    }
+
     // Update Password
     public function updatePassword(Request $request)
     {
