@@ -10,22 +10,20 @@ use App\Http\Controllers\ProfileController;
 use App\Models\Prompt;
 use App\Models\PromptCopy;
 use App\Http\Controllers\FrontendAuthController;
+use App\Http\Controllers\SettingsController;
 
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
-// Contact Us Routes
-Route::get('/contact-us', [FrontendController::class, 'contactUs'])->name('contact.us');
-Route::post('/contact-us/submit', [FrontendController::class, 'submitContact'])->name('contact.submit');
 
-// Frontend Email OTP Login Routes (Ab ye bilkul bahar aur safe hain)
+// Frontend Email OTP Login Routes
 Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('frontend.login');
 Route::post('/send-otp', [FrontendAuthController::class, 'sendOtp'])->name('frontend.send.otp');
 Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])->name('frontend.otp.verify.form');
 Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
 
-// Frontend User Add Prompt Route (Added here)
+// Frontend User Add Prompt Route
 Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 
 
@@ -98,6 +96,11 @@ Route::prefix('admin')->group(function () {
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
+        // Admin Settings Routes (Yeh naya sahi tarika hai)
+        Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
+        Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('admin.settings.profile.update');
+        Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('admin.settings.password.update');
+
         Route::resource('categories', CategoryController::class)->names([
             'index'   => 'admin.categories.index',
             'store'   => 'admin.categories.store',
@@ -113,5 +116,4 @@ Route::prefix('admin')->group(function () {
         Route::delete('/prompts/{id}', [PromptController::class, 'destroy'])->name('admin.prompts.destroy');
         
     });
-
 });

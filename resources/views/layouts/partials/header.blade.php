@@ -68,9 +68,9 @@
             <i class="mdi mdi-account-outline text-primary me-2"></i> My Profile
         </a>
         
-        <a class="dropdown-item py-2" href="#">
-            <i class="mdi mdi-cog-outline text-primary me-2"></i> Settings
-        </a>
+        <a class="dropdown-item py-2" href="{{ route('admin.settings.index') }}">
+    <i class="mdi mdi-cog-outline text-primary me-2"></i> Settings
+</a>
         
         <div class="dropdown-divider"></div>
         

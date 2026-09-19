@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- AJAX Request ke liye Meta CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>AI Prompt Hub - Discover & Copy Best Prompts</title>
@@ -15,7 +14,6 @@
             color: white; 
             padding: 60px 0; 
         }
-
         .btn-hero-search {
             background-color: #6366f1;
             color: #ffffff;
@@ -27,7 +25,6 @@
             color: #ffffff;
             box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
         }
-
         .prompt-card { transition: transform 0.2s; border: 1px solid #e5e7eb; }
         .prompt-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
         .prompt-text-box { background: #f8fafc; font-family: monospace; font-size: 0.9rem; max-height: 120px; overflow-y: auto; }
@@ -45,30 +42,16 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-    <!-- Home Link -->
-    <li class="nav-item me-3">
-        <a class="nav-link text-white fw-semibold" href="{{ route('home') }}">Home</a>
-    </li>
-
-    <!-- ✅ Contact Us Link (Yeh classes lagani hain) -->
-    <li class="nav-item me-3">
-        <a class="nav-link text-white fw-semibold" href="{{ route('contact.us') }}">Contact Us</a>
-    </li>
-
-    <!-- Add Prompt Button -->
-    <li class="nav-item">
-        <button type="button" class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#addPromptModal">
-        + Add Prompt
-    </button>
-    </li>
-</ul>
-
-                <!-- Profile Dropdown on Right -->
-                <ul class="navbar-nav ms-auto">
+                <!-- Combined Right Side Items (Add Prompt + Profile Dropdown) -->
+                <ul class="navbar-nav ms-auto align-items-center flex-row gap-3">
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-primary btn-sm fw-bold px-3 py-2" data-bs-toggle="modal" data-bs-target="#addPromptModal">
+                            + Add Prompt
+                        </button>
+                    </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center text-white fw-semibold" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle fs-5 me-2 text-primary"></i> My Account
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-white fw-semibold px-0" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-5 me-1 text-primary"></i> My Account
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3" aria-labelledby="profileDropdown">
                             <li>
@@ -79,11 +62,11 @@
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('frontend.logout') }}" method="POST">
-    @csrf
-    <button type="submit" class="dropdown-item py-2 text-danger fw-semibold">
-        <i class="bi bi-box-arrow-right me-2"></i> Logout
-    </button>
-</form>
+                                    @csrf
+                                    <button type="submit" class="dropdown-item py-2 text-danger fw-semibold">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </li>
@@ -152,7 +135,7 @@
 
                             <div class="mt-auto d-flex gap-2">
                                 <button class="btn btn-success btn-sm w-100 fw-bold copy-btn" 
-                                        onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
+                                        onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{$prompt->id }})">
                                     <i class="bi bi-clipboard"></i> Copy Prompt
                                 </button>
 
@@ -187,7 +170,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer border-0 pt-0">
-                                <button class="btn btn-success fw-bold" onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
+                                <button class="btn btn-success fw-bold" onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{$prompt->id }})">
                                     <i class="bi bi-clipboard"></i> Copy Prompt
                                 </button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -208,7 +191,7 @@
         </div>
     </div>
 
-    <!-- Add Prompt Modal (Static Backdrop - won't close on outside click) -->
+    <!-- Add Prompt Modal -->
     <div class="modal fade" id="addPromptModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -266,7 +249,6 @@
         function copyPrompt(elementId, btnElement, promptId) {
             const textToCopy = document.getElementById(elementId).value;
             
-            // 1. Copying to Clipboard & Visual Feedback
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalContent = btnElement.innerHTML;
                 btnElement.innerHTML = '<i class="bi bi-check2"></i> Copied!';
@@ -279,7 +261,6 @@
                     btnElement.classList.add('btn-success');
                 }, 2000);
 
-                // 2. Silent AJAX Call for Admin Analytics Tracking
                 fetch(`/prompts/${promptId}/copy-track`, {
                     method: 'POST',
                     headers: {

@@ -40,32 +40,27 @@ $users = User::all();
 
     public function store(Request $request)
 {
-    // 1. Validation for single prompt form
+    // Validation logic...
     $request->validate([
-        'category_id' => 'required|exists:categories,id',
-        'title'       => 'required|string|max:255',
-        'prompt_text' => 'required|string',
-        'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'title' => 'required|string|max:255',
+        'category_id' => 'required',
+        'prompt_text' => 'required',
     ]);
 
-    $imagePath = null;
-
-    // 2. Handle image upload if present
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $imagePath = $file->store('prompts', 'public');
-    }
-
-    // 3. Save data into the database along with user_id
+    // Save prompt logic...
     Prompt::create([
-        'user_id'     => auth()->id(), // ✅ Logged-in user ki ID
+        'title' => $request->title,
         'category_id' => $request->category_id,
-        'title'       => $request->title,
         'prompt_text' => $request->prompt_text,
-        'image'       => $imagePath,
+        'user_id' => auth()->id(), // user attribution
+        // baaki fields...
     ]);
 
-    return redirect()->route('admin.prompts.index')->with('success', 'Prompt created successfully!');
+    // ✅ Yahan badlaav karein: Admin page ki jagah wapas frontend par bhejien success message ke sath
+    return redirect()->back()->with('success', 'Prompt added successfully!');
+    
+    // Ya agar aap kisi specific frontend route par bhejna chahti hain:
+    // return redirect()->route('home')->with('success', 'Prompt added successfully!');
 }
 
     public function edit($id)
