@@ -36,17 +36,15 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-    <!-- Agar admin/user ka logo database me hai toh woh show hoga -->
-    @if(auth()->check() && auth()->user()->logo)
-        <img src="{{ asset(auth()->user()->logo) }}" alt="Logo" class="rounded-circle me-2" width="35" height="35" style="object-fit: cover;">
-    @endif
-    <span class="fw-bold">AI Prompt Hub</span>
-</a>
+                @if(auth()->check() && auth()->user()->logo)
+                    <img src="{{ asset(auth()->user()->logo) }}" alt="Logo" class="rounded-circle me-2" width="35" height="35" style="object-fit: cover;">
+                @endif
+                <span class="fw-bold">AI Prompt Hub</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Combined Right Side Items (Add Prompt + Profile Dropdown) -->
                 <ul class="navbar-nav ms-auto align-items-center flex-row gap-3">
                     <li class="nav-item">
                         <button type="button" class="btn btn-primary btn-sm fw-bold px-3 py-2" data-bs-toggle="modal" data-bs-target="#addPromptModal">
@@ -63,11 +61,15 @@
                                     <i class="bi bi-person me-2 text-muted"></i> My Profile
                                 </a>
                             </li>
-
-                            <a class="dropdown-item py-2 px-3" href="{{ route('user.prompts') }}">
-        <i class="bi bi-collection me-2"></i> My Prompts
-    </a>
-    <div class="dropdown-divider"></div>
+                            <li>
+                                <a class="dropdown-item py-2 px-3" href="{{ route('user.prompts') }}">
+                                    <i class="bi bi-collection me-2"></i> My Prompts
+                                </a>
+                            </li>
+                            <button type="button" class="btn btn-light btn-sm px-3 py-2 text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#addPromptModal">
+    <i class="bi bi-plus-lg me-1 text-primary"></i> Add Prompt
+</button>
+                            
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('frontend.logout') }}" method="POST">
@@ -94,14 +96,47 @@
                 <div class="col-md-8 position-relative">
                     <form action="{{ route('home') }}" method="GET" class="row g-2 justify-content-center">
                         <div class="col-md-9 position-relative">
+                            <!-- Input with autocomplete off -->
                             <input type="text" id="prompt-search" name="search" value="{{ request('search') }}" 
                                    class="form-control form-control-lg shadow-sm" 
-                                   placeholder="Search prompts (e.g. SEO, Email, Marketing)...">
+                                   placeholder="Search prompts (e.g. SEO, Email, Marketing)..." autocomplete="off">
+                            
+                            <!-- Suggestions Dropdown Box -->
+                            <ul id="suggestionList" class="list-group position-absolute w-100 shadow-sm mt-1 text-start" style="z-index: 1000; display: none; left: 0;"></ul>
                         </div>
                         <div class="col-md-3">
                             <button type="submit" class="btn btn-hero-search btn-lg w-100 fw-bold">Search</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Quick View Modal for Suggestions -->
+    <div class="modal fade" id="quickSuggestionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <span id="modalCategoryBadge" class="badge bg-primary fs-6">General</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <h4 id="modalPromptTitle" class="fw-bold text-dark mb-3"></h4>
+                    <div id="modalImageContainer" class="text-center mb-3" style="display: none;">
+                        <img id="modalPromptImage" src="" class="img-fluid rounded border" style="max-height: 300px;">
+                    </div>
+                    <label class="fw-bold mb-1 text-muted small">PROMPT TEXT:</label>
+                    <div class="p-3 bg-light rounded border">
+                        <pre id="modalPromptText" style="white-space: pre-wrap; font-family: monospace; margin: 0;"></pre>
+                    </div>
+                    <textarea id="modalHiddenTextarea" class="d-none"></textarea>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button id="modalCopyBtn" class="btn btn-success fw-bold" onclick="copyModalPrompt()">
+                        <i class="bi bi-clipboard"></i> Copy Prompt
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -242,6 +277,54 @@
         </div>
     </div>
 
+    <!-- Add Prompt Modal -->
+<div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold" id="addPromptModalLabel">
+                    <i class="bi bi-plus-circle me-1"></i> Submit New Prompt
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-bold">Prompt Title</label>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter prompt title..." required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label fw-bold">Category</label>
+                        <select class="form-select" id="category_id" name="category_id" required>
+                            <option value="">Select Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prompt_text" class="form-label fw-bold">Prompt Text</label>
+                        <textarea class="form-control" id="prompt_text" name="prompt_text" rows="5" placeholder="Write your prompt here..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label fw-bold">Image (Optional)</label>
+                        <input type="file" class="form-control" id="image" name="image">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">Submit Prompt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
     <!-- Footer -->
     <div class="container-fluid px-0 mt-5">
         <footer class="text-center text-lg-start text-white" style="background-color: #1c2331">
@@ -254,7 +337,9 @@
 
     <!-- JS Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Copy functionality for cards
         function copyPrompt(elementId, btnElement, promptId) {
             const textToCopy = document.getElementById(elementId).value;
             
@@ -276,17 +361,94 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Background Copy Tracked:', data);
-                })
-                .catch(err => console.error('Tracking Error:', err));
+                }).catch(err => console.error('Tracking Error:', err));
 
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+            }).catch(err => console.error('Failed to copy: ', err));
         }
+
+        // Copy functionality specifically for suggestion modal
+        function copyModalPrompt() {
+            const textToCopy = document.getElementById('modalHiddenTextarea').value;
+            const btnElement = document.getElementById('modalCopyBtn');
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalContent = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+                btnElement.classList.remove('btn-success');
+                btnElement.classList.add('btn-dark');
+
+                setTimeout(() => {
+                    btnElement.innerHTML = originalContent;
+                    btnElement.classList.remove('btn-dark');
+                    btnElement.classList.add('btn-success');
+                }, 2000);
+            }).catch(err => console.error('Failed to copy: ', err));
+        }
+
+        // Live Search Auto-Suggestion jQuery
+        $(document).ready(function() {$('#prompt-search').on('keyup', function() {
+                let query = $(this).val();
+
+                if (query.length > 1) {
+                    $.ajax({
+                        url: "{{ route('search.suggestions') }}",
+                        method: "GET",
+                        data: { query: query },
+                        success: function(data) {
+                            let list = $('#suggestionList');
+                            list.empty();
+                            
+                            if (data.length > 0) {
+                                list.show();
+                                data.forEach(function(item) {
+                                    // Store full data object inside encoded format or attributes to pass to modal
+                                    let safeItem = encodeURIComponent(JSON.stringify(item));
+                                    list.append(`<li class="list-group-item list-group-item-action text-dark" style="cursor: pointer;" onclick="openSuggestionModal('${safeItem}')">${item.title}</li>`);
+                                });
+                            } else {
+                                list.hide();
+                            }
+                        }
+                    });
+                } else {
+                    $('#suggestionList').hide();
+                }
+            });
+        });
+
+        // Function to populate and open modal when suggestion is clicked
+        function openSuggestionModal(encodedItem) {
+            let item = JSON.parse(decodeURIComponent(encodedItem));
+            
+            // Set values into Modal elements
+            $('#modalPromptTitle').text(item.title);
+            $('#modalPromptText').text(item.prompt_text);
+            $('#modalHiddenTextarea').val(item.prompt_text);
+            $('#modalCategoryBadge').text(item.category ? item.category.name : 'General');
+
+            // Handle Image if present
+            if (item.image) {
+                $('#modalPromptImage').attr('src', "{{ asset('storage') }}/" + item.image);
+                $('#modalImageContainer').show();
+            } else {
+                $('#modalImageContainer').hide();
+            }
+
+            // Hide suggestion box and input text clear (optional)
+            $('#suggestionList').hide();
+            $('#prompt-search').val('');
+
+            // Show Bootstrap Modal
+            let myModal = new bootstrap.Modal(document.getElementById('quickSuggestionModal'));
+            myModal.show();
+        }
+
+        // Hide suggestions when clicking outside
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#prompt-search, #suggestionList').length) {
+                $('#suggestionList').hide();
+            }
+        });
     </script>
 </body>
 </html>

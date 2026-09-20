@@ -25,4 +25,20 @@ class Prompt extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function getRatingAttribute()
+    {
+        $copies = $this->copies_count ?? 0;
+
+        if($copies >= 50) return 5;
+        if($copies >= 20) return 4;
+        if($copies >= 10) return 3;
+        if($copies >= 5) return 2;
+        if($copies > 0) return 1;
+
+        return 0;
+
+    }
+
+    
 }

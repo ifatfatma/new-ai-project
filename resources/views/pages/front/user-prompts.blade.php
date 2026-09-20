@@ -34,11 +34,32 @@
         </div>
     </nav>
 
-    <!-- Hero Header & Search Bar (Same as Home) -->
+    <!-- Hero Header & Search Bar with Auto-suggestion -->
     <div class="hero-section text-center mb-4">
         <div class="container">
             <h1 class="fw-bold display-6 mb-2">My Submitted Prompts Lists</h1>
             <p class="lead text-muted mb-4" style="font-size: 1rem;">Manage your custom prompts, track their approval status, and update them.</p>
+            
+            <!-- Search Bar Form -->
+            <div class="row justify-content-center position-relative">
+                <div class="col-md-6">
+                    <form action="{{ route('user.prompts') }}" method="GET" class="input-group shadow-sm">
+                        <input type="text" id="searchBox" name="search" class="form-control border-0 py-2" placeholder="Search your prompts by title..." value="{{ request('search') }}" autocomplete="off">
+                        <button class="btn btn-primary px-4" type="submit">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                        @if(request('search'))
+                            <a href="{{ route('user.prompts') }}" class="btn btn-secondary px-3 d-flex align-items-center">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        @endif
+                    </form>
+                    <!-- Suggestions Dropdown Box -->
+                    <ul id="suggestionList" class="list-group position-absolute w-100 shadow-sm mt-1 text-start" style="z-index: 1000; display: none;"></ul>
+                </div>
+            </div>
+            <!-- Search Bar End -->
+
         </div>
     </div>
 
@@ -60,14 +81,15 @@
                                 <th class="py-3">Title</th>
                                 <th class="py-3">Category</th>
                                 <th class="py-3">Status</th>
+                                <th class="py-3">Ratings</th>
                                 <th class="py-3">Created Date</th>
                                 <th class="py-3 text-end pe-4">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($prompts as $key => $prompt)
+                            @forelse($prompts as $key =>$prompt)
                                 <tr>
-                                    <td class="ps-4 fw-semibold">{{ ($prompts->currentPage() - 1) * $prompts->perPage() + $key + 1 }}</td>
+                                    <td class="ps-4 fw-semibold">{{ ($prompts->currentPage() - 1) * $prompts->perPage() +$key + 1 }}</td>
                                     <td>
                                         <span class="fw-bold text-dark">{{ $prompt->title }}</span>
                                     </td>
@@ -82,6 +104,12 @@
                                         @else
                                             <span class="badge bg-danger px-2 py-1">Rejected</span>
                                         @endif
+                                    </td>
+                                    <!-- Rating Stars Column -->
+                                    <td>
+                                        <div class="rating-stars" title="Popularity Rating">
+                                            {!! generateRatings($prompt->rating) !!}
+                                        </div>
                                     </td>
                                     <td class="text-muted small">{{ $prompt->created_at->format('d M, Y') }}</td>
                                     <td class="text-end pe-4">
@@ -99,7 +127,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
+                                    <td colspan="7" class="text-center py-5 text-muted">
                                         <i class="bi bi-folder2-open display-6 d-block mb-2 text-secondary"></i>
                                         You haven't submitted any prompts yet.
                                     </td>
@@ -127,5 +155,47 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {$('#searchBox').on('keyup', function() {
+            let query = $(this).val();
+
+            if (query.length > 1) {
+                $.ajax({
+                    url: "{{ route('user.prompts.suggestions') }}",
+                    method: "GET",
+                    data: { query: query },
+                    success: function(data) {
+                        let list = $('#suggestionList');
+                        list.empty();
+                        
+                        if (data.length > 0) {
+                            list.show();
+                            data.forEach(function(item) {
+                                list.append(`<li class="list-group-item list-group-item-action text-dark" style="cursor: pointer;" onclick="selectPrompt('${item.title}')">${item.title}</li>`);
+                            });
+                        } else {
+                            list.hide();
+                        }
+                    }
+                });
+            } else {
+                $('#suggestionList').hide();
+            }
+        });
+    });
+
+    function selectPrompt(title) {
+        $('#searchBox').val(title);
+        $('#suggestionList').hide();
+    }
+
+    
+    $(document).click(function(e) {
+        if (!$(e.target).closest('#searchBox, #suggestionList').length) {
+            $('#suggestionList').hide();
+        }
+    });
+    </script>
 </body>
 </html>

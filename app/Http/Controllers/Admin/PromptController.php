@@ -26,12 +26,17 @@ class PromptController extends Controller
         $query->whereDate('created_at', $request->date);
     }
 
+    //  sorting for pending form
+    $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+          ->latest();
+
     // Pagination with query strings so filters persist across pages
     $prompts = $query->paginate(10)->withQueryString();
-$users = User::all();
+    $users = User::all();
 
     return view('pages.admin.prompt.index', compact('prompts', 'users'));
 }
+
     public function create()
     {
         $categories = Category::all();
@@ -57,11 +62,7 @@ $users = User::all();
         // baaki fields...
     ]);
 
-    // ✅ Yahan badlaav karein: Admin page ki jagah wapas frontend par bhejien success message ke sath
     return redirect()->back()->with('success', 'Your prompt has been submitted for admin approval!');
-    
-    // Ya agar aap kisi specific frontend route par bhejna chahti hain:
-    // return redirect()->route('home')->with('success', 'Prompt added successfully!');
 }
 
     public function edit($id)
@@ -141,7 +142,7 @@ $users = User::all();
 public function reject($id)
 {
     $prompt = Prompt::findOrFail($id);
-    $prompt->status = 'rejected'; // Status ko rejected set kar rahe hain
+    $prompt->status = 'rejected'; 
     $prompt->save();
 
     return back()->with('error', 'Prompt has been rejected.');

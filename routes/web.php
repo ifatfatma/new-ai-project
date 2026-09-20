@@ -15,6 +15,7 @@ use App\Http\Controllers\SettingsController;
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
+Route::get('/user-prompts/suggestions', [FrontendController::class, 'userSearchSuggestions'])->name('user.prompts.suggestions');
 
 // Frontend Email OTP Login Routes
 Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('frontend.login');
@@ -24,6 +25,7 @@ Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
 
 // Frontend User Add Prompt Route
+Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 
 // Strict User-Only Copy Tracking Route (1 Email = 1 Count per Day)

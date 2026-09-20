@@ -3,13 +3,13 @@
 
     <!-- Dashboard -->
     <li class="nav-item">
-      <a class="nav-link" href="{{ route('admin.dashboard') }}">
+      <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
         <i class="mdi mdi-grid-large menu-icon"></i>
         <span class="menu-title">Dashboard</span>
       </a>
     </li>
 
-    <!-- Categories Dropdown -->
+    <!-- Categories & Prompts Dropdown -->
     <li class="nav-item">
       <a class="nav-link collapsed" id="categoryToggleBtn" href="javascript:void(0);" style="cursor: pointer;">
         <i class="menu-icon mdi mdi-folder-cog-outline"></i>
@@ -20,12 +20,12 @@
       <div class="collapse" id="manageCategoryMenu" style="display: none;">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('admin.categories.index') }}">
+            <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
               <i class="mdi mdi-format-list-bulleted me-2"></i> All Categories
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('admin.prompts.index') }}">
+            <a class="nav-link {{ request()->routeIs('admin.prompts.*') ? 'active' : '' }}" href="{{ route('admin.prompts.index') }}">
               <i class="mdi mdi-format-list-bulleted me-2"></i> All Prompts
             </a>
           </li>
@@ -33,8 +33,9 @@
       </div>
     </li>
 
+    <!-- Settings -->
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center" href="{{ route('admin.settings.index') }}">
+      <a class="nav-link d-flex align-items-center {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
         <svg class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h-3.84c-.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
         </svg>
@@ -42,18 +43,21 @@
       </a>
     </li>
 
+    <!-- Logout -->
     <li class="nav-item">
-      <a class="nav-link" href="{{ route('admin.logout') }}" 
+      <a class="nav-link text-danger" href="{{ route('admin.logout') }}" 
          onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
         <i class="mdi mdi-power me-2 text-danger"></i> Log-out
       </a>
     </li>
 
-    <form id="logout-form-sidebar" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-      @csrf
-    </form>
   </ul>
 </nav>
+
+<!-- Hidden Logout Form (Placed outside the navigation list properly) -->
+<form id="logout-form-sidebar" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+  @csrf
+</form>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
