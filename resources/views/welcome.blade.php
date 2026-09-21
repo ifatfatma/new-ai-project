@@ -25,9 +25,44 @@
             color: #ffffff;
             box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
         }
-        .prompt-card { transition: transform 0.2s; border: 1px solid #e5e7eb; }
-        .prompt-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-        .prompt-text-box { background: #f8fafc; font-family: monospace; font-size: 0.9rem; max-height: 120px; overflow-y: auto; }
+
+        /* --- PINTEREST STYLE MASONRY LAYOUT CSS --- */
+        .prompts-container {
+            column-count: 3;
+            column-gap: 24px;
+            width: 100%;
+        }
+        .prompt-card { 
+            break-inside: avoid;
+            margin-bottom: 24px;
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            display: inline-block;
+            width: 100%;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .prompt-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12); 
+        }
+        .prompt-content-text { 
+            background: #f8fafc; 
+            font-family: monospace; 
+            font-size: 0.9rem; 
+            color: #4b5563;
+            line-height: 1.6;
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+        }
+
+        @media (max-width: 1024px) {
+            .prompts-container { column-count: 2; }
+        }
+        @media (max-width: 640px) {
+            .prompts-container { column-count: 1; }
+        }
     </style>
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
@@ -47,7 +82,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center flex-row gap-3">
                     <li class="nav-item">
-                        <button type="button" class="btn btn-primary btn-sm fw-bold px-3 py-2" data-bs-toggle="modal" data-bs-target="#addPromptModal">
+                        <button type="button" class="btn btn-warning btn-sm fw-bold px-3 py-2" data-bs-toggle="modal" data-bs-target="#addPromptModal">
                             + Add Prompt
                         </button>
                     </li>
@@ -66,10 +101,6 @@
                                     <i class="bi bi-collection me-2"></i> My Prompts
                                 </a>
                             </li>
-                            <button type="button" class="btn btn-light btn-sm px-3 py-2 text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#addPromptModal">
-    <i class="bi bi-plus-lg me-1 text-primary"></i> Add Prompt
-</button>
-                            
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('frontend.logout') }}" method="POST">
@@ -96,12 +127,9 @@
                 <div class="col-md-8 position-relative">
                     <form action="{{ route('home') }}" method="GET" class="row g-2 justify-content-center">
                         <div class="col-md-9 position-relative">
-                            <!-- Input with autocomplete off -->
                             <input type="text" id="prompt-search" name="search" value="{{ request('search') }}" 
                                    class="form-control form-control-lg shadow-sm" 
                                    placeholder="Search prompts (e.g. SEO, Email, Marketing)..." autocomplete="off">
-                            
-                            <!-- Suggestions Dropdown Box -->
                             <ul id="suggestionList" class="list-group position-absolute w-100 shadow-sm mt-1 text-start" style="z-index: 1000; display: none; left: 0;"></ul>
                         </div>
                         <div class="col-md-3">
@@ -154,41 +182,41 @@
             @endforeach
         </div>
 
-        <!-- Prompts Grid -->
-        <div class="row">
+        <!-- Prompts Grid (Pinterest Style Masonry Container) -->
+        <div class="prompts-container">
             @forelse($prompts as $prompt)
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 prompt-card shadow-sm">
-                        @if($prompt->image)
-                            <img src="{{ asset('storage/' . $prompt->image) }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="Output Example">
-                        @endif
-                        <div class="card-body d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge bg-primary">{{ $prompt->category->name ?? 'General' }}</span>
-                                @if($prompt->label)
-                                    <span class="badge bg-secondary">{{ $prompt->label }}</span>
-                                @endif
-                            </div>
-                            
-                            <h5 class="card-title fw-bold text-dark mb-2">{{ $prompt->title }}</h5>
-                            
-                            <!-- Prompt Preview Text -->
-                            <div class="p-2 border rounded prompt-text-box mb-3 text-muted">
-                                {{ $prompt->prompt_text }}
-                            </div>
+                <div class="prompt-card">
+                    @if($prompt->image)
+                        <div class="bg-light text-center" style="border-top-left-radius: 20px; border-top-right-radius: 20px; overflow: hidden;">
+                            <img src="{{ asset('storage/' . $prompt->image) }}" class="card-img-top" style="max-height: 250px; width: auto; object-fit: contain;" alt="Output Example">
+                        </div>
+                    @endif
+                    
+                    <div class="card-body d-flex flex-column p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary">{{ $prompt->category->name ?? 'General' }}</span>
+                            @if($prompt->label)
+                                <span class="badge bg-secondary">{{ $prompt->label }}</span>
+                            @endif
+                        </div>
+                        
+                        <h5 class="card-title fw-bold text-dark mb-2">{{ $prompt->title }}</h5>
+                        
+                        <div class="p-3 border rounded prompt-content-text mb-3">
+                            {{ Str::limit($prompt->prompt_text, 100, '...') }}
+                        </div>
 
-                            <div class="mt-auto d-flex gap-2">
-                                <button class="btn btn-success btn-sm w-100 fw-bold copy-btn" 
-                                        onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{$prompt->id }})">
-                                    <i class="bi bi-clipboard"></i> Copy Prompt
-                                </button>
+                        <div class="mt-auto d-flex gap-2">
+                            <button class="btn btn-success btn-sm w-100 fw-bold copy-btn" 
+                                    onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{$prompt->id }})">
+                                <i class="bi bi-clipboard"></i> Copy Prompt
+                            </button>
 
-                                <textarea id="prompt-text-{{ $prompt->id }}" class="d-none">{{ $prompt->prompt_text }}</textarea>
+                            <textarea id="prompt-text-{{ $prompt->id }}" class="d-none">{{ $prompt->prompt_text }}</textarea>
 
-                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#publicModal{{ $prompt->id }}">
-                                    View
-                                </button>
-                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#publicModal{{ $prompt->id }}">
+                                View
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -209,8 +237,25 @@
                                     </div>
                                 @endif
                                 <label class="fw-bold mb-1 text-muted small">PROMPT TEXT:</label>
-                                <div class="p-3 bg-light rounded border">
-                                    <pre style="white-space: pre-wrap; font-family: monospace; margin: 0;">{{ $prompt->prompt_text }}</pre>
+                                
+                                <div class="p-3 bg-light rounded border position-relative">
+                                    @php
+                                        $fullText =$prompt->prompt_text;
+                                        $isLong = Str::length($fullText) > 150;
+                                        $shortText = Str::limit($fullText, 150, '');
+                                    @endphp
+
+                                    <pre id="modal-text-short-{{ $prompt->id }}" style="white-space: pre-wrap; font-family: monospace; margin: 0;">{{ $shortText }}@if($isLong)...@endif</pre>
+
+                                    @if($isLong)
+                                        <pre id="modal-text-full-{{ $prompt->id }}" style="white-space: pre-wrap; font-family: monospace; margin: 0; display: none;">{{ $fullText }}</pre>
+                                        
+                                        <div class="text-end mt-2">
+                                            <button type="button" class="btn btn-link btn-sm text-decoration-none fw-bold p-0 toggle-read-more" onclick="toggleModalText({{ $prompt->id }})">
+                                                Read More <i class="bi bi-chevron-down"></i>
+                                            </button>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="modal-footer border-0 pt-0">
@@ -236,94 +281,64 @@
     </div>
 
     <!-- Add Prompt Modal -->
-    <div class="modal fade" id="addPromptModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-header bg-dark text-white px-4">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2"></i>Add New Prompt</h5>
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="addPromptModalLabel">
+                        <i class="bi bi-plus-circle me-1"></i> Submit New Prompt
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body p-4">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Prompt Title</label>
-                            <input type="text" name="title" class="form-control" required placeholder="e.g. SEO Meta Description Generator">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Category</label>
-                            <select name="category_id" class="form-select" required>
-                                <option value="">Select Category</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Prompt Text</label>
-                            <textarea name="prompt_text" class="form-control" rows="4" required placeholder="Write your prompt content here..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Image / Output Example (Optional)</label>
-                            <input type="file" name="image" class="form-control">
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 px-4 pb-4">
-                        <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary fw-bold px-4">Save Prompt</button>
-                    </div>
-                </form>
+                
+               <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    <div class="modal-body p-4">
+        <div class="mb-3">
+            <label for="title" class="form-label fw-bold">Prompt Title</label>
+            <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" placeholder="Enter prompt title..." required>
+            @error('title')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="category_id" class="form-label fw-bold">Category</label>
+            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
+                <option value="">Select Category</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                @endforeach
+            </select>
+            @error('category_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="prompt_text" class="form-label fw-bold">Prompt Text</label>
+            <textarea class="form-control @error('prompt_text') is-invalid @enderror" id="prompt_text" name="prompt_text" rows="5" placeholder="Write your prompt here..." required>{{ old('prompt_text') }}</textarea>
+            @error('prompt_text')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="image" class="form-label fw-bold">Image (Optional)</label>
+            <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
+            @error('image')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+    <div class="modal-footer bg-light border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary px-4 fw-bold">Submit Prompt</button>
+    </div>
+</form>
             </div>
         </div>
     </div>
-
-    <!-- Add Prompt Modal -->
-<div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title fw-bold" id="addPromptModalLabel">
-                    <i class="bi bi-plus-circle me-1"></i> Submit New Prompt
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            
-            <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label for="title" class="form-label fw-bold">Prompt Title</label>
-                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter prompt title..." required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="category_id" class="form-label fw-bold">Category</label>
-                        <select class="form-select" id="category_id" name="category_id" required>
-                            <option value="">Select Category</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="prompt_text" class="form-label fw-bold">Prompt Text</label>
-                        <textarea class="form-control" id="prompt_text" name="prompt_text" rows="5" placeholder="Write your prompt here..." required></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="image" class="form-label fw-bold">Image (Optional)</label>
-                        <input type="file" class="form-control" id="image" name="image">
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary px-4 fw-bold">Submit Prompt</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
     <!-- Footer -->
     <div class="container-fluid px-0 mt-5">
@@ -339,7 +354,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Copy functionality for cards
         function copyPrompt(elementId, btnElement, promptId) {
             const textToCopy = document.getElementById(elementId).value;
             
@@ -366,7 +380,6 @@
             }).catch(err => console.error('Failed to copy: ', err));
         }
 
-        // Copy functionality specifically for suggestion modal
         function copyModalPrompt() {
             const textToCopy = document.getElementById('modalHiddenTextarea').value;
             const btnElement = document.getElementById('modalCopyBtn');
@@ -385,7 +398,6 @@
             }).catch(err => console.error('Failed to copy: ', err));
         }
 
-        // Live Search Auto-Suggestion jQuery
         $(document).ready(function() {$('#prompt-search').on('keyup', function() {
                 let query = $(this).val();
 
@@ -401,7 +413,6 @@
                             if (data.length > 0) {
                                 list.show();
                                 data.forEach(function(item) {
-                                    // Store full data object inside encoded format or attributes to pass to modal
                                     let safeItem = encodeURIComponent(JSON.stringify(item));
                                     list.append(`<li class="list-group-item list-group-item-action text-dark" style="cursor: pointer;" onclick="openSuggestionModal('${safeItem}')">${item.title}</li>`);
                                 });
@@ -416,17 +427,14 @@
             });
         });
 
-        // Function to populate and open modal when suggestion is clicked
         function openSuggestionModal(encodedItem) {
             let item = JSON.parse(decodeURIComponent(encodedItem));
             
-            // Set values into Modal elements
             $('#modalPromptTitle').text(item.title);
             $('#modalPromptText').text(item.prompt_text);
             $('#modalHiddenTextarea').val(item.prompt_text);
             $('#modalCategoryBadge').text(item.category ? item.category.name : 'General');
 
-            // Handle Image if present
             if (item.image) {
                 $('#modalPromptImage').attr('src', "{{ asset('storage') }}/" + item.image);
                 $('#modalImageContainer').show();
@@ -434,21 +442,34 @@
                 $('#modalImageContainer').hide();
             }
 
-            // Hide suggestion box and input text clear (optional)
             $('#suggestionList').hide();
             $('#prompt-search').val('');
 
-            // Show Bootstrap Modal
             let myModal = new bootstrap.Modal(document.getElementById('quickSuggestionModal'));
             myModal.show();
         }
 
-        // Hide suggestions when clicking outside
         $(document).click(function(e) {
             if (!$(e.target).closest('#prompt-search, #suggestionList').length) {
                 $('#suggestionList').hide();
             }
         });
+
+        function toggleModalText(promptId) {
+            const shortTextEl = document.getElementById(`modal-text-short-${promptId}`);
+            const fullTextEl = document.getElementById(`modal-text-full-${promptId}`);
+            const btnEl = shortTextEl.closest('.p-3').querySelector('.toggle-read-more');
+
+            if (fullTextEl.style.display === 'none') {
+                fullTextEl.style.display = 'block';
+                shortTextEl.style.display = 'none';
+                btnEl.innerHTML = 'Read Less <i class="bi bi-chevron-up"></i>';
+            } else {
+                fullTextEl.style.display = 'none';
+                shortTextEl.style.display = 'block';
+                btnEl.innerHTML = 'Read More <i class="bi bi-chevron-down"></i>';
+            }
+        }
     </script>
 </body>
 </html>

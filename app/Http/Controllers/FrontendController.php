@@ -46,7 +46,6 @@ class FrontendController extends Controller
         return response()->json($prompts);
     }
 
-    // User Prompts page ke liye suggestions (Sirf Logged-in User ke Prompts)
     public function userSearchSuggestions(Request $request)
     {
         $query = $request->get('query');
@@ -77,25 +76,22 @@ class FrontendController extends Controller
     }
 
     // My Prompts Listing
-   public function myPrompts(Request $request)
+    public function myPrompts(Request $request)
     {
+        // Yahan SoftDeletes ki wajah se deleted prompts automatically hide ho jayenge
         $query = Prompt::where('user_id', auth()->id());
 
-        // Agar search ya koi aur filter hai toh wo yahan rahega...
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        // Pending prompts ko sabse upar rakhne ke liye sorting
         $prompts = $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
                          ->latest()
                          ->paginate(10);
 
-        // ✅ Yahan path theek kar diya hai ('pages.front.user-prompts')
         return view('pages.front.user-prompts', compact('prompts'));
     }
 
-    // Edit Form
     public function editPrompt($id)
     {
         $prompt = Prompt::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
@@ -103,7 +99,6 @@ class FrontendController extends Controller
         return view('pages.front.edit-prompt', compact('prompt', 'categories'));
     }
 
-    // Update Prompt
     public function updatePrompt(Request $request, $id)
     {
         $prompt = Prompt::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
@@ -120,7 +115,7 @@ class FrontendController extends Controller
             'category_id' => $request->category_id,
             'prompt_text' => $request->prompt_text,
             'status' => 'pending', 
-            'updated_at' => now(), // ✅ Isse edit kiya hua prompt bhi fresh count hokar top par aa jayega
+            'updated_at' => now(),
         ];
 
         if ($request->hasFile('image')) {
@@ -132,7 +127,7 @@ class FrontendController extends Controller
 
         return redirect()->route('user.prompts')->with('success', 'Prompt updated successfully and sent for review!');
     }
-    // Soft Delete Prompt
+
     public function destroyPrompt($id)
     {
         $prompt = Prompt::where('id', $id)->where('user_id', auth()->id())->firstOrFail();

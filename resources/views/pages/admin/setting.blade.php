@@ -3,7 +3,7 @@
 @section('content')
 <div class="content-wrapper">
     <div class="page-header">
-        <h3 class="page-title"> Account Profile Settings </h3>
+        <h3 class="page-title"> Account & System Settings </h3>
     </div>
 
     @if(session('success'))
@@ -13,7 +13,6 @@
     @endif
 
     <div class="row">
-        <!-- 1. Personal Details Form -->
         <div class="col-md-6 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
@@ -41,7 +40,6 @@
             </div>
         </div>
 
-        <!-- 2. Change Password Form -->
         <div class="col-md-6 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
@@ -75,9 +73,7 @@
         </div>
     </div>
 
-    <!-- 3. Profile Picture & Website Logo Cards -->
     <div class="row">
-        <!-- Profile Picture Card -->
         <div class="col-md-6 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
@@ -108,7 +104,6 @@
             </div>
         </div>
 
-        <!-- Website Logo Card -->
         <div class="col-md-6 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
@@ -134,6 +129,27 @@
                         </div>
 
                         <button type="submit" class="btn btn-success me-2">Update Website Logo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-warning"><i class="mdi mdi-wallpaper me-2"></i>Admin Login Background</h4>
+                    <p class="card-description"> Update background image for the admin login screen </p>
+
+                    <form action="{{ route('admin.settings.login.bg.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="login_background" class="form-label fw-bold">Choose Background Image</label>
+                            <input type="file" class="form-control @error('login_background') is-invalid @enderror" id="login_background" name="login_background" required>
+                            @error('login_background') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+                        <button type="submit" class="btn btn-warning text-white btn-sm">Update Background</button>
                     </form>
                 </div>
             </div>

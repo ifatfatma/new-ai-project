@@ -71,4 +71,24 @@ class SettingsController extends Controller
 
         return back()->with('success', 'Password changed successfully!');
     }
+
+
+
+    public function updateLoginBackground(Request $request)
+{
+    $request->validate([
+        'login_background' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+    ]);
+
+    if ($request->hasFile('login_background')) {
+        $imagePath = $request->file('login_background')->store('settings', 'public');
+
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'login_background'],
+            ['value' => $imagePath]
+        );
+    }
+
+    return back()->with('success', 'Admin login background updated successfully!');
+}
 }

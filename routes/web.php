@@ -24,8 +24,7 @@ Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])->na
 Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
 
-// Frontend User Add Prompt Route
-Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
+
 Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 
 // Strict User-Only Copy Tracking Route (1 Email = 1 Count per Day)
@@ -100,13 +99,14 @@ Route::prefix('admin')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-        Route::post('/admin/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update');
+        Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update'); // Fixed double /admin prefix
 
         // Admin Settings Routes
         Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
         Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('admin.settings.profile.update');
         Route::post('/settings/logo', [SettingsController::class, 'updateLogo'])->name('admin.settings.logo.update');
         Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('admin.settings.password.update');
+        Route::post('/settings/login-background', [SettingsController::class, 'updateLoginBackground'])->name('admin.settings.login.bg.update');
 
         Route::resource('categories', CategoryController::class)->names([
             'index'   => 'admin.categories.index',
@@ -121,7 +121,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/prompts/{id}/edit', [PromptController::class, 'edit'])->name('admin.prompts.edit');
         Route::put('/prompts/{id}', [PromptController::class, 'update'])->name('admin.prompts.update');
         Route::delete('/prompts/{id}', [PromptController::class, 'destroy'])->name('admin.prompts.destroy');
-        Route::post('/admin/prompts/{id}/approve', [App\Http\Controllers\Admin\PromptController::class, 'approve'])->name('admin.prompts.approve');
-        Route::post('/admin/prompts/{id}/reject', [App\Http\Controllers\Admin\PromptController::class, 'reject'])->name('admin.prompts.reject');
+        Route::post('/prompts/{id}/approve', [App\Http\Controllers\Admin\PromptController::class, 'approve'])->name('admin.prompts.approve'); // Fixed double /admin prefix
+        Route::post('/prompts/{id}/reject', [App\Http\Controllers\Admin\PromptController::class, 'reject'])->name('admin.prompts.reject'); // Fixed double /admin prefix
     });
 });

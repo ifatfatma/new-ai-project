@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Hash;
 
 class FrontendAuthController extends Controller
 {
-    // 1. Email Input Form dikhana
+    // 1. Email Input Form 
     public function showLoginForm()
     {
         return view('auth.frontend-login');
     }
 
-    // 2. OTP Generate karke Email par bhejna
+    
     public function sendOtp(Request $request)
     {
         $request->validate([
@@ -25,24 +25,24 @@ class FrontendAuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        // 6 digit ka random OTP generate karein
+        
         $otp = rand(100000, 999999);
 
-        // OTP aur Expiry time (10 minutes) save karein
+        // OTP aur Expiry time (10 minutes) 
         $user->otp = $otp;
         $user->otp_expires_at = now()->addMinutes(10);
         $user->save();
 
         session(['otp_email' => $user->email]);
 
-        // Terminal log me OTP print hoga testing ke liye
+        
         logger("OTP for {$user->email} is: {$otp}");
 
         return redirect()->route('frontend.otp.verify.form')
             ->with('success', 'OTP has been sent! (Check terminal log for OTP: ' . $otp . ')');
     }
 
-    // 3. OTP Verification Form dikhana
+    // 3. OTP Verification Form 
     public function showVerifyForm()
     {
         if (!session()->has('otp_email')) {
@@ -51,7 +51,7 @@ class FrontendAuthController extends Controller
         return view('auth.frontend-verify');
     }
 
-    // 4. OTP Verify karke Login karana
+    // 4. OTP Verification
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -70,7 +70,7 @@ class FrontendAuthController extends Controller
             return back()->with('error', 'OTP has expired. Please request a new one.');
         }
 
-        // Login successful! Purana OTP clear kar dein
+        // Login successful! 
         $user->otp = null;
         $user->otp_expires_at = null;
         $user->save();
@@ -84,12 +84,12 @@ class FrontendAuthController extends Controller
     // Logout
    public function logout(Request $request) 
 {
-    Auth::logout(); // User session clear karein
+    Auth::logout(); // Clear user session
 
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    // ✅ Ab user logout hone ke baad seedha Login Page par jayega
+    
     return redirect()->route('frontend.login')->with('success', 'You have been successfully logged out.');
 }
 }

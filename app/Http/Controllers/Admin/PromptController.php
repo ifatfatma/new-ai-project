@@ -43,28 +43,33 @@ class PromptController extends Controller
         return view('pages.admin.prompt.create', compact('categories'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
 {
     // Validation logic...
     $request->validate([
         'title' => 'required|string|max:255',
         'category_id' => 'required',
         'prompt_text' => 'required',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation add karein
     ]);
+
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('prompts', 'public'); // Storage mein save karein
+    }
 
     // Save prompt logic...
     Prompt::create([
         'title' => $request->title,
         'category_id' => $request->category_id,
         'prompt_text' => $request->prompt_text,
+        'image' => $imagePath, // Image path yahan save karein
         'user_id' => auth()->id(), // user attribution
         'status' => 'pending',
-        // baaki fields...
     ]);
 
     return redirect()->back()->with('success', 'Your prompt has been submitted for admin approval!');
 }
-
     public function edit($id)
     {
         $prompt = Prompt::findOrFail($id);
