@@ -41,6 +41,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             display: inline-block;
             width: 100%;
+            overflow: hidden;
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
         .prompt-card:hover { 
@@ -187,14 +188,21 @@
             @forelse($prompts as $prompt)
                 <div class="prompt-card">
                     @if($prompt->image)
-                        <div class="bg-light text-center" style="border-top-left-radius: 20px; border-top-right-radius: 20px; overflow: hidden;">
-                            <img src="{{ asset('storage/' . $prompt->image) }}" class="card-img-top" style="max-height: 250px; width: auto; object-fit: contain;" alt="Output Example">
-                        </div>
+                        <img src="{{ asset('storage/' . $prompt->image) }}" class="card-img-top border-bottom" style="width: 100%; height: 220px; object-fit: cover;" alt="Output Example">
                     @endif
                     
                     <div class="card-body d-flex flex-column p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge bg-primary">{{ $prompt->category->name ?? 'General' }}</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-1">
+                            <div>
+                                <span class="badge bg-primary">{{ $prompt->category->name ?? 'General' }}</span>
+
+                                @if($prompt->ai_tool)
+                                    <span class="badge bg-info text-dark ms-1">
+                                        <i class="bi bi-robot"></i> {{ $prompt->ai_tool }}
+                                    </span>
+                                @endif
+                            </div>
+
                             @if($prompt->label)
                                 <span class="badge bg-secondary">{{ $prompt->label }}</span>
                             @endif
@@ -281,6 +289,7 @@
     </div>
 
     <!-- Add Prompt Modal -->
+    <<!-- Add Prompt Modal -->
     <div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -291,51 +300,56 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 
-               <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <div class="modal-body p-4">
-        <div class="mb-3">
-            <label for="title" class="form-label fw-bold">Prompt Title</label>
-            <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" placeholder="Enter prompt title..." required>
-            @error('title')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label for="title" class="form-label fw-bold">Prompt Title</label>
+                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" placeholder="Enter prompt title..." required>
+                            @error('title')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-        <div class="mb-3">
-            <label for="category_id" class="form-label fw-bold">Category</label>
-            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
-                <option value="">Select Category</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                @endforeach
-            </select>
-            @error('category_id')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label fw-bold">Category</label>
+                            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
+                                <option value="">Select Category</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-        <div class="mb-3">
-            <label for="prompt_text" class="form-label fw-bold">Prompt Text</label>
-            <textarea class="form-control @error('prompt_text') is-invalid @enderror" id="prompt_text" name="prompt_text" rows="5" placeholder="Write your prompt here..." required>{{ old('prompt_text') }}</textarea>
-            @error('prompt_text')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                        <div class="mb-3">
+                            <label for="ai_tool" class="form-label fw-bold">AI Tool (Optional)</label>
+                            <input type="text" class="form-control" id="ai_tool" name="ai_tool" value="{{ old('ai_tool') }}" placeholder="e.g. ChatGPT, Midjourney">
+                        </div>
 
-        <div class="mb-3">
-            <label for="image" class="form-label fw-bold">Image (Optional)</label>
-            <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
-            @error('image')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-    </div>
-    <div class="modal-footer bg-light border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary px-4 fw-bold">Submit Prompt</button>
-    </div>
-</form>
+                        <div class="mb-3">
+                            <label for="prompt_text" class="form-label fw-bold">Prompt Text</label>
+                            <textarea class="form-control @error('prompt_text') is-invalid @enderror" id="prompt_text" name="prompt_text" rows="5" placeholder="Write your prompt here..." required>{{ old('prompt_text') }}</textarea>
+                            @error('prompt_text')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label fw-bold">Image (Optional)</label>
+                            <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
+                            @error('image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">Submit Prompt</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

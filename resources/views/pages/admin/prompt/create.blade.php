@@ -1,6 +1,17 @@
 @extends('layouts.backlayout')
 
 @section('content')
+
+
+@if ($errors->any())
+  <div class="alert alert-danger">
+      <ul>
+          @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+          @endforeach
+      </ul>
+  </div>
+@endif
 <div class="row">
   <div class="col-md-12 grid-margin stretch-card">
     <div class="card">
@@ -43,28 +54,33 @@
             
             <!-- Default First Prompt Box -->
             <div class="prompt-card border rounded p-3 mb-3 bg-light" id="prompt-block-0">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge bg-primary">Prompt #1</span>
-              </div>
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="badge bg-primary">Prompt #1</span>
+  </div>
 
-              <div class="form-group mb-2">
-                <label>Prompt Step / Title (Optional)</label>
-                <input type="text" name="prompts[0][label]" class="form-control" placeholder="e.g. Step 1: Catchy Headline Generator">
-              </div>
+  <div class="mb-3">
+    <label for="ai_tool" class="fw-bold">AI Tool / Platform (e.g. ChatGPT, Midjourney)</label>
+    <input type="text" name="prompts[0][ai_tool]" class="form-control" value="{{ old('prompts.0.ai_tool') }}" placeholder="ChatGPT">
+  </div>
 
-              <div class="form-group mb-2">
-                <label>Prompt Text <span class="text-danger">*</span></label>
-                <textarea name="prompts[0][text]" class="form-control" rows="3" placeholder="Write your complete prompt here..." required></textarea>
-              </div>
+  <div class="form-group mb-2">
+    <label>Prompt Step / Title (Optional)</label>
+    <input type="text" name="prompts[0][label]" class="form-control" placeholder="e.g. Step 1: Catchy Headline Generator">
+  </div>
 
-              <div class="form-group mb-0">
-                <label>Example Output Image (Optional)</label>
-                <div class="input-group">
-                  <input type="file" name="prompts[0][image]" id="img_0" class="form-control" accept="image/*">
-                  <button type="button" class="btn btn-outline-secondary" onclick="clearInput('img_0')">Clear Image</button>
-                </div>
-              </div>
-            </div>
+  <div class="form-group mb-2">
+    <label>Prompt Text <span class="text-danger">*</span></label>
+    <textarea name="prompts[0][text]" class="form-control" rows="3" placeholder="Write your complete prompt here..." required></textarea>
+  </div>
+
+  <div class="form-group mb-0">
+    <label>Example Output Image (Optional)</label>
+    <div class="input-group">
+      <input type="file" name="prompts[0][image]" id="img_0" class="form-control" accept="image/*">
+      <button type="button" class="btn btn-outline-secondary" onclick="clearInput('img_0')">Clear Image</button>
+    </div>
+  </div>
+</div>
 
           </div>
 
@@ -94,6 +110,11 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="badge bg-primary">Prompt #${index + 1}</span>
           <button type="button" class="btn btn-danger btn-sm text-white" onclick="deleteBox('box-${index}')">Remove Box</button>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="fw-bold">AI Tool / Platform (e.g. ChatGPT, Midjourney)</label>
+          <input type="text" name="prompts[${index}][ai_tool]" class="form-control" placeholder="ChatGPT">
         </div>
 
         <div class="form-group mb-2">

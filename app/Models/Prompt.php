@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes; // Yeh line add karni zaroori hai
+use Illuminate\Database\Eloquent\SoftDeletes; 
 
 class Prompt extends Model
 {
@@ -13,7 +13,7 @@ class Prompt extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'id', 'category_id', 'title', 'label', 'prompt_text', 'status', 'copies_count', 'image', 'created_at', 'updated_at', 'user_id', 'deleted_at'
+        'id', 'category_id', 'ai_tool', 'title', 'label', 'prompt_text', 'status', 'copies_count', 'image', 'created_at', 'updated_at', 'user_id', 'deleted_at'
     ];
 
     public function user()

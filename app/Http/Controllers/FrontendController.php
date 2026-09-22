@@ -14,7 +14,6 @@ class FrontendController extends Controller
         
         $query = Prompt::with('category')->where('status', 'approved');
 
-        // Search Filter
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -23,14 +22,13 @@ class FrontendController extends Controller
             })->where('status', 'approved');
         }
 
-        // Category Filter
         if ($request->has('category') && $request->category != '') {
             $query->where('category_id', $request->category);
         }
 
         $prompts = $query->latest()->paginate(12);
 
-        return view('welcome', compact('prompts', 'categories'));
+        return view('home', compact('prompts', 'categories'));
     }
 
     public function searchSuggestions(Request $request)
@@ -75,10 +73,8 @@ class FrontendController extends Controller
         return back()->with('success', 'Thank you! Your message has been sent successfully.');
     }
 
-    // My Prompts Listing
     public function myPrompts(Request $request)
     {
-        // Yahan SoftDeletes ki wajah se deleted prompts automatically hide ho jayenge
         $query = Prompt::where('user_id', auth()->id());
 
         if ($request->filled('search')) {
@@ -95,7 +91,7 @@ class FrontendController extends Controller
     public function editPrompt($id)
     {
         $prompt = Prompt::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
-        $categories = \App\Models\Category::all();
+        $categories = Category::all();
         return view('pages.front.edit-prompt', compact('prompt', 'categories'));
     }
 
@@ -104,18 +100,20 @@ class FrontendController extends Controller
         $prompt = Prompt::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
 
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'prompt_text' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'ai_tool'     => 'nullable|string|max:100', // Added here
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = [
-            'title' => $request->title,
+            'title'       => $request->title,
             'category_id' => $request->category_id,
             'prompt_text' => $request->prompt_text,
-            'status' => 'pending', 
-            'updated_at' => now(),
+            'ai_tool'     => $request->ai_tool, // Added here
+            'status'      => 'pending', 
+            'updated_at'  => now(),
         ];
 
         if ($request->hasFile('image')) {
@@ -134,5 +132,11 @@ class FrontendController extends Controller
         $prompt->delete(); 
 
         return redirect()->route('user.prompts')->with('success', 'Prompt moved to trash successfully.');
+    }
+
+    public function show($id)
+    {
+        $prompt = Prompt::where('status', 'approved')->findOrFail($id);
+        return view('prompts.show', compact('prompt'));
     }
 }

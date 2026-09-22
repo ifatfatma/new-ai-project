@@ -156,4 +156,56 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- NEW: Website SEO Settings Card (Added beside Login Background) -->
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-primary"><i class="mdi mdi-globe-model me-2"></i>Website SEO Settings</h4>
+                    <p class="card-description"> Manage global meta tags and social share image </p>
+
+                    <form action="{{ route('admin.seo.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="form-group mb-3">
+                            <label for="meta_title" class="fw-bold">Meta Title</label>
+                            <input type="text" class="form-control @error('meta_title') is-invalid @enderror" id="meta_title" name="meta_title" value="{{ old('meta_title', $seo->meta_title ?? '') }}" placeholder="e.g. AI Prompt Hub">
+                            @error('meta_title') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="meta_description" class="fw-bold">Meta Description</label>
+                            <textarea class="form-control @error('meta_description') is-invalid @enderror" id="meta_description" name="meta_description" rows="2" placeholder="Brief description...">{{ old('meta_description', $seo->meta_description ?? '') }}</textarea>
+                            @error('meta_description') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="meta_keywords" class="fw-bold">Meta Keywords</label>
+                            <input type="text" class="form-control @error('meta_keywords') is-invalid @enderror" id="meta_keywords" name="meta_keywords" value="{{ old('meta_keywords', $seo->meta_keywords ?? '') }}" placeholder="ai prompts, chatgpt">
+                            @error('meta_keywords') <span class="text-danger small">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-md-3 text-center">
+                                @if(isset($seo->og_image) && $seo->og_image)
+                                    <img src="{{ asset('storage/' . $seo->og_image) }}" alt="OG" class="shadow-sm rounded border" width="50" height="50" style="object-fit: cover;">
+                                @else
+                                    <span class="text-muted small">No Image</span>
+                                @endif
+                            </div>
+                            <div class="col-md-9">
+                                <label for="og_image" class="fw-bold">Social Share Image (OG)</label>
+                                <input type="file" class="form-control @error('og_image') is-invalid @enderror" id="og_image" name="og_image">
+                                @error('og_image') <span class="text-danger small">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm text-white">Save SEO Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

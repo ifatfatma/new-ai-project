@@ -11,11 +11,13 @@ use App\Models\Prompt;
 use App\Models\PromptCopy;
 use App\Http\Controllers\FrontendAuthController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Admin\SeoSettingController;
 
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
 Route::get('/user-prompts/suggestions', [FrontendController::class, 'userSearchSuggestions'])->name('user.prompts.suggestions');
+Route::get('/prompts/{id}', [FrontendController::class, 'show'])->name('prompts.show');
 
 // Frontend Email OTP Login Routes
 Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('frontend.login');
@@ -24,7 +26,7 @@ Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])->na
 Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
 
-
+// Frontend / Public Prompt Store Route (Fixes the Route [prompts.store] not defined error)
 Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 
 // Strict User-Only Copy Tracking Route (1 Email = 1 Count per Day)
@@ -49,8 +51,8 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
 
     $copyRecord = PromptCopy::firstOrCreate(
         [
-            'prompt_id'   => $prompt->id,
-            'email'       => $userEmail,
+            'prompt_id' => $prompt->id,
+            'email' => $userEmail,
             'copied_date' => $today,
         ]
     );
@@ -59,24 +61,23 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
         $prompt->increment('copies_count');
 
         return response()->json([
-            'success'      => true,
-            'counted'      => true,
-            'message'      => 'Copy count updated for today!',
+            'success' => true,
+            'counted' => true,
+            'message' => 'Copy count updated for today!',
             'total_copies' => (int) $prompt->copies_count
         ]);
     }
 
     return response()->json([
-        'success'      => true,
-        'counted'      => false,
-        'message'      => 'Already counted for today.',
+        'success' => true,
+        'counted' => false,
+        'message' => 'Already counted for today.',
         'total_copies' => (int) $prompt->copies_count
     ]);
 })->middleware('auth')->name('prompts.copy.track');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/my-prompts', [FrontendController::class, 'myPrompts'])->name('user.prompts');
-    // User Prompt Edit aur Delete routes
     Route::get('/my-prompts/{id}/edit', [FrontendController::class, 'editPrompt'])->name('user.prompts.edit');
     Route::put('/my-prompts/{id}', [FrontendController::class, 'updatePrompt'])->name('user.prompts.update');
     Route::delete('/my-prompts/{id}', [FrontendController::class, 'destroyPrompt'])->name('user.prompts.destroy');
@@ -91,7 +92,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('admin.login.submit');
 
     Route::middleware('auth')->group(function () {
-        
+
         Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
         Route::get('/analytics/copies', [HomeController::class, 'copyAnalytics'])->name('admin.analytics.copies');
         Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
@@ -99,7 +100,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-        Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update'); // Fixed double /admin prefix
+        Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update');
 
         // Admin Settings Routes
         Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
@@ -108,20 +109,29 @@ Route::prefix('admin')->group(function () {
         Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('admin.settings.password.update');
         Route::post('/settings/login-background', [SettingsController::class, 'updateLoginBackground'])->name('admin.settings.login.bg.update');
 
+        // SEO Settings Routes
+        Route::get('/seo-settings', [SeoSettingController::class, 'edit'])->name('admin.seo.edit');
+        Route::post('/seo-settings', [SeoSettingController::class, 'update'])->name('admin.seo.update');
+
         Route::resource('categories', CategoryController::class)->names([
-            'index'   => 'admin.categories.index',
-            'store'   => 'admin.categories.store',
-            'update'  => 'admin.categories.update',
+            'index' => 'admin.categories.index',
+            'store' => 'admin.categories.store',
+            'update' => 'admin.categories.update',
             'destroy' => 'admin.categories.destroy',
         ]);
 
+        // Admin Prompts Routes
         Route::get('/prompts', [PromptController::class, 'index'])->name('admin.prompts.index');
         Route::get('/prompts/create', [PromptController::class, 'create'])->name('admin.prompts.create');
         Route::post('/prompts/store', [PromptController::class, 'store'])->name('admin.prompts.store');
+        
+        // Yeh line theek ki gayi hai taaki 404 error na aaye
+        Route::get('/prompts/{id}', [PromptController::class, 'show'])->name('admin.prompts.show');
+        
         Route::get('/prompts/{id}/edit', [PromptController::class, 'edit'])->name('admin.prompts.edit');
         Route::put('/prompts/{id}', [PromptController::class, 'update'])->name('admin.prompts.update');
         Route::delete('/prompts/{id}', [PromptController::class, 'destroy'])->name('admin.prompts.destroy');
-        Route::post('/prompts/{id}/approve', [App\Http\Controllers\Admin\PromptController::class, 'approve'])->name('admin.prompts.approve'); // Fixed double /admin prefix
-        Route::post('/prompts/{id}/reject', [App\Http\Controllers\Admin\PromptController::class, 'reject'])->name('admin.prompts.reject'); // Fixed double /admin prefix
+        Route::post('/prompts/{id}/approve', [PromptController::class, 'approve'])->name('admin.prompts.approve');
+        Route::post('/prompts/{id}/reject', [PromptController::class, 'reject'])->name('admin.prompts.reject');
     });
 });

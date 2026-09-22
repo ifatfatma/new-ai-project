@@ -9,33 +9,28 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class PromptController extends Controller
 {
-   public function index(Request $request)
-{
-    $query = Prompt::with('user', 'category');
+    public function index(Request $request)
+    {
+        $query = Prompt::with('user', 'category');
 
-    // 1. Filter by user
-    if ($request->filled('user_id')) {
-        $query->where('user_id', $request->user_id);
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+              ->latest();
+
+        $prompts = $query->paginate(10)->withQueryString();
+        $users = User::all();
+
+        return view('pages.admin.prompt.index', compact('prompts', 'users'));
     }
-
-    // 2. Filter by date
-    if ($request->filled('date')) {
-        $query->whereDate('created_at', $request->date);
-    }
-
-    //  sorting for pending form
-    $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
-          ->latest();
-
-    // Pagination with query strings so filters persist across pages
-    $prompts = $query->paginate(10)->withQueryString();
-    $users = User::all();
-
-    return view('pages.admin.prompt.index', compact('prompts', 'users'));
-}
 
     public function create()
     {
@@ -44,32 +39,35 @@ class PromptController extends Controller
     }
 
    public function store(Request $request)
-{
-    // Validation logic...
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'category_id' => 'required',
-        'prompt_text' => 'required',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation add karein
-    ]);
+    {
+        // Agar aapka frontend single form bhej raha hai (jaise pehle discuss hua)
+        $request->validate([
+            'title'       => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'prompt_text' => 'required|string',
+            'ai_tool'     => 'nullable|string|max:100',
+            'label'       => 'nullable|string|max:255',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
 
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('prompts', 'public'); // Storage mein save karein
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('prompts', 'public');
+        }
+
+        Prompt::create([
+            'title'       => $request->title,
+            'category_id' => $request->category_id,
+            'prompt_text' => $request->prompt_text,
+            'ai_tool'     => $request->ai_tool,
+            'label'       => $request->label,
+            'image'       => $imagePath,
+            'user_id'     => auth()->id(),
+            'status'      => 'pending', 
+        ]);
+
+        return redirect()->back()->with('success', 'Prompt submitted successfully! It will be visible on the website after admin approval.');
     }
-
-    // Save prompt logic...
-    Prompt::create([
-        'title' => $request->title,
-        'category_id' => $request->category_id,
-        'prompt_text' => $request->prompt_text,
-        'image' => $imagePath, // Image path yahan save karein
-        'user_id' => auth()->id(), // user attribution
-        'status' => 'pending',
-    ]);
-
-    return redirect()->back()->with('success', 'Your prompt has been submitted for admin approval!');
-}
     public function edit($id)
     {
         $prompt = Prompt::findOrFail($id);
@@ -78,51 +76,45 @@ class PromptController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $prompt = Prompt::findOrFail($id);
+{
+    $prompt = Prompt::findOrFail($id);
 
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title'       => 'required|string|max:255',
-            'label'       => 'nullable|string|max:255',
-            'prompt_text' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048|dimensions:max_width=3000,max_height=3000',
-        ], [
-            'image.image'      => 'The uploaded file must be a valid image.',
-            'image.mimes'      => 'Only JPG, JPEG, PNG, and WEBP image formats are allowed.',
-            'image.max'        => 'The image size must not exceed 2MB (2048KB).',
-            'image.dimensions' => 'The image dimensions must not exceed 3000x3000 pixels.',
-        ]);
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'title'       => 'required|string|max:255',
+        'label'       => 'nullable|string|max:255',
+        'prompt_text' => 'required|string',
+        'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'ai_tool'     => 'nullable|string|max:100', // Yeh zaroori hai
+    ]);
 
-        $imagePath = $prompt->image;
+    $imagePath = $prompt->image;
 
-        // Delete image if requested
-        if ($request->has('remove_image') && $request->remove_image == 1) {
-            if ($prompt->image && Storage::disk('public')->exists($prompt->image)) {
-                Storage::disk('public')->delete($prompt->image);
-            }
-            $imagePath = null;
+    if ($request->has('remove_image') && $request->remove_image == 1) {
+        if ($prompt->image && Storage::disk('public')->exists($prompt->image)) {
+            Storage::disk('public')->delete($prompt->image);
         }
-
-        // Replace old image with new upload
-        if ($request->hasFile('image')) {
-            if ($prompt->image && Storage::disk('public')->exists($prompt->image)) {
-                Storage::disk('public')->delete($prompt->image);
-            }
-            $imagePath = $request->file('image')->store('prompts', 'public');
-        }
-
-        $prompt->update([
-            'category_id' => $request->category_id,
-            'title'       => $request->title,
-            'label'       => $request->label,
-            'prompt_text' => $request->prompt_text,
-            'image'       => $imagePath,
-        ]);
-
-        return redirect()->route('admin.prompts.index')->with('success', 'Prompt updated successfully!');
+        $imagePath = null;
     }
 
+    if ($request->hasFile('image')) {
+        if ($prompt->image && Storage::disk('public')->exists($prompt->image)) {
+            Storage::disk('public')->delete($prompt->image);
+        }
+        $imagePath = $request->file('image')->store('prompts', 'public');
+    }
+
+    $prompt->update([
+        'category_id' => $request->category_id,
+        'title'       => $request->title,
+        'label'       => $request->label,
+        'prompt_text' => $request->prompt_text,
+        'image'       => $imagePath,
+        'ai_tool'     => $request->ai_tool, // Yahan se AI tool update ho jayega
+    ]);
+
+    return redirect()->route('admin.prompts.index')->with('success', 'Prompt updated successfully!');
+}
     public function destroy($id)
     {
         $prompt = Prompt::findOrFail($id);
@@ -136,21 +128,26 @@ class PromptController extends Controller
     }
 
     public function approve($id)
+    {
+        $prompt = Prompt::findOrFail($id);
+        $prompt->status = 'approved';
+        $prompt->save();
+
+        return redirect()->back()->with('success', 'Prompt successfully approved and published!');
+    }
+
+    public function reject($id)
+    {
+        $prompt = Prompt::findOrFail($id);
+        $prompt->status = 'rejected'; 
+        $prompt->save();
+
+        return back()->with('error', 'Prompt has been rejected.');
+    }
+
+    public function show($id)
 {
-    $prompt = Prompt::findOrFail($id);
-    $prompt->status = 'approved';
-    $prompt->save();
-
-    return redirect()->back()->with('success', 'Prompt successfully approved and published!');
+    $prompt = Prompt::with('user', 'category')->findOrFail($id);
+    return view('pages.admin.prompt.show', compact('prompt'));
 }
-
-public function reject($id)
-{
-    $prompt = Prompt::findOrFail($id);
-    $prompt->status = 'rejected'; 
-    $prompt->save();
-
-    return back()->with('error', 'Prompt has been rejected.');
-}
-
 }

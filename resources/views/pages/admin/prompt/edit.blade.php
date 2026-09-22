@@ -37,6 +37,10 @@
             <textarea name="prompt_text" class="form-control" rows="5" required>{{ $prompt->prompt_text }}</textarea>
           </div>
 
+       <div class="mb-3">
+    <label for="ai_tool" class="fw-bold">AI Tool / Platform (e.g. ChatGPT, Midjourney)</label>
+    <input type="text" name="ai_tool" class="form-control" value="{{ old('ai_tool', $prompt->ai_tool ?? '') }}" placeholder="ChatGPT">
+</div>
           <div class="form-group mb-4">
             <label class="fw-bold">Example Output Image (Optional)</label>
             
