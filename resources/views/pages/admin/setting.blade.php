@@ -401,13 +401,13 @@
                     @csrf
 
                     {{-- Meta Title --}}
-                    <div class="form-group mb-3">
+                 {{--    <div class="form-group mb-3">
 
                         <label for="meta_title" class="fw-bold">
                             Meta Title
-                        </label>
+                        </label> --}}
 
-                        <input
+                     {{--    <input
                             type="text"
                             class="form-control @error('meta_title') is-invalid @enderror"
                             id="meta_title"
@@ -420,7 +420,7 @@
                             <span class="text-danger small">{{ $message }}</span>
                         @enderror
 
-                    </div>
+                    </div> --}}
 
 
                     {{-- Meta Description --}}
@@ -446,7 +446,7 @@
 
 
                     {{-- Meta Keywords --}}
-                    <div class="form-group mb-3">
+                    {{-- <div class="form-group mb-3">
 
                         <label for="meta_keywords" class="fw-bold">
                             Meta Keywords
@@ -466,7 +466,7 @@
                         @enderror
 
                     </div>
-
+ --}}
 
                     {{-- OG Image --}}
                     <div class="row align-items-center mb-3">

@@ -9,21 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::create('settings', function (Blueprint $table) {
-        $table->id();
-        $table->string('key')->unique(); 
-        $table->text('value')->nullable();
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::table('prompts', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('settings');
+        Schema::table('prompts', function (Blueprint $table) {
+            //
+        });
     }
 };

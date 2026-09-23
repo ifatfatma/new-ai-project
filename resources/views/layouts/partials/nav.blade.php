@@ -11,14 +11,14 @@
 
     <!-- Categories & Prompts Dropdown -->
     <li class="nav-item">
-      <!-- Agar current route categories ya prompts ka hai, toh 'collapsed' class hata di gayi hai -->
+     
       <a class="nav-link {{ request()->routeIs('admin.categories.*') || request()->routeIs('admin.prompts.*') ? '' : 'collapsed' }}" id="categoryToggleBtn" href="javascript:void(0);" style="cursor: pointer;">
         <i class="menu-icon mdi mdi-folder-cog-outline"></i>
         <span class="menu-title">Prompts</span>
         <i class="menu-arrow mdi mdi-chevron-down ms-auto"></i>
       </a>
       
-      <!-- Agar current route categories ya prompts ka hai, toh style display block kar diya hai taaki menu khula rahe -->
+      
       <div class="collapse {{ request()->routeIs('admin.categories.*') || request()->routeIs('admin.prompts.*') ? 'show' : '' }}" id="manageCategoryMenu" style="{{ request()->routeIs('admin.categories.*') || request()->routeIs('admin.prompts.*') ? 'display: block;' : 'display: none;' }}">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
@@ -27,7 +27,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <!-- Yeh raha aapka All Prompts ka link jo already connected hai -->
+           
             <a class="nav-link {{ request()->routeIs('admin.prompts.*') ? 'active' : '' }}" href="{{ route('admin.prompts.index') }}">
               <i class="mdi mdi-format-list-bulleted me-2"></i> All Prompts
             </a>

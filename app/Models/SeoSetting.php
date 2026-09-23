@@ -10,8 +10,8 @@ class SeoSetting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'meta_title',
-        'meta_description',
+       // 'meta_title',
+       // 'meta_description',
         'meta_keywords',
         'og_image',
         

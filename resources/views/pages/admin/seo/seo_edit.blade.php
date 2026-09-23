@@ -12,20 +12,20 @@
         <form action="{{ route('admin.seo.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <div class="mb-3">
+            {{-- <div class="mb-3">
                 <label class="form-label fw-bold">Meta Title</label>
                 <input type="text" name="meta_title" class="form-control" value="{{ old('meta_title', $seo->meta_title) }}" placeholder="e.g. AI Prompt Hub - Find Best Prompts">
-            </div>
+            </div> --}}
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Meta Description</label>
                 <textarea name="meta_description" class="form-control" rows="3" placeholder="Brief description for search engines...">{{ old('meta_description', $seo->meta_description) }}</textarea>
             </div>
 
-            <div class="mb-3">
+            {{-- <div class="mb-3">
                 <label class="form-label fw-bold">Meta Keywords</label>
                 <input type="text" name="meta_keywords" class="form-control" value="{{ old('meta_keywords', $seo->meta_keywords) }}" placeholder="ai prompts, chatgpt, midjourney, seo outline">
-            </div>
+            </div> --}}
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Social Share Image (OG Image)</label>

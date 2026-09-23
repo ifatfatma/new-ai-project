@@ -1,165 +1,605 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>AI Prompt Hub - Discover & Copy Best Prompts</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    {{-- BOOTSTRAP --}}
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    {{-- BOOTSTRAP ICONS --}}
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
 
     <style>
+
+        /* =========================================
+           HERO
+        ========================================= */
+
         .hero-section {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a 0%,
+                    #1e1b4b 50%,
+                    #312e81 100%
+                );
+
             color: white;
+
             padding: 60px 0;
         }
 
+
         .btn-hero-search {
+
             background-color: #6366f1;
+
             color: #ffffff;
+
             border: 1px solid #4f46e5;
+
             transition: all 0.2s ease-in-out;
         }
 
+
         .btn-hero-search:hover {
+
             background-color: #4f46e5;
+
             color: #ffffff;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+
+            box-shadow:
+                0 0 15px rgba(99, 102, 241, 0.4);
         }
 
-        /* Pinterest Style Masonry */
+
+
+        /* =========================================
+           PROMPTS MASONRY
+        ========================================= */
+
         .prompts-container {
+
             column-count: 3;
+
             column-gap: 24px;
+
             width: 100%;
         }
+
 
         .prompt-card {
+
             break-inside: avoid;
+
             margin-bottom: 24px;
+
             background: #ffffff;
+
             border-radius: 20px;
+
             border: 1px solid #eaeaea;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.06);
+
             display: inline-block;
+
             width: 100%;
+
             overflow: hidden;
-            transition: transform 0.2s ease-in-out,
-                        box-shadow 0.2s ease-in-out;
+
+            transition:
+                transform 0.2s ease-in-out,
+                box-shadow 0.2s ease-in-out;
         }
+
 
         .prompt-card:hover {
+
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+
+            box-shadow:
+                0 10px 25px rgba(0,0,0,0.12);
         }
 
+
         .prompt-content-text {
+
             background: #f8fafc;
+
             font-family: monospace;
+
             font-size: 0.9rem;
+
             color: #4b5563;
+
             line-height: 1.6;
+
             white-space: pre-wrap;
+
             word-wrap: break-word;
         }
 
-        /* ================================
+
+
+        /* =========================================
            CARD TOP INFORMATION
-        ================================= */
+        ========================================= */
 
         .prompt-top-row {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: flex-start;
+
             gap: 10px;
+
             width: 100%;
+
             margin-bottom: 12px;
         }
 
+
         .prompt-category {
+
             flex-shrink: 0;
         }
 
+
         .prompt-ai-tools {
+
             margin-left: auto;
+
             display: flex;
+
             flex-wrap: wrap;
+
             justify-content: flex-end;
+
             align-items: center;
+
             gap: 5px;
+
             max-width: 70%;
         }
 
+
         .ai-tool-badge {
+
             display: inline-flex;
+
             align-items: center;
+
             gap: 4px;
+
             background: #cff4fc;
+
             color: #055160;
+
             border: 1px solid #b6effb;
+
             padding: 4px 8px;
+
             border-radius: 6px;
+
             font-size: 11px;
+
             font-weight: 600;
+
             white-space: nowrap;
         }
 
+
         .prompt-label {
+
             display: inline-block;
+
             margin-top: 4px;
         }
 
-        /* ================================
-           ADD PROMPT MODAL
-        ================================= */
 
-        .ai-tool-select {
-            min-height: 110px;
+
+        /* =========================================
+           CUSTOM AI TOOLS DROPDOWN
+        ========================================= */
+
+        .ai-tools-dropdown {
+
+            position: relative;
+
+            width: 100%;
         }
 
+
+        /* DROPDOWN BUTTON */
+
+        .ai-tools-dropdown-btn {
+
+            width: 100%;
+
+            min-height: 48px;
+
+            background: #ffffff;
+
+            border: 1px solid #ced4da;
+
+            border-radius: 6px;
+
+            padding: 10px 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            color: #495057;
+
+            font-size: 15px;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+        }
+
+
+        .ai-tools-dropdown-btn:hover {
+
+            border-color: #86b7fe;
+        }
+
+
+        .ai-tools-dropdown-btn:focus {
+
+            outline: none;
+
+            border-color: #86b7fe;
+
+            box-shadow:
+                0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+
+        .ai-tools-dropdown-btn i {
+
+            font-size: 14px;
+
+            transition:
+                transform 0.2s ease;
+        }
+
+
+        .ai-tools-dropdown.open
+        .ai-tools-dropdown-btn i {
+
+            transform: rotate(180deg);
+        }
+
+
+        /* SELECTED TEXT */
+
+        #selectedToolsText {
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+        }
+
+
+        #selectedToolsText.has-selection {
+
+            color: #212529;
+
+            font-weight: 500;
+        }
+
+
+        /* DROPDOWN MENU */
+
+        .ai-tools-dropdown-menu {
+
+            display: none;
+
+            position: absolute;
+
+            top: calc(100% + 5px);
+
+            left: 0;
+
+            right: 0;
+
+            z-index: 1055;
+
+            background: #ffffff;
+
+            border: 1px solid #dee2e6;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.12);
+
+            padding: 6px 0;
+
+            max-height: 260px;
+
+            overflow-y: auto;
+        }
+
+
+        /* OPEN */
+
+        .ai-tools-dropdown.open
+        .ai-tools-dropdown-menu {
+
+            display: block;
+        }
+
+
+        /* OPTION */
+
+        .ai-tool-option {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 14px;
+
+            margin: 0;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            color: #212529;
+
+            transition:
+                background 0.15s ease;
+        }
+
+
+        .ai-tool-option:hover {
+
+            background: #f8f9fa;
+        }
+
+
+        /* HIDE NATIVE CHECKBOX */
+
+        .ai-tool-option
+        input[type="checkbox"] {
+
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        /* CUSTOM CHECKBOX */
+
+        .ai-tool-check {
+
+            width: 18px;
+
+            height: 18px;
+
+            border: 1.5px solid #adb5bd;
+
+            border-radius: 4px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            background: #ffffff;
+
+            transition: all 0.15s ease;
+        }
+
+
+        .ai-tool-check i {
+
+            display: none;
+
+            color: #ffffff;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        /* CHECKED */
+
+        .ai-tool-option
+        input[type="checkbox"]:checked
+        + .ai-tool-check {
+
+            background: #0d6efd;
+
+            border-color: #0d6efd;
+        }
+
+
+        .ai-tool-option
+        input[type="checkbox"]:checked
+        + .ai-tool-check
+        i {
+
+            display: block;
+        }
+
+
+        /* TOOL NAME */
+
+        .ai-tool-name {
+
+            flex: 1;
+        }
+
+
+        /* SCROLLBAR */
+
+        .ai-tools-dropdown-menu::-webkit-scrollbar {
+
+            width: 6px;
+        }
+
+
+        .ai-tools-dropdown-menu::-webkit-scrollbar-track {
+
+            background: #f8f9fa;
+        }
+
+
+        .ai-tools-dropdown-menu::-webkit-scrollbar-thumb {
+
+            background: #adb5bd;
+
+            border-radius: 10px;
+        }
+
+
+        /* HELP TEXT */
+
         .ai-tool-help {
+
             font-size: 12px;
         }
 
-        @media (max-width: 1024px) {
-            .prompts-container {
-                column-count: 2;
-            }
+
+
+        /* =========================================
+           SEARCH SUGGESTION
+        ========================================= */
+
+        #suggestionList {
+
+            max-height: 300px;
+
+            overflow-y: auto;
         }
 
-        @media (max-width: 640px) {
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 1024px) {
+
             .prompts-container {
+
+                column-count: 2;
+            }
+
+        }
+
+
+        @media (max-width: 640px) {
+
+            .prompts-container {
+
                 column-count: 1;
             }
 
+
             .prompt-top-row {
+
                 flex-direction: column;
             }
 
+
             .prompt-ai-tools {
+
                 margin-left: 0;
+
                 max-width: 100%;
+
                 justify-content: flex-start;
             }
+
         }
+
+
+        @media (max-width: 576px) {
+
+            .ai-tools-dropdown-menu {
+
+                max-height: 220px;
+            }
+
+
+            .ai-tool-option {
+
+                padding: 11px 12px;
+            }
+
+        }
+
     </style>
+
 </head>
+
 
 <body class="bg-light d-flex flex-column min-vh-100">
 
-    <!-- ================================
-         NAVBAR
-    ================================= -->
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
+
+    {{-- =====================================================
+         NAVBAR
+    ====================================================== --}}
+
+    <nav
+        class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm"
+    >
 
         <div class="container-fluid">
 
-            <a class="navbar-brand d-flex align-items-center"
-               href="{{ url('/') }}">
+
+            {{-- BRAND --}}
+
+            <a
+                class="navbar-brand d-flex align-items-center"
+                href="{{ url('/') }}"
+            >
 
                 @if(auth()->check() && auth()->user()->logo)
 
@@ -174,11 +614,16 @@
 
                 @endif
 
+
                 <span class="fw-bold">
                     AI Prompt Hub
                 </span>
 
             </a>
+
+
+
+            {{-- MOBILE TOGGLE --}}
 
             <button
                 class="navbar-toggler"
@@ -186,15 +631,24 @@
                 data-bs-toggle="collapse"
                 data-bs-target="#navbarNav"
             >
+
                 <span class="navbar-toggler-icon"></span>
+
             </button>
+
+
 
             <div
                 class="collapse navbar-collapse"
                 id="navbarNav"
             >
 
-                <ul class="navbar-nav ms-auto align-items-center flex-row gap-3">
+                <ul
+                    class="navbar-nav ms-auto align-items-center flex-row gap-3"
+                >
+
+
+                    {{-- ADD PROMPT --}}
 
                     <li class="nav-item">
 
@@ -204,10 +658,16 @@
                             data-bs-toggle="modal"
                             data-bs-target="#addPromptModal"
                         >
+
                             + Add Prompt
+
                         </button>
 
                     </li>
+
+
+
+                    {{-- ACCOUNT --}}
 
                     <li class="nav-item dropdown">
 
@@ -219,9 +679,15 @@
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
-                            <i class="bi bi-person-circle fs-5 me-1 text-primary"></i>
+
+                            <i
+                                class="bi bi-person-circle fs-5 me-1 text-primary"
+                            ></i>
+
                             My Account
+
                         </a>
+
 
                         <ul
                             class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3"
@@ -229,28 +695,47 @@
                         >
 
                             <li>
+
                                 <a
                                     class="dropdown-item py-2"
                                     href="#"
                                 >
-                                    <i class="bi bi-person me-2 text-muted"></i>
+
+                                    <i
+                                        class="bi bi-person me-2 text-muted"
+                                    ></i>
+
                                     My Profile
+
                                 </a>
+
                             </li>
 
+
                             <li>
+
                                 <a
                                     class="dropdown-item py-2 px-3"
                                     href="{{ route('user.prompts') }}"
                                 >
-                                    <i class="bi bi-collection me-2"></i>
+
+                                    <i
+                                        class="bi bi-collection me-2"
+                                    ></i>
+
                                     My Prompts
+
                                 </a>
+
                             </li>
 
+
                             <li>
+
                                 <hr class="dropdown-divider">
+
                             </li>
+
 
                             <li>
 
@@ -265,8 +750,13 @@
                                         type="submit"
                                         class="dropdown-item py-2 text-danger fw-semibold"
                                     >
-                                        <i class="bi bi-box-arrow-right me-2"></i>
+
+                                        <i
+                                            class="bi bi-box-arrow-right me-2"
+                                        ></i>
+
                                         Logout
+
                                     </button>
 
                                 </form>
@@ -286,31 +776,41 @@
     </nav>
 
 
-    <!-- ================================
+
+    {{-- =====================================================
          HERO
-    ================================= -->
+    ====================================================== --}}
 
     <div class="hero-section text-center mb-5">
 
         <div class="container">
 
+
             <h1 class="fw-bold display-5 mb-3">
+
                 Find & Copy Premium AI Prompts
+
             </h1>
 
+
             <p class="lead mb-4">
+
                 Explore curated prompts for ChatGPT, Midjourney, and LLMs.
+
             </p>
+
 
             <div class="row justify-content-center">
 
                 <div class="col-md-8 position-relative">
+
 
                     <form
                         action="{{ route('home') }}"
                         method="GET"
                         class="row g-2 justify-content-center"
                     >
+
 
                         <div class="col-md-9 position-relative">
 
@@ -324,6 +824,7 @@
                                 autocomplete="off"
                             >
 
+
                             <ul
                                 id="suggestionList"
                                 class="list-group position-absolute w-100 shadow-sm mt-1 text-start"
@@ -332,13 +833,16 @@
 
                         </div>
 
+
                         <div class="col-md-3">
 
                             <button
                                 type="submit"
                                 class="btn btn-hero-search btn-lg w-100 fw-bold"
                             >
+
                                 Search
+
                             </button>
 
                         </div>
@@ -354,9 +858,10 @@
     </div>
 
 
-    <!-- ================================
+
+    {{-- =====================================================
          QUICK SUGGESTION MODAL
-    ================================= -->
+    ====================================================== --}}
 
     <div
         class="modal fade"
@@ -365,11 +870,18 @@
         aria-hidden="true"
     >
 
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div
+            class="modal-dialog modal-dialog-centered modal-lg"
+        >
 
-            <div class="modal-content border-0 shadow-lg rounded-4">
+            <div
+                class="modal-content border-0 shadow-lg rounded-4"
+            >
 
-                <div class="modal-header border-0 pb-0">
+
+                <div
+                    class="modal-header border-0 pb-0"
+                >
 
                     <span
                         id="modalCategoryBadge"
@@ -377,6 +889,7 @@
                     >
                         General
                     </span>
+
 
                     <button
                         type="button"
@@ -387,12 +900,15 @@
 
                 </div>
 
+
                 <div class="modal-body p-4">
+
 
                     <h4
                         id="modalPromptTitle"
                         class="fw-bold text-dark mb-3"
                     ></h4>
+
 
                     <div
                         id="modalImageContainer"
@@ -409,18 +925,27 @@
 
                     </div>
 
-                    <label class="fw-bold mb-1 text-muted small">
+
+                    <label
+                        class="fw-bold mb-1 text-muted small"
+                    >
                         PROMPT TEXT:
                     </label>
+
 
                     <div class="p-3 bg-light rounded border">
 
                         <pre
                             id="modalPromptText"
-                            style="white-space: pre-wrap; font-family: monospace; margin: 0;"
+                            style="
+                                white-space: pre-wrap;
+                                font-family: monospace;
+                                margin: 0;
+                            "
                         ></pre>
 
                     </div>
+
 
                     <textarea
                         id="modalHiddenTextarea"
@@ -429,23 +954,32 @@
 
                 </div>
 
-                <div class="modal-footer border-0 pt-0">
+
+                <div
+                    class="modal-footer border-0 pt-0"
+                >
 
                     <button
                         id="modalCopyBtn"
                         class="btn btn-success fw-bold"
                         onclick="copyModalPrompt()"
                     >
+
                         <i class="bi bi-clipboard"></i>
+
                         Copy Prompt
+
                     </button>
+
 
                     <button
                         type="button"
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
                     >
+
                         Close
+
                     </button>
 
                 </div>
@@ -457,22 +991,31 @@
     </div>
 
 
-    <!-- ================================
+
+    {{-- =====================================================
          PROMPTS
-    ================================= -->
+    ====================================================== --}}
 
-    <div class="container mb-5 flex-grow-1">
+    <div
+        class="container mb-5 flex-grow-1"
+    >
 
-        <!-- Category Filters -->
 
-        <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
+        {{-- CATEGORY FILTERS --}}
+
+        <div
+            class="d-flex flex-wrap gap-2 justify-content-center mb-4"
+        >
 
             <a
                 href="{{ route('home') }}"
                 class="btn btn-sm {{ !request('category') ? 'btn-dark' : 'btn-outline-dark' }}"
             >
+
                 All Prompts
+
             </a>
+
 
             @foreach($categories as $category)
 
@@ -480,7 +1023,9 @@
                     href="{{ route('home', ['category' => $category->id]) }}"
                     class="btn btn-sm {{ request('category') == $category->id ? 'btn-dark' : 'btn-outline-dark' }}"
                 >
+
                     {{ $category->name }}
+
                 </a>
 
             @endforeach
@@ -488,13 +1033,17 @@
         </div>
 
 
-        <!-- Masonry -->
+
+        {{-- MASONRY --}}
 
         <div class="prompts-container">
 
+
             @forelse($prompts as $prompt)
 
+
                 <div class="prompt-card">
+
 
                     {{-- IMAGE --}}
 
@@ -503,57 +1052,88 @@
                         <img
                             src="{{ asset('storage/' . $prompt->image) }}"
                             class="card-img-top border-bottom"
-                            style="width: 100%; height: 220px; object-fit: cover;"
+                            style="
+                                width: 100%;
+                                height: 220px;
+                                object-fit: cover;
+                            "
                             alt="Output Example"
                         >
 
                     @endif
 
 
-                    <div class="card-body d-flex flex-column p-4">
+
+                    <div
+                        class="card-body d-flex flex-column p-4"
+                    >
 
 
-                        <!-- TOP ROW -->
+                        {{-- TOP ROW --}}
 
                         <div class="prompt-top-row">
+
 
                             {{-- CATEGORY --}}
 
                             <div class="prompt-category">
 
                                 <span class="badge bg-primary">
+
                                     {{ $prompt->category->name ?? 'General' }}
+
                                 </span>
 
                             </div>
 
 
-                            {{-- AI TOOLS RIGHT SIDE --}}
+
+                            {{-- AI TOOLS --}}
 
                             @if(!empty($prompt->ai_tool))
 
+
                                 <div class="prompt-ai-tools">
 
+
                                     @php
+
                                         $tools = is_array($prompt->ai_tool)
                                             ? $prompt->ai_tool
-                                            : json_decode($prompt->ai_tool, true);
+                                            : json_decode(
+                                                $prompt->ai_tool,
+                                                true
+                                            );
 
                                         $tools = is_array($tools)
                                             ? $tools
                                             : [$prompt->ai_tool];
+
                                     @endphp
+
 
                                     @foreach($tools as $tool)
 
+
                                         @php
-                                            $toolName = availableTools()[$tool] ?? $tool;
+
+                                            $toolName =
+                                                availableTools()[$tool]
+                                                ?? $tool;
+
                                         @endphp
 
+
                                         <span class="ai-tool-badge">
-                                            <i class="bi bi-robot"></i>
+
+                                            <i
+                                                class="bi bi-robot"
+                                            ></i>
+
                                             {{ $toolName }}
+
                                         </span>
+
 
                                     @endforeach
 
@@ -564,14 +1144,19 @@
                         </div>
 
 
+
                         {{-- LABEL --}}
 
                         @if($prompt->label)
 
                             <div class="mb-2">
 
-                                <span class="badge bg-secondary prompt-label">
+                                <span
+                                    class="badge bg-secondary prompt-label"
+                                >
+
                                     {{ $prompt->label }}
+
                                 </span>
 
                             </div>
@@ -579,25 +1164,41 @@
                         @endif
 
 
+
                         {{-- TITLE --}}
 
-                        <h5 class="card-title fw-bold text-dark mb-2">
+                        <h5
+                            class="card-title fw-bold text-dark mb-2"
+                        >
+
                             {{ $prompt->title }}
+
                         </h5>
+
 
 
                         {{-- PROMPT TEXT --}}
 
-                        <div class="p-3 border rounded prompt-content-text mb-3">
+                        <div
+                            class="p-3 border rounded prompt-content-text mb-3"
+                        >
 
-                            {{ Str::limit($prompt->prompt_text, 100, '...') }}
+                            {{ Str::limit(
+                                $prompt->prompt_text,
+                                100,
+                                '...'
+                            ) }}
 
                         </div>
 
 
+
                         {{-- BUTTONS --}}
 
-                        <div class="mt-auto d-flex gap-2">
+                        <div
+                            class="mt-auto d-flex gap-2"
+                        >
+
 
                             <button
                                 class="btn btn-success btn-sm w-100 fw-bold copy-btn"
@@ -609,6 +1210,7 @@
                             >
 
                                 <i class="bi bi-clipboard"></i>
+
                                 Copy Prompt
 
                             </button>
@@ -625,7 +1227,9 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#publicModal{{ $prompt->id }}"
                             >
+
                                 View
+
                             </button>
 
                         </div>
@@ -635,9 +1239,10 @@
                 </div>
 
 
-                <!-- ================================
+
+                {{-- =================================================
                      VIEW MODAL
-                ================================= -->
+                ================================================== --}}
 
                 <div
                     class="modal fade"
@@ -646,15 +1251,27 @@
                     aria-hidden="true"
                 >
 
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div
+                        class="modal-dialog modal-dialog-centered modal-lg"
+                    >
 
-                        <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div
+                            class="modal-content border-0 shadow-lg rounded-4"
+                        >
 
-                            <div class="modal-header border-0 pb-0">
 
-                                <span class="badge bg-primary fs-6">
+                            <div
+                                class="modal-header border-0 pb-0"
+                            >
+
+                                <span
+                                    class="badge bg-primary fs-6"
+                                >
+
                                     {{ $prompt->category->name ?? 'General' }}
+
                                 </span>
+
 
                                 <button
                                     type="button"
@@ -665,39 +1282,72 @@
 
                             </div>
 
+
                             <div class="modal-body p-4">
 
-                                <h4 class="fw-bold text-dark mb-3">
+
+                                <h4
+                                    class="fw-bold text-dark mb-3"
+                                >
+
                                     {{ $prompt->title }}
+
                                 </h4>
 
 
-                                {{-- AI TOOLS IN VIEW MODAL --}}
+
+                                {{-- AI TOOLS --}}
 
                                 @if(!empty($prompt->ai_tool))
 
-                                    <div class="mb-3 d-flex flex-wrap gap-2">
+
+                                    <div
+                                        class="mb-3 d-flex flex-wrap gap-2"
+                                    >
+
 
                                         @php
-                                            $modalTools = is_array($prompt->ai_tool)
-                                                ? $prompt->ai_tool
-                                                : json_decode($prompt->ai_tool, true);
 
-                                            $modalTools = is_array($modalTools)
-                                                ? $modalTools
-                                                : [$prompt->ai_tool];
+                                            $modalTools =
+                                                is_array($prompt->ai_tool)
+                                                    ? $prompt->ai_tool
+                                                    : json_decode(
+                                                        $prompt->ai_tool,
+                                                        true
+                                                    );
+
+                                            $modalTools =
+                                                is_array($modalTools)
+                                                    ? $modalTools
+                                                    : [$prompt->ai_tool];
+
                                         @endphp
+
 
                                         @foreach($modalTools as $tool)
 
+
                                             @php
-                                                $toolName = availableTools()[$tool] ?? $tool;
+
+                                                $toolName =
+                                                    availableTools()[$tool]
+                                                    ?? $tool;
+
                                             @endphp
 
-                                            <span class="ai-tool-badge">
-                                                <i class="bi bi-robot"></i>
+
+                                            <span
+                                                class="ai-tool-badge"
+                                            >
+
+                                                <i
+                                                    class="bi bi-robot"
+                                                ></i>
+
                                                 {{ $toolName }}
+
                                             </span>
+
 
                                         @endforeach
 
@@ -706,11 +1356,14 @@
                                 @endif
 
 
+
                                 {{-- IMAGE --}}
 
                                 @if($prompt->image)
 
-                                    <div class="text-center mb-3">
+                                    <div
+                                        class="text-center mb-3"
+                                    >
 
                                         <img
                                             src="{{ asset('storage/' . $prompt->image) }}"
@@ -723,51 +1376,80 @@
                                 @endif
 
 
-                                <label class="fw-bold mb-1 text-muted small">
+
+                                <label
+                                    class="fw-bold mb-1 text-muted small"
+                                >
                                     PROMPT TEXT:
                                 </label>
 
 
-                                <div class="p-3 bg-light rounded border position-relative">
+
+                                <div
+                                    class="p-3 bg-light rounded border position-relative"
+                                >
+
 
                                     @php
 
-                                        $fullText = $prompt->prompt_text;
+                                        $fullText =
+                                            $prompt->prompt_text;
 
-                                        $isLong = Str::length($fullText) > 150;
+                                        $isLong =
+                                            Str::length($fullText) > 150;
 
-                                        $shortText = Str::limit(
-                                            $fullText,
-                                            150,
-                                            ''
-                                        );
+                                        $shortText =
+                                            Str::limit(
+                                                $fullText,
+                                                150,
+                                                ''
+                                            );
 
                                     @endphp
 
 
+
                                     <pre
                                         id="modal-text-short-{{ $prompt->id }}"
-                                        style="white-space: pre-wrap; font-family: monospace; margin: 0;"
+                                        style="
+                                            white-space: pre-wrap;
+                                            font-family: monospace;
+                                            margin: 0;
+                                        "
                                     >{{ $shortText }}@if($isLong)...@endif</pre>
+
 
 
                                     @if($isLong)
 
+
                                         <pre
                                             id="modal-text-full-{{ $prompt->id }}"
-                                            style="white-space: pre-wrap; font-family: monospace; margin: 0; display: none;"
+                                            style="
+                                                white-space: pre-wrap;
+                                                font-family: monospace;
+                                                margin: 0;
+                                                display: none;
+                                            "
                                         >{{ $fullText }}</pre>
 
 
-                                        <div class="text-end mt-2">
+                                        <div
+                                            class="text-end mt-2"
+                                        >
 
                                             <button
                                                 type="button"
                                                 class="btn btn-link btn-sm text-decoration-none fw-bold p-0 toggle-read-more"
                                                 onclick="toggleModalText({{ $prompt->id }})"
                                             >
+
                                                 Read More
-                                                <i class="bi bi-chevron-down"></i>
+
+                                                <i
+                                                    class="bi bi-chevron-down"
+                                                ></i>
+
                                             </button>
 
                                         </div>
@@ -779,7 +1461,11 @@
                             </div>
 
 
-                            <div class="modal-footer border-0 pt-0">
+
+                            <div
+                                class="modal-footer border-0 pt-0"
+                            >
+
 
                                 <button
                                     class="btn btn-success fw-bold"
@@ -789,16 +1475,22 @@
                                         {{ $prompt->id }}
                                     )"
                                 >
+
                                     <i class="bi bi-clipboard"></i>
+
                                     Copy Prompt
+
                                 </button>
+
 
                                 <button
                                     type="button"
                                     class="btn btn-secondary"
                                     data-bs-dismiss="modal"
                                 >
+
                                     Close
+
                                 </button>
 
                             </div>
@@ -812,22 +1504,33 @@
 
             @empty
 
-                <div class="col-12 text-center py-5">
 
-                    <p class="text-muted fs-5">
+                <div
+                    class="col-12 text-center py-5"
+                >
+
+                    <p
+                        class="text-muted fs-5"
+                    >
+
                         No prompts found.
+
                     </p>
 
                 </div>
+
 
             @endforelse
 
         </div>
 
 
-        <!-- Pagination -->
 
-        <div class="d-flex justify-content-center mt-4">
+        {{-- PAGINATION --}}
+
+        <div
+            class="d-flex justify-content-center mt-4"
+        >
 
             {{ $prompts->links() }}
 
@@ -836,9 +1539,10 @@
     </div>
 
 
-    <!-- ================================
+
+    {{-- =====================================================
          ADD PROMPT MODAL
-    ================================= -->
+    ====================================================== --}}
 
     <div
         class="modal fade"
@@ -848,19 +1552,34 @@
         aria-hidden="true"
     >
 
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div
+            class="modal-dialog modal-dialog-centered modal-lg"
+        >
 
-            <div class="modal-content border-0 shadow-lg rounded-4">
+            <div
+                class="modal-content border-0 shadow-lg rounded-4"
+            >
 
-                <div class="modal-header bg-dark text-white">
+
+                {{-- HEADER --}}
+
+                <div
+                    class="modal-header bg-dark text-white"
+                >
 
                     <h5
                         class="modal-title fw-bold"
                         id="addPromptModalLabel"
                     >
-                        <i class="bi bi-plus-circle me-1"></i>
+
+                        <i
+                            class="bi bi-plus-circle me-1"
+                        ></i>
+
                         Submit New Prompt
+
                     </h5>
+
 
                     <button
                         type="button"
@@ -871,6 +1590,9 @@
 
                 </div>
 
+
+
+                {{-- FORM --}}
 
                 <form
                     action="{{ route('prompts.store') }}"
@@ -883,7 +1605,10 @@
 
                     <div class="modal-body p-4">
 
-                        {{-- TITLE --}}
+
+                        {{-- =================================
+                             TITLE
+                        ================================== --}}
 
                         <div class="mb-3">
 
@@ -891,8 +1616,11 @@
                                 for="title"
                                 class="form-label fw-bold"
                             >
+
                                 Prompt Title
+
                             </label>
+
 
                             <input
                                 type="text"
@@ -904,10 +1632,15 @@
                                 required
                             >
 
+
                             @error('title')
 
-                                <div class="invalid-feedback">
+                                <div
+                                    class="invalid-feedback"
+                                >
+
                                     {{ $message }}
+
                                 </div>
 
                             @enderror
@@ -915,7 +1648,10 @@
                         </div>
 
 
-                        {{-- CATEGORY --}}
+
+                        {{-- =================================
+                             CATEGORY
+                        ================================== --}}
 
                         <div class="mb-3">
 
@@ -923,8 +1659,11 @@
                                 for="category_id"
                                 class="form-label fw-bold"
                             >
+
                                 Category
+
                             </label>
+
 
                             <select
                                 class="form-select @error('category_id') is-invalid @enderror"
@@ -934,8 +1673,11 @@
                             >
 
                                 <option value="">
+
                                     Select Category
+
                                 </option>
+
 
                                 @foreach($categories as $category)
 
@@ -943,17 +1685,24 @@
                                         value="{{ $category->id }}"
                                         {{ old('category_id') == $category->id ? 'selected' : '' }}
                                     >
+
                                         {{ $category->name }}
+
                                     </option>
 
                                 @endforeach
 
                             </select>
 
+
                             @error('category_id')
 
-                                <div class="invalid-feedback">
+                                <div
+                                    class="invalid-feedback"
+                                >
+
                                     {{ $message }}
+
                                 </div>
 
                             @enderror
@@ -961,63 +1710,160 @@
                         </div>
 
 
-                        {{-- AI TOOLS --}}
+
+                        {{-- =================================
+                             AI TOOLS
+                        ================================== --}}
 
                         <div class="mb-3">
 
+
                             <label
-                                for="ai_tool"
                                 class="form-label fw-bold"
                             >
+
                                 AI Tools / Platforms
+
                             </label>
 
-                            <select
-                                class="form-select ai-tool-select"
-                                id="ai_tool"
-                                name="ai_tool[]"
-                                multiple
+
+                            @php
+
+                                $oldTools =
+                                    old('ai_tool', []);
+
+                                if (!is_array($oldTools)) {
+
+                                    $oldTools =
+                                        [$oldTools];
+
+                                }
+
+                            @endphp
+
+
+
+                            <div
+                                class="ai-tools-dropdown"
+                                id="aiToolsDropdown"
                             >
 
-                                @php
-                                    $oldTools = old('ai_tool', []);
 
-                                    if (!is_array($oldTools)) {
-                                        $oldTools = [$oldTools];
-                                    }
-                                @endphp
+                                {{-- DROPDOWN BUTTON --}}
 
-                                @foreach(availableTools() as $key => $toolName)
+                                <button
+                                    type="button"
+                                    class="ai-tools-dropdown-btn"
+                                    id="aiToolsDropdownBtn"
+                                >
 
-                                    <option
-                                        value="{{ $key }}"
-                                        {{ in_array($key, $oldTools) ? 'selected' : '' }}
+                                    <span
+                                        id="selectedToolsText"
                                     >
-                                        {{ $toolName }}
-                                    </option>
 
-                                @endforeach
+                                        Select AI Tools
 
-                            </select>
+                                    </span>
 
-                            <div class="text-muted ai-tool-help mt-1">
-                                <i class="bi bi-info-circle"></i>
-                                Ctrl / Command press karke multiple AI tools select kar sakte hain.
+
+                                    <i
+                                        class="bi bi-chevron-down"
+                                    ></i>
+
+                                </button>
+
+
+
+                                {{-- DROPDOWN MENU --}}
+
+                                <div
+                                    class="ai-tools-dropdown-menu"
+                                    id="aiToolsDropdownMenu"
+                                >
+
+
+                                    @foreach(availableTools() as $key => $toolName)
+
+
+                                        <label
+                                            class="ai-tool-option"
+                                        >
+
+
+                                            <input
+                                                type="checkbox"
+                                                name="ai_tool[]"
+                                                value="{{ $key }}"
+                                                {{ in_array(
+                                                    $key,
+                                                    $oldTools
+                                                ) ? 'checked' : '' }}
+                                            >
+
+
+                                            <span
+                                                class="ai-tool-check"
+                                            >
+
+                                                <i
+                                                    class="bi bi-check"
+                                                ></i>
+
+                                            </span>
+
+
+                                            <span
+                                                class="ai-tool-name"
+                                            >
+
+                                                {{ $toolName }}
+
+                                            </span>
+
+
+                                        </label>
+
+
+                                    @endforeach
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div
+                                class="text-muted ai-tool-help mt-1"
+                            >
+
+                                <i
+                                    class="bi bi-info-circle"
+                                ></i>
+
+                                Multiple AI tools select kar sakte hain.
+
                             </div>
 
                         </div>
 
 
-                        {{-- PROMPT TEXT --}}
+
+                        {{-- =================================
+                             PROMPT TEXT
+                        ================================== --}}
 
                         <div class="mb-3">
+
 
                             <label
                                 for="prompt_text"
                                 class="form-label fw-bold"
                             >
+
                                 Prompt Text
+
                             </label>
+
 
                             <textarea
                                 class="form-control @error('prompt_text') is-invalid @enderror"
@@ -1028,10 +1874,15 @@
                                 required
                             >{{ old('prompt_text') }}</textarea>
 
+
                             @error('prompt_text')
 
-                                <div class="invalid-feedback">
+                                <div
+                                    class="invalid-feedback"
+                                >
+
                                     {{ $message }}
+
                                 </div>
 
                             @enderror
@@ -1039,19 +1890,31 @@
                         </div>
 
 
-                        {{-- IMAGE --}}
+
+                        {{-- =================================
+                             IMAGE
+                        ================================== --}}
 
                         <div class="mb-3">
+
 
                             <label
                                 for="image"
                                 class="form-label fw-bold"
                             >
+
                                 Image
-                                <small class="text-muted">
+
+                                <small
+                                    class="text-muted"
+                                >
+
                                     (Optional)
+
                                 </small>
+
                             </label>
+
 
                             <input
                                 type="file"
@@ -1061,10 +1924,15 @@
                                 accept="image/*"
                             >
 
+
                             @error('image')
 
-                                <div class="invalid-feedback">
+                                <div
+                                    class="invalid-feedback"
+                                >
+
                                     {{ $message }}
+
                                 </div>
 
                             @enderror
@@ -1074,21 +1942,32 @@
                     </div>
 
 
-                    <div class="modal-footer bg-light border-0">
+
+                    {{-- FOOTER --}}
+
+                    <div
+                        class="modal-footer bg-light border-0"
+                    >
+
 
                         <button
                             type="button"
                             class="btn btn-secondary"
                             data-bs-dismiss="modal"
                         >
+
                             Cancel
+
                         </button>
+
 
                         <button
                             type="submit"
                             class="btn btn-primary px-4 fw-bold"
                         >
+
                             Submit Prompt
+
                         </button>
 
                     </div>
@@ -1102,11 +1981,14 @@
     </div>
 
 
-    <!-- ================================
-         FOOTER
-    ================================= -->
 
-    <div class="container-fluid px-0 mt-5">
+    {{-- =====================================================
+         FOOTER
+    ====================================================== --}}
+
+    <div
+        class="container-fluid px-0 mt-5"
+    >
 
         <footer
             class="text-center text-lg-start text-white"
@@ -1120,12 +2002,16 @@
 
                 © {{ date('Y') }} Copyright:
 
+
                 <a
                     class="text-white fw-bold text-decoration-none"
                     href="{{ route('home') }}"
                 >
+
                     AI Prompt Hub
+
                 </a>
+
 
                 . All rights reserved.
 
@@ -1136,218 +2022,614 @@
     </div>
 
 
-    <!-- ================================
-         JS
-    ================================= -->
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- =====================================================
+         JAVASCRIPT
+    ====================================================== --}}
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {{-- BOOTSTRAP JS --}}
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+
+    {{-- JQUERY --}}
+
+    <script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+    ></script>
+
 
 
     <script>
 
-        /* ==========================================
-           COPY PROMPT
-        ========================================== */
 
-        function copyPrompt(elementId, btnElement, promptId)
-        {
-            const element = document.getElementById(elementId);
+        /* =====================================================
+           CUSTOM AI TOOLS DROPDOWN
+        ====================================================== */
 
-            if (!element) {
-                return;
-            }
-
-            const textToCopy = element.value;
-
-            navigator.clipboard.writeText(textToCopy)
-                .then(() => {
-
-                    const originalContent = btnElement.innerHTML;
-
-                    btnElement.innerHTML =
-                        '<i class="bi bi-check2"></i> Copied!';
-
-                    btnElement.classList.remove('btn-success');
-                    btnElement.classList.add('btn-dark');
-
-                    setTimeout(() => {
-
-                        btnElement.innerHTML = originalContent;
-
-                        btnElement.classList.remove('btn-dark');
-                        btnElement.classList.add('btn-success');
-
-                    }, 2000);
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
 
 
-                    fetch(`/prompts/${promptId}/copy-track`, {
-
-                        method: 'POST',
-
-                        headers: {
-
-                            'Content-Type': 'application/json',
-
-                            'X-CSRF-TOKEN':
-                                document
-                                    .querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content')
-
-                        }
-
-                    })
-                    .catch(err =>
-                        console.error('Tracking Error:', err)
+                const dropdown =
+                    document.getElementById(
+                        'aiToolsDropdown'
                     );
 
-                })
-                .catch(err =>
-                    console.error('Failed to copy:', err)
-                );
-        }
+
+                const dropdownBtn =
+                    document.getElementById(
+                        'aiToolsDropdownBtn'
+                    );
 
 
-        /* ==========================================
-           COPY MODAL PROMPT
-        ========================================== */
-
-        function copyModalPrompt()
-        {
-            const textarea =
-                document.getElementById('modalHiddenTextarea');
-
-            const btnElement =
-                document.getElementById('modalCopyBtn');
-
-            if (!textarea || !btnElement) {
-                return;
-            }
-
-            const textToCopy = textarea.value;
-
-            navigator.clipboard.writeText(textToCopy)
-                .then(() => {
-
-                    const originalContent =
-                        btnElement.innerHTML;
-
-                    btnElement.innerHTML =
-                        '<i class="bi bi-check2"></i> Copied!';
-
-                    btnElement.classList.remove('btn-success');
-                    btnElement.classList.add('btn-dark');
-
-                    setTimeout(() => {
-
-                        btnElement.innerHTML =
-                            originalContent;
-
-                        btnElement.classList.remove('btn-dark');
-                        btnElement.classList.add('btn-success');
-
-                    }, 2000);
-
-                })
-                .catch(err =>
-                    console.error('Failed to copy:', err)
-                );
-        }
+                const dropdownMenu =
+                    document.getElementById(
+                        'aiToolsDropdownMenu'
+                    );
 
 
-        /* ==========================================
-           SEARCH SUGGESTIONS
-        ========================================== */
+                const selectedToolsText =
+                    document.getElementById(
+                        'selectedToolsText'
+                    );
 
-        $(document).ready(function () {
 
-            $('#prompt-search').on('keyup', function () {
+                if (
+                    !dropdown ||
+                    !dropdownBtn ||
+                    !dropdownMenu ||
+                    !selectedToolsText
+                ) {
 
-                let query = $(this).val();
+                    return;
 
-                if (query.length > 1) {
+                }
 
-                    $.ajax({
 
-                        url: "{{ route('search.suggestions') }}",
 
-                        method: "GET",
+                /* =========================================
+                   UPDATE SELECTED TOOLS
+                ========================================== */
 
-                        data: {
-                            query: query
-                        },
+                function updateSelectedTools()
+                {
 
-                        success: function (data) {
+                    const checkedTools =
+                        dropdownMenu.querySelectorAll(
+                            'input[type="checkbox"]:checked'
+                        );
 
-                            let list =
-                                $('#suggestionList');
 
-                            list.empty();
+                    if (
+                        checkedTools.length === 0
+                    ) {
 
-                            if (data.length > 0) {
+                        selectedToolsText.textContent =
+                            'Select AI Tools';
 
-                                list.show();
 
-                                data.forEach(function (item) {
+                        selectedToolsText.classList.remove(
+                            'has-selection'
+                        );
 
-                                    let safeItem =
-                                        encodeURIComponent(
-                                            JSON.stringify(item)
-                                        );
 
-                                    list.append(`
-                                        <li
-                                            class="list-group-item list-group-item-action text-dark"
-                                            style="cursor: pointer;"
-                                            onclick="openSuggestionModal('${safeItem}')"
-                                        >
-                                            ${item.title}
-                                        </li>
-                                    `);
+                        return;
 
-                                });
+                    }
 
-                            } else {
 
-                                list.hide();
+
+                    const selectedNames = [];
+
+
+
+                    checkedTools.forEach(
+                        function (checkbox) {
+
+
+                            const option =
+                                checkbox.closest(
+                                    '.ai-tool-option'
+                                );
+
+
+                            const name =
+                                option
+                                    ? option.querySelector(
+                                        '.ai-tool-name'
+                                    )
+                                    : null;
+
+
+                            if (name) {
+
+                                selectedNames.push(
+                                    name.textContent.trim()
+                                );
 
                             }
 
                         }
+                    );
 
-                    });
 
-                } else {
 
-                    $('#suggestionList').hide();
+                    selectedToolsText.textContent =
+                        selectedNames.join(', ');
+
+
+                    selectedToolsText.classList.add(
+                        'has-selection'
+                    );
 
                 }
 
-            });
-
-        });
 
 
-        /* ==========================================
-           OPEN SEARCH SUGGESTION MODAL
-        ========================================== */
+                /* =========================================
+                   OPEN / CLOSE
+                ========================================== */
 
-        function openSuggestionModal(encodedItem)
-        {
-            let item =
-                JSON.parse(
-                    decodeURIComponent(encodedItem)
+                dropdownBtn.addEventListener(
+                    'click',
+                    function (event) {
+
+                        event.stopPropagation();
+
+                        dropdown.classList.toggle(
+                            'open'
+                        );
+
+                    }
                 );
 
+
+
+                /* =========================================
+                   CHECKBOX CHANGE
+                ========================================== */
+
+                const checkboxes =
+                    dropdownMenu.querySelectorAll(
+                        'input[type="checkbox"]'
+                    );
+
+
+                checkboxes.forEach(
+                    function (checkbox) {
+
+
+                        checkbox.addEventListener(
+                            'change',
+                            function () {
+
+                                updateSelectedTools();
+
+                            }
+                        );
+
+                    }
+                );
+
+
+
+                /* =========================================
+                   CLOSE OUTSIDE CLICK
+                ========================================== */
+
+                document.addEventListener(
+                    'click',
+                    function (event) {
+
+
+                        if (
+                            !dropdown.contains(
+                                event.target
+                            )
+                        ) {
+
+                            dropdown.classList.remove(
+                                'open'
+                            );
+
+                        }
+
+                    }
+                );
+
+
+
+                /* =========================================
+                   INITIAL OLD VALUES
+                ========================================== */
+
+                updateSelectedTools();
+
+            }
+        );
+
+
+
+        /* =====================================================
+           COPY PROMPT
+        ====================================================== */
+
+        function copyPrompt(
+            elementId,
+            btnElement,
+            promptId
+        )
+        {
+
+            const element =
+                document.getElementById(
+                    elementId
+                );
+
+
+            if (!element) {
+
+                return;
+
+            }
+
+
+            const textToCopy =
+                element.value;
+
+
+            navigator.clipboard
+                .writeText(textToCopy)
+                .then(
+                    function () {
+
+
+                        const originalContent =
+                            btnElement.innerHTML;
+
+
+                        btnElement.innerHTML =
+                            '<i class="bi bi-check2"></i> Copied!';
+
+
+                        btnElement.classList.remove(
+                            'btn-success'
+                        );
+
+
+                        btnElement.classList.add(
+                            'btn-dark'
+                        );
+
+
+                        setTimeout(
+                            function () {
+
+
+                                btnElement.innerHTML =
+                                    originalContent;
+
+
+                                btnElement.classList.remove(
+                                    'btn-dark'
+                                );
+
+
+                                btnElement.classList.add(
+                                    'btn-success'
+                                );
+
+
+                            },
+                            2000
+                        );
+
+
+
+                        fetch(
+                            `/prompts/${promptId}/copy-track`,
+                            {
+
+                                method: 'POST',
+
+
+                                headers: {
+
+                                    'Content-Type':
+                                        'application/json',
+
+                                    'X-CSRF-TOKEN':
+                                        document
+                                            .querySelector(
+                                                'meta[name="csrf-token"]'
+                                            )
+                                            .getAttribute(
+                                                'content'
+                                            )
+
+                                }
+
+                            }
+                        )
+                        .catch(
+                            function (err) {
+
+                                console.error(
+                                    'Tracking Error:',
+                                    err
+                                );
+
+                            }
+                        );
+
+                    }
+                )
+                .catch(
+                    function (err) {
+
+                        console.error(
+                            'Failed to copy:',
+                            err
+                        );
+
+                    }
+                );
+
+        }
+
+
+
+        /* =====================================================
+           COPY MODAL PROMPT
+        ====================================================== */
+
+        function copyModalPrompt()
+        {
+
+            const textarea =
+                document.getElementById(
+                    'modalHiddenTextarea'
+                );
+
+
+            const btnElement =
+                document.getElementById(
+                    'modalCopyBtn'
+                );
+
+
+            if (
+                !textarea ||
+                !btnElement
+            ) {
+
+                return;
+
+            }
+
+
+            const textToCopy =
+                textarea.value;
+
+
+            navigator.clipboard
+                .writeText(textToCopy)
+                .then(
+                    function () {
+
+
+                        const originalContent =
+                            btnElement.innerHTML;
+
+
+                        btnElement.innerHTML =
+                            '<i class="bi bi-check2"></i> Copied!';
+
+
+                        btnElement.classList.remove(
+                            'btn-success'
+                        );
+
+
+                        btnElement.classList.add(
+                            'btn-dark'
+                        );
+
+
+                        setTimeout(
+                            function () {
+
+
+                                btnElement.innerHTML =
+                                    originalContent;
+
+
+                                btnElement.classList.remove(
+                                    'btn-dark'
+                                );
+
+
+                                btnElement.classList.add(
+                                    'btn-success'
+                                );
+
+
+                            },
+                            2000
+                        );
+
+                    }
+                )
+                .catch(
+                    function (err) {
+
+                        console.error(
+                            'Failed to copy:',
+                            err
+                        );
+
+                    }
+                );
+
+        }
+
+
+
+        /* =====================================================
+           SEARCH SUGGESTIONS
+        ====================================================== */
+
+        $(document).ready(
+            function () {
+
+
+                $('#prompt-search').on(
+                    'keyup',
+                    function () {
+
+
+                        let query =
+                            $(this).val();
+
+
+                        if (
+                            query.length > 1
+                        ) {
+
+
+                            $.ajax({
+
+                                url:
+                                    "{{ route('search.suggestions') }}",
+
+                                method:
+                                    "GET",
+
+                                data: {
+
+                                    query:
+                                        query
+
+                                },
+
+
+                                success:
+                                    function (data) {
+
+
+                                        let list =
+                                            $('#suggestionList');
+
+
+                                        list.empty();
+
+
+                                        if (
+                                            data.length > 0
+                                        ) {
+
+
+                                            list.show();
+
+
+                                            data.forEach(
+                                                function (item) {
+
+
+                                                    let safeItem =
+                                                        encodeURIComponent(
+                                                            JSON.stringify(
+                                                                item
+                                                            )
+                                                        );
+
+
+                                                    list.append(`
+
+                                                        <li
+                                                            class="list-group-item list-group-item-action text-dark"
+                                                            style="cursor: pointer;"
+                                                            onclick="openSuggestionModal('${safeItem}')"
+                                                        >
+
+                                                            ${item.title}
+
+                                                        </li>
+
+                                                    `);
+
+                                                }
+                                            );
+
+
+                                        } else {
+
+
+                                            list.hide();
+
+                                        }
+
+                                    }
+
+                            });
+
+
+                        } else {
+
+
+                            $('#suggestionList')
+                                .hide();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           OPEN SEARCH SUGGESTION MODAL
+        ====================================================== */
+
+        function openSuggestionModal(
+            encodedItem
+        )
+        {
+
+            let item =
+                JSON.parse(
+                    decodeURIComponent(
+                        encodedItem
+                    )
+                );
+
+
+
             $('#modalPromptTitle')
-                .text(item.title);
+                .text(
+                    item.title
+                );
+
 
             $('#modalPromptText')
-                .text(item.prompt_text);
+                .text(
+                    item.prompt_text
+                );
+
 
             $('#modalHiddenTextarea')
-                .val(item.prompt_text);
+                .val(
+                    item.prompt_text
+                );
+
 
             $('#modalCategoryBadge')
                 .text(
@@ -1357,18 +2639,24 @@
                 );
 
 
+
             if (item.image) {
+
 
                 $('#modalPromptImage')
                     .attr(
                         'src',
-                        "{{ asset('storage') }}/" + item.image
+                        "{{ asset('storage') }}/"
+                        + item.image
                     );
+
 
                 $('#modalImageContainer')
                     .show();
 
+
             } else {
+
 
                 $('#modalImageContainer')
                     .hide();
@@ -1376,9 +2664,14 @@
             }
 
 
-            $('#suggestionList').hide();
 
-            $('#prompt-search').val('');
+            $('#suggestionList')
+                .hide();
+
+
+            $('#prompt-search')
+                .val('');
+
 
 
             let myModal =
@@ -1388,48 +2681,68 @@
                     )
                 );
 
+
             myModal.show();
+
         }
 
 
-        /* ==========================================
+
+        /* =====================================================
            CLOSE SEARCH SUGGESTIONS
-        ========================================== */
+        ====================================================== */
 
-        $(document).click(function (e) {
+        $(document).click(
+            function (e) {
 
-            if (
-                !$(e.target).closest(
-                    '#prompt-search, #suggestionList'
-                ).length
-            ) {
 
-                $('#suggestionList').hide();
+                if (
+                    !$(e.target).closest(
+                        '#prompt-search, #suggestionList'
+                    ).length
+                ) {
+
+                    $('#suggestionList')
+                        .hide();
+
+                }
 
             }
+        );
 
-        });
 
 
-        /* ==========================================
+        /* =====================================================
            READ MORE / READ LESS
-        ========================================== */
+        ====================================================== */
 
-        function toggleModalText(promptId)
+        function toggleModalText(
+            promptId
+        )
         {
+
+
             const shortTextEl =
                 document.getElementById(
                     `modal-text-short-${promptId}`
                 );
+
 
             const fullTextEl =
                 document.getElementById(
                     `modal-text-full-${promptId}`
                 );
 
-            if (!shortTextEl || !fullTextEl) {
+
+            if (
+                !shortTextEl ||
+                !fullTextEl
+            ) {
+
                 return;
+
             }
+
 
             const btnEl =
                 shortTextEl
@@ -1439,28 +2752,45 @@
                     );
 
 
-            if (fullTextEl.style.display === 'none') {
 
-                fullTextEl.style.display = 'block';
+            if (
+                fullTextEl.style.display === 'none'
+            ) {
 
-                shortTextEl.style.display = 'none';
+
+                fullTextEl.style.display =
+                    'block';
+
+
+                shortTextEl.style.display =
+                    'none';
+
 
                 btnEl.innerHTML =
                     'Read Less <i class="bi bi-chevron-up"></i>';
 
+
             } else {
 
-                fullTextEl.style.display = 'none';
 
-                shortTextEl.style.display = 'block';
+                fullTextEl.style.display =
+                    'none';
+
+
+                shortTextEl.style.display =
+                    'block';
+
 
                 btnEl.innerHTML =
                     'Read More <i class="bi bi-chevron-down"></i>';
 
             }
+
         }
+
 
     </script>
 
 </body>
+
 </html>

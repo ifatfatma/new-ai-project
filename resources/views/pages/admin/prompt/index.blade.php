@@ -1,29 +1,42 @@
-
 @extends('layouts.backlayout')
 
 @section('content')
 
-<div class="content-wrapper" style="padding-top: 60px !important;">
+<div class="content-wrapper prompt-management-page" style="padding-top: 60px !important;">
 
-    {{-- Page Header --}}
+    {{-- =========================
+        PAGE HEADER
+    ========================== --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <div>
             <h3 class="page-title font-weight-bold text-dark mb-1">
                 Prompts Management
             </h3>
-            <p class="text-muted mb-0">All AI Prompts</p>
+
+            <p class="text-muted mb-0">
+                All AI Prompts
+            </p>
         </div>
 
         <a href="{{ route('admin.prompts.create') }}"
            class="btn btn-primary fw-bold">
+
             + Add New Prompt
+
         </a>
+
     </div>
 
 
-    {{-- Success Message --}}
+    {{-- =========================
+        SUCCESS MESSAGE
+    ========================== --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
             {{ session('success') }}
 
             <button type="button"
@@ -31,11 +44,15 @@
                     data-bs-dismiss="alert"
                     aria-label="Close">
             </button>
+
         </div>
+
     @endif
 
 
-    {{-- Filter Form --}}
+    {{-- =========================
+        FILTER FORM
+    ========================== --}}
     <form method="GET"
           action="{{ route('admin.prompts.index') }}"
           class="mb-4 row g-3 align-items-center">
@@ -47,7 +64,9 @@
                     class="form-select select2-user"
                     onchange="this.form.submit()">
 
-                <option value="">All Users</option>
+                <option value="">
+                    All Users
+                </option>
 
                 @foreach($users as $user)
 
@@ -77,7 +96,7 @@
         </div>
 
 
-        {{-- Reset Filters --}}
+        {{-- Reset --}}
         @if(request('user_id') || request('date'))
 
             <div class="col-auto">
@@ -96,14 +115,55 @@
     </form>
 
 
-    {{-- Custom CSS --}}
+    {{-- =========================
+        CUSTOM CSS
+    ========================== --}}
     <style>
+
+        /* =========================================
+           MAIN PAGE
+        ========================================= */
+
+        .prompt-management-page {
+            overflow: visible !important;
+        }
+
+
+        /* =========================================
+           CARD FIX
+        ========================================= */
+
+        .prompt-table-card {
+            overflow: visible !important;
+            position: relative !important;
+        }
+
+        .prompt-table-card .card-body {
+            overflow: visible !important;
+            position: relative !important;
+        }
+
+
+        /* =========================================
+           TABLE
+        ========================================= */
+
+        .prompts-table {
+            width: 100%;
+            margin-bottom: 0;
+        }
 
         .prompts-table td {
             white-space: normal !important;
             word-break: break-word !important;
             vertical-align: middle;
         }
+
+        .prompts-table th {
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
 
         .prompts-table .badge {
             max-width: 180px;
@@ -113,10 +173,117 @@
             display: inline-block;
         }
 
-        .prompt-actions {
-            white-space: nowrap;
-            position: relative;
+
+        /* =========================================
+           TABLE RESPONSIVE
+           
+           IMPORTANT:
+           Desktop par overflow visible rakha hai
+           taaki dropdown clip na ho.
+        ========================================= */
+
+        .prompt-table-responsive {
+            overflow: visible !important;
+            position: relative !important;
         }
+
+
+        /* =========================================
+           ACTION COLUMN
+        ========================================= */
+
+        .prompt-actions {
+            white-space: nowrap !important;
+            position: relative !important;
+            overflow: visible !important;
+            z-index: 1000 !important;
+        }
+
+
+        /* =========================================
+           ACTION DROPDOWN
+        ========================================= */
+
+        .prompt-actions .dropdown {
+            position: relative !important;
+        }
+
+
+        .prompt-actions .dropdown-menu {
+            min-width: 190px !important;
+
+            width: auto !important;
+
+            max-height: none !important;
+
+            height: auto !important;
+
+            overflow: visible !important;
+
+            position: absolute !important;
+
+            z-index: 999999 !important;
+
+            border: 0 !important;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.15) !important;
+
+            border-radius: 10px !important;
+
+            padding-top: 6px !important;
+
+            padding-bottom: 6px !important;
+        }
+
+
+        /* Dropdown open state */
+
+        .prompt-actions .dropdown-menu.show {
+            display: block !important;
+
+            max-height: none !important;
+
+            overflow: visible !important;
+
+            z-index: 999999 !important;
+        }
+
+
+        /* =========================================
+           ACTION ITEMS
+        ========================================= */
+
+        .prompt-actions .dropdown-item {
+            white-space: nowrap !important;
+
+            overflow: visible !important;
+
+            min-height: 38px;
+
+            display: flex !important;
+
+            align-items: center !important;
+        }
+
+
+        .prompt-actions .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+
+        /* =========================================
+           ACTION BUTTON
+        ========================================= */
+
+        .prompt-actions .dropdown-toggle {
+            white-space: nowrap !important;
+        }
+
+
+        /* =========================================
+           PROMPT TEXT
+        ========================================= */
 
         .prompt-text {
             white-space: pre-wrap;
@@ -125,39 +292,98 @@
             margin: 0;
         }
 
+
+        /* =========================================
+           PROMPT IMAGE
+        ========================================= */
+
         .prompt-image {
             max-height: 250px;
             max-width: 100%;
             object-fit: contain;
         }
 
+
+        /* =========================================
+           MODAL
+        ========================================= */
+
+        .modal {
+            z-index: 1000000 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 999999 !important;
+        }
+
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 767px) {
+
+            .prompt-table-responsive {
+                overflow-x: auto !important;
+                overflow-y: visible !important;
+            }
+
+            .prompts-table {
+                min-width: 900px;
+            }
+
+            .prompt-actions {
+                overflow: visible !important;
+            }
+
+            .prompt-actions .dropdown-menu {
+                min-width: 180px !important;
+            }
+
+        }
+
     </style>
 
 
-    {{-- Prompts Table --}}
+    {{-- =========================
+        PROMPTS TABLE
+    ========================== --}}
     <div class="row">
 
         <div class="col-12 grid-margin stretch-card">
 
-            <div class="card border-0 shadow-sm rounded-3">
+            <div class="card border-0 shadow-sm rounded-3 prompt-table-card">
 
                 <div class="card-body">
 
-                    <div class="table-responsive">
+                    <div class="table-responsive prompt-table-responsive">
 
                         <table class="table table-hover align-middle prompts-table">
 
                             <thead>
+
                                 <tr>
+
                                     <th>#</th>
+
                                     <th>Title</th>
+
                                     <th>Category</th>
+
                                     <th>Created By</th>
+
                                     <th>Label</th>
+
                                     <th>Status</th>
+
                                     <th>Copies</th>
-                                    <th class="text-center">Actions</th>
+
+                                    <th class="text-center">
+                                        Actions
+                                    </th>
+
                                 </tr>
+
                             </thead>
 
 
@@ -165,8 +391,11 @@
 
                             @forelse($prompts as $key => $prompt)
 
-                                {{-- Status Handling --}}
+                                {{-- =========================
+                                    STATUS
+                                ========================== --}}
                                 @php
+
                                     $status = $prompt->status ?? null;
 
                                     if ($status === null) {
@@ -174,30 +403,43 @@
                                     }
 
                                     if ($status === 'approved' || $status == 1) {
+
                                         $statusText = 'approved';
+
                                     } elseif ($status === 'rejected' || $status == 2) {
+
                                         $statusText = 'rejected';
+
                                     } else {
+
                                         $statusText = 'pending';
+
                                     }
+
                                 @endphp
 
 
                                 <tr>
 
-                                    {{-- Number --}}
+                                    {{-- NUMBER --}}
                                     <td>
-                                        {{ ($prompts->currentPage() - 1) * $prompts->perPage() + $key + 1 }}
+
+                                        {{ ($prompts->currentPage() - 1)
+                                            * $prompts->perPage()
+                                            + $key + 1 }}
+
                                     </td>
 
 
-                                    {{-- Title --}}
+                                    {{-- TITLE --}}
                                     <td class="fw-bold">
+
                                         {{ $prompt->title }}
+
                                     </td>
 
 
-                                    {{-- Category --}}
+                                    {{-- CATEGORY --}}
                                     <td>
 
                                         <span class="badge px-2 py-1"
@@ -214,7 +456,7 @@
                                     </td>
 
 
-                                    {{-- Created By --}}
+                                    {{-- CREATED BY --}}
                                     <td>
 
                                         <span class="text-dark fw-medium">
@@ -228,43 +470,53 @@
                                     </td>
 
 
-                                    {{-- Label --}}
+                                    {{-- LABEL --}}
                                     <td>
 
                                         @if(!empty($prompt->label))
 
                                             <span class="badge bg-secondary">
+
                                                 {{ $prompt->label }}
+
                                             </span>
 
                                         @else
 
-                                            <span class="text-muted">-</span>
+                                            <span class="text-muted">
+                                                -
+                                            </span>
 
                                         @endif
 
                                     </td>
 
 
-                                    {{-- Status --}}
+                                    {{-- STATUS --}}
                                     <td>
 
                                         @if($statusText === 'approved')
 
                                             <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+
                                                 Approved
+
                                             </span>
 
                                         @elseif($statusText === 'rejected')
 
                                             <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+
                                                 Rejected
+
                                             </span>
 
                                         @else
 
                                             <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
+
                                                 Pending
+
                                             </span>
 
                                         @endif
@@ -272,17 +524,21 @@
                                     </td>
 
 
-                                    {{-- Copies --}}
+                                    {{-- COPIES --}}
                                     <td>
 
                                         <span class="badge bg-light text-dark border">
+
                                             {{ $prompt->copies_count ?? 0 }}
+
                                         </span>
 
                                     </td>
 
 
-                                    {{-- Actions --}}
+                                    {{-- =========================
+                                        ACTIONS
+                                    ========================== --}}
                                     <td class="text-center prompt-actions">
 
                                         <div class="dropdown">
@@ -291,19 +547,22 @@
                                                 type="button"
                                                 class="btn btn-light btn-sm border px-3 py-1 rounded-pill shadow-sm dropdown-toggle d-inline-flex align-items-center"
                                                 data-bs-toggle="dropdown"
+                                                data-bs-boundary="viewport"
+                                                data-bs-offset="0,8"
                                                 aria-expanded="false">
 
                                                 <i class="bi bi-three-dots-vertical me-1 text-secondary"></i>
+
                                                 Actions
 
                                             </button>
 
 
-                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2 rounded-3"
-                                                style="min-width: 160px;">
+                                            <ul
+                                                class="dropdown-menu dropdown-menu-end shadow border-0 py-2 rounded-3"
+                                                style="min-width: 190px;">
 
-
-                                                {{-- Approve --}}
+                                                {{-- APPROVE --}}
                                                 <li>
 
                                                     <form
@@ -318,6 +577,7 @@
                                                             style="font-size: 13px; font-weight: 500;">
 
                                                             <i class="bi bi-check-circle-fill me-2"></i>
+
                                                             Approve
 
                                                         </button>
@@ -327,7 +587,7 @@
                                                 </li>
 
 
-                                                {{-- Reject --}}
+                                                {{-- REJECT --}}
                                                 <li>
 
                                                     <form
@@ -343,6 +603,7 @@
                                                             style="font-size: 13px; font-weight: 500;">
 
                                                             <i class="bi bi-x-circle-fill me-2"></i>
+
                                                             Reject
 
                                                         </button>
@@ -353,11 +614,13 @@
 
 
                                                 <li>
+
                                                     <hr class="dropdown-divider my-1">
+
                                                 </li>
 
 
-                                                {{-- View Button --}}
+                                                {{-- VIEW --}}
                                                 <li>
 
                                                     <button
@@ -367,6 +630,7 @@
                                                         data-bs-target="#viewModal{{ $prompt->id }}">
 
                                                         <i class="bi bi-eye-fill me-2 text-info"></i>
+
                                                         View
 
                                                     </button>
@@ -374,7 +638,7 @@
                                                 </li>
 
 
-                                                {{-- Edit --}}
+                                                {{-- EDIT --}}
                                                 <li>
 
                                                     <a
@@ -383,6 +647,7 @@
                                                         style="font-size: 13px;">
 
                                                         <i class="bi bi-pencil-square me-2 text-primary"></i>
+
                                                         Edit
 
                                                     </a>
@@ -391,11 +656,13 @@
 
 
                                                 <li>
+
                                                     <hr class="dropdown-divider my-1">
+
                                                 </li>
 
 
-                                                {{-- Delete --}}
+                                                {{-- DELETE --}}
                                                 <li>
 
                                                     <form
@@ -404,6 +671,7 @@
                                                         onsubmit="return confirm('Delete this prompt?');">
 
                                                         @csrf
+
                                                         @method('DELETE')
 
                                                         <button
@@ -412,6 +680,7 @@
                                                             style="font-size: 13px;">
 
                                                             <i class="bi bi-trash-fill me-2"></i>
+
                                                             Delete
 
                                                         </button>
@@ -427,6 +696,7 @@
                                     </td>
 
                                 </tr>
+
 
                             @empty
 
@@ -458,10 +728,9 @@
     </div>
 
 
-    {{-- ========================================================= --}}
-    {{-- VIEW MODALS: OUTSIDE THE TABLE AND TABLE-RESPONSIVE       --}}
-    {{-- ========================================================= --}}
-
+    {{-- =========================
+        VIEW MODALS
+    ========================== --}}
     @foreach($prompts as $prompt)
 
         <div
@@ -476,7 +745,7 @@
                 <div class="modal-content border-0 shadow rounded-4">
 
 
-                    {{-- Modal Header --}}
+                    {{-- MODAL HEADER --}}
                     <div class="modal-header">
 
                         <h5
@@ -498,11 +767,10 @@
                     </div>
 
 
-                    {{-- Modal Body --}}
+                    {{-- MODAL BODY --}}
                     <div class="modal-body">
 
-
-                        {{-- Category, Label and User --}}
+                        {{-- CATEGORY / LABEL / USER --}}
                         <div class="mb-3">
 
                             <span class="badge bg-primary">
@@ -526,6 +794,7 @@
                             <span class="badge bg-light text-dark border ms-1">
 
                                 By:
+
                                 {{ $prompt->user->name
                                     ?? $prompt->user->email
                                     ?? 'Admin' }}
@@ -535,7 +804,7 @@
                         </div>
 
 
-                        {{-- Prompt Image --}}
+                        {{-- IMAGE --}}
                         @if(!empty($prompt->image))
 
                             <div class="text-center mb-3">
@@ -550,11 +819,13 @@
                         @endif
 
 
-                        {{-- Prompt Text --}}
+                        {{-- PROMPT TEXT --}}
                         <div class="mb-2">
 
                             <label class="fw-bold text-muted small">
+
                                 PROMPT TEXT:
+
                             </label>
 
                         </div>
@@ -569,7 +840,7 @@
                     </div>
 
 
-                    {{-- Modal Footer --}}
+                    {{-- MODAL FOOTER --}}
                     <div class="modal-footer">
 
                         <button
@@ -592,7 +863,9 @@
     @endforeach
 
 
-    {{-- Pagination --}}
+    {{-- =========================
+        PAGINATION
+    ========================== --}}
     <div class="d-flex justify-content-center mt-3">
 
         {{ $prompts->links() }}
@@ -600,5 +873,172 @@
     </div>
 
 </div>
+
+
+{{-- =========================
+    DROPDOWN FIX JAVASCRIPT
+========================== --}}
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    /*
+     * Bootstrap dropdown ko body ke andar move kar dete hain
+     * taaki table/card ke overflow ki wajah se clip na ho.
+     */
+
+    document.querySelectorAll('.prompt-actions .dropdown-toggle')
+        .forEach(function (button) {
+
+            button.addEventListener('shown.bs.dropdown', function () {
+
+                const dropdown = button.closest('.dropdown');
+
+                const menu = dropdown
+                    ? dropdown.querySelector('.dropdown-menu')
+                    : null;
+
+                if (!menu) {
+                    return;
+                }
+
+                /*
+                 * Menu ko body me move karo
+                 */
+                if (menu.parentElement !== document.body) {
+
+                    document.body.appendChild(menu);
+
+                }
+
+                /*
+                 * Button ki screen position
+                 */
+                const rect =
+                    button.getBoundingClientRect();
+
+
+                /*
+                 * Dropdown ki width
+                 */
+                const menuWidth =
+                    menu.offsetWidth || 190;
+
+
+                /*
+                 * Right aligned position
+                 */
+                let left =
+                    rect.right - menuWidth;
+
+
+                /*
+                 * Screen ke left se bahar na jaye
+                 */
+                if (left < 10) {
+
+                    left = 10;
+
+                }
+
+
+                /*
+                 * Screen ke right se bahar na jaye
+                 */
+                if (
+                    left + menuWidth >
+                    window.innerWidth - 10
+                ) {
+
+                    left =
+                        window.innerWidth -
+                        menuWidth -
+                        10;
+
+                }
+
+
+                /*
+                 * Vertical position
+                 */
+                let top =
+                    rect.bottom + 8;
+
+
+                /*
+                 * Agar neeche space kam ho
+                 * to button ke upar dropdown kholo
+                 */
+                const menuHeight =
+                    menu.offsetHeight || 250;
+
+
+                if (
+                    top + menuHeight >
+                    window.innerHeight - 10
+                ) {
+
+                    top =
+                        rect.top -
+                        menuHeight -
+                        8;
+
+                }
+
+
+                /*
+                 * Final position
+                 */
+                menu.style.position = 'fixed';
+
+                menu.style.left =
+                    left + 'px';
+
+                menu.style.top =
+                    top + 'px';
+
+                menu.style.margin = '0';
+
+                menu.style.zIndex = '9999999';
+
+            });
+
+
+            button.addEventListener('hidden.bs.dropdown', function () {
+
+                const dropdown =
+                    button.closest('.dropdown');
+
+                const menu =
+                    document.querySelector(
+                        'body > .dropdown-menu'
+                    );
+
+                if (!menu || !dropdown) {
+                    return;
+                }
+
+                /*
+                 * Menu ko original dropdown me wapas rakho
+                 */
+                dropdown.appendChild(menu);
+
+                menu.style.position = '';
+
+                menu.style.left = '';
+
+                menu.style.top = '';
+
+                menu.style.margin = '';
+
+                menu.style.zIndex = '';
+
+            });
+
+        });
+
+});
+
+</script>
 
 @endsection

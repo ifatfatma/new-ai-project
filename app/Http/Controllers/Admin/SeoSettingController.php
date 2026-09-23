@@ -30,15 +30,15 @@ class SeoSettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'meta_title' => 'nullable|string|max:255',
+           // 'meta_title' => 'nullable|string|max:255',
 
             'meta_description' => 'nullable|string',
 
-            'meta_keywords' => 'nullable|string',
+           // 'meta_keywords' => 'nullable|string',
 
-            'tools' => 'nullable|array',
+           // 'tools' => 'nullable|array',
 
-            'tools.*' => 'string',
+            //'tools.*' => 'string',
 
             'og_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
@@ -57,11 +57,11 @@ class SeoSettingController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $seo->meta_title = $request->input('meta_title');
+       // $seo->meta_title = $request->input('meta_title');
 
         $seo->meta_description = $request->input('meta_description');
 
-        $seo->meta_keywords = $request->input('meta_keywords');
+       // $seo->meta_keywords = $request->input('meta_keywords');
 
 
         /*
