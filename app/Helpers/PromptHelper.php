@@ -13,3 +13,22 @@ function generateRatings($rating = 0) {
     
     return $ratingtxt; 
 }
+
+
+
+// Available AI Tools
+function availableTools(): array
+{
+    return [
+        'chatgpt'    => 'ChatGPT',
+        'claude'     => 'Claude',
+        'gemini'     => 'Gemini',
+        'midjourney' => 'Midjourney',
+        'dalle'      => 'DALL-E',
+        'perplexity' => 'Perplexity',
+        'deepseek'   => 'DeepSeek',
+        'canva'      => 'Canva',
+        'copy_ai'    => 'Copy.ai',
+        'jasper'     => 'Jasper',
+    ];
+}

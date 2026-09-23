@@ -40,5 +40,9 @@ class Prompt extends Model
 
     }
 
+    protected $casts = [
+    'ai_tool' => 'array',
+];
+
     
 }

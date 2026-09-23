@@ -14,5 +14,8 @@ class SeoSetting extends Model
         'meta_description',
         'meta_keywords',
         'og_image',
+        
     ];
+
+    
 }

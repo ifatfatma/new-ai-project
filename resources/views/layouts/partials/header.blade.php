@@ -28,33 +28,33 @@
   <div class="navbar-menu-wrapper d-flex align-items-center justify-content-between flex-grow-1 px-3">
     
     <!-- Left Side: Help Number -->
-    <div class="d-flex align-items-center">
+    <!-- <div class="d-flex align-items-center">
       <span class="fw-bold text-dark text-nowrap" style="font-size: 13px;">Help : +91 8240112233</span>
-    </div>
+    </div> -->
 
     <!-- Right Side: Search, Icons & Profile -->
     <ul class="navbar-nav navbar-nav-right ms-auto d-flex align-items-center mb-0 gap-3" style="list-style: none;">
 
       <!-- Search Field -->
-      <li class="nav-item d-none d-md-block">
+      <!-- <li class="nav-item d-none d-md-block">
         <form class="search-form" action="#">
           <input type="search" class="form-control" placeholder="Search Here" style="height: 35px; width: 140px;">
         </form>
-      </li>
+      </li> -->
 
       <!-- Notification Bell Icon -->
-      <li class="nav-item dropdown">
+      <!-- <li class="nav-item dropdown">
         <a class="nav-link count-indicator text-dark p-0" href="#">
           <i class="mdi mdi-bell-outline" style="font-size: 20px;"></i>
         </a>
-      </li>
+      </li> -->
 
       <!-- Mail Icon -->
-      <li class="nav-item dropdown">
+     <!--  <li class="nav-item dropdown">
         <a class="nav-link count-indicator text-dark p-0" href="#">
           <i class="mdi mdi-email-outline" style="font-size: 20px;"></i>
         </a>
-      </li>
+      </li> -->
 
       <!-- Globe (Live Website) Icon -->
       <li class="nav-item">

@@ -1,5 +1,3 @@
-
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('prompts', function (Blueprint $table) {
-            $table->string('ai_tool')->nullable()->after('category_id');
+        Schema::table('seo_settings', function (Blueprint $table) {
+            $table->json('tools')->nullable()->after('meta_keywords');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('prompts', function (Blueprint $table) {
-            $table->dropColumn('ai_tool');
+        Schema::table('seo_settings', function (Blueprint $table) {
+            $table->dropColumn('tools');
         });
     }
 };
