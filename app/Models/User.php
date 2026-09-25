@@ -48,4 +48,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function savedPrompts()
+{
+    return $this->belongsToMany(
+        Prompt::class,
+        'saved_prompts'
+    )->withTimestamps();
+}
 }

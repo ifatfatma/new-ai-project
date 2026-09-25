@@ -5,9 +5,15 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta
+        http-equiv="X-UA-Compatible"
+        content="ie=edge"
+    >
 
 
     {{-- =====================================================
@@ -107,12 +113,6 @@
 
     {{-- =====================================================
          PAGE SPECIFIC CSS
-         
-         Example:
-         home.blade.php
-         @push('styles')
-             @include('layouts.partials.home-css')
-         @endpush
     ====================================================== --}}
 
     @stack('styles')
@@ -125,11 +125,16 @@
 
     {{-- =====================================================
          NAVBAR
+         Hide navbar when $hideNavbar = true
     ====================================================== --}}
 
-    @include('layouts.partials.nav', [
-        'fallback' => 'layouts.partials.header'
-    ])
+    @if(!isset($hideNavbar) || !$hideNavbar)
+
+        @include('layouts.partials.nav', [
+            'fallback' => 'layouts.partials.header'
+        ])
+
+    @endif
 
 
     {{-- =====================================================
@@ -159,15 +164,10 @@
 
     {{-- =====================================================
          PAGE SPECIFIC JS
-         
-         Example:
-         home.blade.php
-         @push('scripts')
-             @include('layouts.partials.home-js')
-         @endpush
     ====================================================== --}}
 
     @stack('scripts')
+
 
 </body>
 

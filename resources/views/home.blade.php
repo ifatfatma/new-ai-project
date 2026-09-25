@@ -31,6 +31,31 @@
            GLOBAL
         ===================================================== */
 
+
+
+        .save-btn {
+    transition: all 0.2s ease;
+}
+
+.save-btn.saved {
+    background: #eef2ff;
+    color: #6366f1;
+    border-color: #c7d2fe;
+}
+
+.save-btn.saved:hover {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+.save-btn i {
+    transition: transform 0.2s ease;
+}
+
+.save-btn.saved i {
+    transform: scale(1.1);
+}
+
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
@@ -1807,6 +1832,21 @@
 
                                     @csrf
 
+                                    <li>
+
+    <a
+        class="dropdown-item py-2 px-3"
+        href="{{ route('user.saved-prompts') }}"
+    >
+
+        <i class="bi bi-bookmark-fill me-2 text-primary"></i>
+
+        Saved Prompts
+
+    </a>
+
+</li>
+
                                     <button
                                         type="submit"
                                         class="dropdown-item py-2 text-danger fw-semibold"
@@ -1825,6 +1865,7 @@
                         </ul>
 
                     </li>
+                    
 
                 </ul>
 
@@ -2164,6 +2205,55 @@
 
                     {{-- ONLY COPY + SHARE BUTTONS --}}
                     <div class="prompt-card-actions">
+                        @if(auth()->check())
+
+    @php
+        /*
+        |--------------------------------------------------------------------------
+        | CHECK SAVED STATUS DIRECTLY FROM saved_prompts TABLE
+        |--------------------------------------------------------------------------
+        | This keeps the button state exactly in sync with the database.
+        */
+        $isSaved = \App\Models\SavedPrompt::where(
+            'user_id',
+            auth()->id()
+        )
+        ->where(
+            'prompt_id',
+            $prompt->id
+        )
+        ->exists();
+    @endphp
+
+    <button
+        type="button"
+        class="btn prompt-action-btn save-btn {{ $isSaved ? 'saved' : '' }}"
+        data-prompt-id="{{ $prompt->id }}"
+        data-saved="{{ $isSaved ? '1' : '0' }}"
+        data-save-url="{{ route('prompts.save', $prompt) }}"
+        onclick="toggleSavePrompt(this)"
+        title="{{ $isSaved ? 'Remove from Saved' : 'Save Prompt' }}"
+    >
+        <i class="bi {{ $isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' }} me-1"></i>
+
+        <span>
+            {{ $isSaved ? 'Saved' : 'Save' }}
+        </span>
+    </button>
+
+@else
+
+    <button
+        type="button"
+        class="btn prompt-action-btn"
+        onclick="window.location.href='{{ route('login') }}'"
+        title="Login to save prompt"
+    >
+        <i class="bi bi-bookmark me-1"></i>
+        Save
+    </button>
+
+@endif
 
                         {{-- COPY --}}
                         <button
@@ -2286,26 +2376,21 @@
                                         @endphp
 
 
-                                        @foreach($modalTools as $tool)
+                                       @foreach($modalTools as $tool)
+    @php
+        // Function se direct URL nikal lo
+        $toolUrl = availableTools()[$tool] ?? '#';
+        
+        // Tool key ko readable name mein convert karne ke liye (jaise 'copy_ai' ko 'Copy Ai')
+        $readableName = ucfirst(str_replace('_', ' ', $tool));
+    @endphp
 
-                                            @php
-
-                                                $toolName =
-                                                    availableTools()[$tool]
-                                                    ?? $tool;
-
-                                            @endphp
-
-
-                                            <span class="ai-tool-badge">
-
-                                                <i class="bi bi-robot"></i>
-
-                                                {{ $toolName }}
-
-                                            </span>
-
-                                        @endforeach
+    {{-- Span ki jagah <a> tag use karein --}}
+    <a href="{{ $toolUrl }}" target="_blank" class="ai-tool-badge text-decoration-none" style="display: inline-block;">
+        <i class="bi bi-robot"></i>
+        {{ $readableName }}
+    </a>
+@endforeach
 
                                     </div>
 
@@ -2705,39 +2790,21 @@
                                 >
 
 
-                                    @foreach(availableTools() as $key => $toolName)
-
-                                        <label class="ai-tool-option">
-
-
-                                            <input
-                                                type="checkbox"
-                                                name="ai_tool[]"
-                                                value="{{ $key }}"
-                                                {{ in_array(
-                                                    $key,
-                                                    $oldTools
-                                                ) ? 'checked' : '' }}
-                                            >
-
-
-                                            <span class="ai-tool-check">
-
-                                                <i class="bi bi-check"></i>
-
-                                            </span>
-
-
-                                            <span class="ai-tool-name">
-
-                                                {{ $toolName }}
-
-                                            </span>
-
-
-                                        </label>
-
-                                    @endforeach
+                       <div class="dropdown-menu p-3 w-100 show" style="position: relative;">
+    @foreach(availableTools() as $key => $url)
+        <div class="form-check mb-2">
+            <input class="form-check-input" 
+                   type="checkbox" 
+                   name="ai_tools[]" 
+                   value="{{ $key }}" 
+                   id="tool_{{ $key }}">
+            
+            <label class="form-check-label ms-2" for="tool_{{ $key }}">
+                {{ ucfirst(str_replace('_', ' ', $key)) }}
+            </label>
+        </div>
+    @endforeach
+</div>
 
                                 </div>
 
@@ -3771,6 +3838,273 @@
             }
 
         }
+
+
+        function toggleSavePrompt(button)
+        {
+            if (!button) {
+                return;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | PREVENT DOUBLE CLICK
+            |--------------------------------------------------------------------------
+            */
+            if (button.dataset.saving === '1') {
+                return;
+            }
+
+            const promptId = button.dataset.promptId;
+            const saveUrl = button.dataset.saveUrl;
+
+            if (!promptId || !saveUrl) {
+                console.error('Save Prompt Error: prompt id or save URL missing.');
+                showSaveToast('Unable to save this prompt.', false);
+                return;
+            }
+
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+
+            /*
+            |--------------------------------------------------------------------------
+            | CURRENT STATE
+            |--------------------------------------------------------------------------
+            | 0 = currently not saved -> SAVE
+            | 1 = currently saved     -> REMOVE
+            */
+            const currentlySaved =
+                button.dataset.saved === '1';
+
+            const action =
+                currentlySaved
+                    ? 'remove'
+                    : 'save';
+
+            button.dataset.saving = '1';
+            button.disabled = true;
+
+            fetch(saveUrl, {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content'),
+
+                    'Accept': 'application/json'
+                },
+
+                body: JSON.stringify({
+                    action: action
+                })
+            })
+            .then(async function (response) {
+
+                let data = {};
+
+                try {
+                    data = await response.json();
+                } catch (error) {
+                    data = {};
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message ||
+                        'Unable to update saved prompt.'
+                    );
+                }
+
+                return data;
+            })
+            .then(function (data) {
+
+                const saved =
+                    data.saved === true ||
+                    data.saved === 1 ||
+                    data.saved === '1';
+
+                /*
+                |--------------------------------------------------------------------------
+                | UPDATE ALL SAVE BUTTONS FOR THIS PROMPT
+                |--------------------------------------------------------------------------
+                */
+                document
+                    .querySelectorAll(
+                        '.save-btn[data-prompt-id="' +
+                        promptId +
+                        '"]'
+                    )
+                    .forEach(function (saveButton) {
+
+                        const saveIcon =
+                            saveButton.querySelector('i');
+
+                        const saveText =
+                            saveButton.querySelector('span');
+
+                        saveButton.dataset.saved =
+                            saved ? '1' : '0';
+
+                        saveButton.classList.toggle(
+                            'saved',
+                            saved
+                        );
+
+                        saveButton.title =
+                            saved
+                                ? 'Remove from Saved'
+                                : 'Save Prompt';
+
+                        if (saveIcon) {
+
+                            saveIcon.classList.remove(
+                                'bi-bookmark',
+                                'bi-bookmark-fill'
+                            );
+
+                            saveIcon.classList.add(
+                                saved
+                                    ? 'bi-bookmark-fill'
+                                    : 'bi-bookmark'
+                            );
+                        }
+
+                        if (saveText) {
+                            saveText.textContent =
+                                saved
+                                    ? 'Saved'
+                                    : 'Save';
+                        }
+                    });
+
+                if (saved) {
+
+                    showSaveToast(
+                        'Prompt saved successfully!',
+                        true
+                    );
+
+                } else {
+
+                    showSaveToast(
+                        'Removed from saved list.',
+                        false
+                    );
+                }
+            })
+            .catch(function (error) {
+
+                console.error(
+                    'Save Prompt Error:',
+                    error
+                );
+
+                showSaveToast(
+                    error.message ||
+                    'Something went wrong. Please try again.',
+                    false
+                );
+            })
+            .finally(function () {
+
+                button.dataset.saving = '0';
+                button.disabled = false;
+            });
+        }
+
+
+        function showSaveToast(
+            message,
+            saved = true
+        )
+        {
+            const oldToast =
+                document.getElementById(
+                    'saveSuccessToast'
+                );
+
+            if (oldToast) {
+                oldToast.remove();
+            }
+
+            const toast =
+                document.createElement('div');
+
+            toast.id =
+                'saveSuccessToast';
+
+            toast.innerHTML = `
+                <i class="bi ${
+                    saved
+                        ? 'bi-bookmark-check-fill'
+                        : 'bi-bookmark-x-fill'
+                } me-2"></i>
+                <span>${message}</span>
+            `;
+
+            toast.style.position =
+                'fixed';
+
+            toast.style.bottom =
+                '25px';
+
+            toast.style.right =
+                '25px';
+
+            toast.style.zIndex =
+                '99999';
+
+            toast.style.background =
+                saved
+                    ? 'linear-gradient(135deg,#6366f1,#7c3aed)'
+                    : 'linear-gradient(135deg,#64748b,#475569)';
+
+            toast.style.color =
+                '#ffffff';
+
+            toast.style.padding =
+                '13px 18px';
+
+            toast.style.borderRadius =
+                '12px';
+
+            toast.style.boxShadow =
+                '0 12px 30px rgba(79,70,229,0.28)';
+
+            toast.style.fontWeight =
+                '600';
+
+            toast.style.fontSize =
+                '14px';
+
+            toast.style.display =
+                'flex';
+
+            toast.style.alignItems =
+                'center';
+
+            toast.style.gap =
+                '2px';
+
+            document.body.appendChild(
+                toast
+            );
+
+            setTimeout(function () {
+
+                if (toast) {
+                    toast.remove();
+                }
+
+            }, 2500);
+        }
+
 
 
     </script>

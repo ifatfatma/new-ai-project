@@ -20,15 +20,15 @@ function generateRatings($rating = 0) {
 function availableTools(): array
 {
     return [
-        'chatgpt'    => 'ChatGPT',
-        'claude'     => 'Claude',
-        'gemini'     => 'Gemini',
-        'midjourney' => 'Midjourney',
-        'dalle'      => 'DALL-E',
-        'perplexity' => 'Perplexity',
-        'deepseek'   => 'DeepSeek',
-        'canva'      => 'Canva',
-        'copy_ai'    => 'Copy.ai',
-        'jasper'     => 'Jasper',
+        'chatgpt'    => 'https://chatgpt.com',
+        'claude'     => 'https://claude.ai',
+        'gemini'     => 'https://gemini.google.com',
+        'midjourney' => 'https://www.midjourney.com',
+        'dalle'      => 'https://openai.com/index/dall-e-3',
+        'perplexity' => 'https://www.perplexity.ai',
+        'deepseek'   => 'https://www.deepseek.com',
+        'canva'      => 'https://www.canva.com',
+        'copy_ai'    => 'https://www.copy.ai',
+        'jasper'     => 'https://www.jasper.ai',
     ];
 }

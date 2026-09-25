@@ -77,13 +77,23 @@ class PromptController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function create()
+  public function create()
     {
         $categories = Category::all();
 
+        // Available AI tools ki list
+        $availableTools = [
+            'ChatGPT' => 'ChatGPT',
+            'Claude' => 'Claude',
+            'Gemini' => 'Google Gemini',
+            'Copilot' => 'Microsoft Copilot',
+            'DeepSeek' => 'DeepSeek',
+            'Llama' => 'Meta Llama',
+        ];
+
         return view(
             'pages.admin.prompt.create',
-            compact('categories')
+            compact('categories', 'availableTools')
         );
     }
 

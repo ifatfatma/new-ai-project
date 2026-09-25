@@ -12,6 +12,7 @@ use App\Models\PromptCopy;
 use App\Http\Controllers\FrontendAuthController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Admin\SeoSettingController;
+use App\Http\Controllers\SavedPromptController;
 
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
@@ -134,4 +135,18 @@ Route::prefix('admin')->group(function () {
         Route::post('/prompts/{id}/approve', [PromptController::class, 'approve'])->name('admin.prompts.approve');
         Route::post('/prompts/{id}/reject', [PromptController::class, 'reject'])->name('admin.prompts.reject');
     });
+
+    Route::middleware('auth')->group(function () {
+
+    Route::post(
+        '/prompts/{prompt}/save',
+        [SavedPromptController::class, 'toggle']
+    )->name('prompts.save');
+
+    Route::get(
+        '/my-saved-prompts',
+        [SavedPromptController::class, 'index']
+    )->name('user.saved-prompts');
+
+});
 });
