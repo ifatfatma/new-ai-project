@@ -1836,32 +1836,52 @@
 
                 @php
 
+                    /* Variable metadata stored at the end of prompt_text */
+                    $displayPromptText = $prompt->prompt_text;
+                    $variableMeta = [];
+
+                    if (preg_match(
+                        '/<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i',
+                        $displayPromptText,
+                        $metaMatch
+                    )) {
+                        $decodedMeta = json_decode(
+                            urldecode($metaMatch[1]),
+                            true
+                        );
+
+                        if (is_array($decodedMeta)) {
+                            $variableMeta = $decodedMeta;
+                        }
+
+                        $displayPromptText = preg_replace(
+                            '/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i',
+                            '',
+                            $displayPromptText
+                        );
+                    }
+
+                    /*
+                     * Variables can be written directly inside square brackets.
+                     * Examples:
+                     * [young Indian woman]
+                     * [elegant black formal suit]
+                     * [soft golden-hour]
+                     *
+                     * Numeric variables such as [1], [2] are also supported.
+                     */
                     preg_match_all(
-                        '/\[(\d+)\]/',
-                        $prompt->prompt_text,
+                        '/\[([^\[\]]+)\]/',
+                        $displayPromptText,
                         $matches
                     );
 
                     $promptVariables =
                         collect($matches[1] ?? [])
+                            ->map(fn ($value) => trim($value))
+                            ->filter(fn ($value) => $value !== '')
                             ->unique()
-                            ->sortBy(
-                                fn ($value) => (int) $value
-                            )
                             ->values();
-
-                    /*
-                     * Generic user-friendly labels.
-                     * These are intentionally not tied to
-                     * Subject / Outfit / Style etc.
-                     */
-                    $variableLabels = [
-                        1 => 'Main Detail',
-                        2 => 'Supporting Detail',
-                        3 => 'Additional Detail',
-                        4 => 'Extra Detail',
-                        5 => 'More Details',
-                    ];
 
                 @endphp
 
@@ -1999,9 +2019,9 @@
                             )"
                         >
 
-                            <i class="bi bi-clipboard me-1"></i>
+                            <i class="bi bi-clipboard{{ $promptVariables->isNotEmpty() ? '-check' : '' }} me-1"></i>
 
-                            Copy
+                            {{ $promptVariables->isNotEmpty() ? 'Copy Filled' : 'Copy' }}
 
                         </button>
 
@@ -2011,7 +2031,7 @@
                         <textarea
                             id="prompt-text-{{ $prompt->id }}"
                             class="d-none"
-                        >{{ $prompt->prompt_text }}</textarea>
+                        >{{ $displayPromptText }}</textarea>
 
 
                         {{-- SHARE --}}
@@ -2189,61 +2209,66 @@
                                     >
 
                                         <div class="prompt-variables-title">
-
                                             <i class="bi bi-sliders2-vertical"></i>
-
                                             Customize this prompt
-
                                         </div>
-
 
                                         <div class="prompt-variable-hint">
-
-                                            Add any details you want. All fields are optional.
-
+                                            Fill in the details below. The example shows you what to enter.
                                         </div>
-
 
                                         @foreach($promptVariables as $variable)
 
                                             @php
+                                                $variableToken = trim((string) $variable);
 
-                                                $variableNumber =
-                                                    (int) $variable;
+                                                /*
+                                                 * New format: metadata may be keyed by the
+                                                 * actual bracket text. Old numeric metadata is
+                                                 * still supported for [1], [2], etc.
+                                                 */
+                                                $variableSettings =
+                                                    $variableMeta[$variableToken] ?? [];
 
-                                                $variableLabel =
-                                                    $variableLabels[$variableNumber]
-                                                    ?? 'Custom Detail';
+                                                if (empty($variableSettings) && isset($variableMeta[$variableToken])) {
+                                                    $variableSettings = $variableMeta[$variableToken];
+                                                }
 
+                                                $variableLabel = trim($variableSettings['label'] ?? '');
+                                                $variableExample = trim($variableSettings['example'] ?? '');
+
+                                                if ($variableLabel === '') {
+                                                    $variableLabel =
+                                                        preg_match('/^\d+$/', $variableToken)
+                                                            ? 'Variable ' . $variableToken
+                                                            : 'Enter ' . $variableToken;
+                                                }
+
+                                                if ($variableExample === '') {
+                                                    $variableExample = $variableToken;
+                                                }
                                             @endphp
 
-
                                             <div class="prompt-variable-field">
-
                                                 <label
                                                     class="prompt-variable-label"
-                                                    for="modal-prompt-variable-{{ $prompt->id }}-{{ $variable }}"
+                                                    for="modal-prompt-variable-{{ $prompt->id }}-{{ $loop->index }}"
                                                 >
-
                                                     {{ $variableLabel }}
-
                                                 </label>
-
 
                                                 <input
                                                     type="text"
                                                     class="prompt-variable-input"
-                                                    id="modal-prompt-variable-{{ $prompt->id }}-{{ $variable }}"
-                                                    data-variable="{{ $variable }}"
+                                                    id="modal-prompt-variable-{{ $prompt->id }}-{{ $loop->index }}"
+                                                    data-variable="{{ $variableToken }}"
                                                     data-prompt-id="{{ $prompt->id }}"
-                                                    placeholder="Enter {{ strtolower($variableLabel) }} (optional)"
+                                                    placeholder="{{ $variableExample ?: 'Enter your answer' }}"
                                                     autocomplete="off"
                                                 >
-
                                             </div>
 
                                         @endforeach
-
 
                                         <button
                                             type="button"
@@ -2281,7 +2306,7 @@
                                     @php
 
                                         $fullText =
-                                            $prompt->prompt_text;
+                                            $displayPromptText;
 
                                         $isLong =
                                             Str::length($fullText) > 150;
@@ -3013,7 +3038,7 @@ Use [1], [2], [3] for optional details that users can customize."
 
         /* =====================================================
            COPY PROMPT
-           VARIABLES ARE OPTIONAL
+           VARIABLES ARE REQUIRED
         ===================================================== */
 
         function copyPrompt(
@@ -3022,459 +3047,111 @@ Use [1], [2], [3] for optional details that users can customize."
             promptId
         )
         {
-
-            const element =
-                document.getElementById(elementId);
-
+            const element = document.getElementById(elementId);
 
             if (!element) {
                 return;
             }
 
+            const originalText = element.value;
 
-            const originalText =
-                element.value;
-
-
-            let scope =
-                btnElement.closest('.modal');
-
+            let scope = btnElement.closest('.modal');
 
             if (!scope) {
-
-                scope =
-                    btnElement.closest('.prompt-card');
-
+                scope = btnElement.closest('.prompt-card');
             }
-
 
             if (!scope) {
                 scope = document;
             }
 
-
-            const variableFields =
-                scope.querySelectorAll(
-                    `.prompt-variable-input[data-prompt-id="${promptId}"]`
-                );
-
-
-            /*
-             * Agar prompt mein variables hi nahi hain,
-             * to normal prompt copy hoga.
-             */
-
-            if (variableFields.length === 0) {
-
-                copyTextToClipboard(
-                    originalText,
-                    btnElement,
-                    promptId
-                );
-
-                return;
-
-            }
-
-
-            const values = {};
-
-            let hasAnyValue = false;
-
-
-            /*
-             * Sabhi variable values collect karo.
-             * Empty fields allowed hain.
-             */
-
-            variableFields.forEach(
-                function (field) {
-
-                    const variableNumber =
-                        field.dataset.variable;
-
-                    const value =
-                        field.value.trim();
-
-
-                    values[variableNumber] =
-                        value;
-
-
-                    if (value !== '') {
-
-                        hasAnyValue = true;
-
-                    }
-
-                }
+            const variableFields = scope.querySelectorAll(
+                `.prompt-variable-input[data-prompt-id="${promptId}"]`
             );
 
-
-            /*
-             * IMPORTANT:
-             *
-             * Agar user ne ek bhi field fill nahi kiya,
-             * to ORIGINAL prompt exactly copy hoga.
-             *
-             * Example:
-             *
-             * "Create [1] image with [2] background."
-             *
-             * Result:
-             *
-             * "Create [1] image with [2] background."
-             */
-
-            if (!hasAnyValue) {
-
+            if (variableFields.length === 0) {
                 copyTextToClipboard(
                     originalText,
                     btnElement,
                     promptId
                 );
-
                 return;
-
             }
 
+            const values = {};
+            let firstEmptyField = null;
 
-            /*
-             * Kam se kam ek field filled hai.
-             *
-             * Filled variables replace honge.
-             * Empty variables remove honge.
-             */
+            variableFields.forEach(function (field) {
+                const variableNumber = field.dataset.variable;
+                const value = field.value.trim();
 
-            let textToCopy =
-                originalText.replace(
-                    /\[(\d+)\]/g,
-                    function (
-                        match,
-                        variableNumber
-                    ) {
+                values[variableNumber] = value;
 
-                        return values[variableNumber] || '';
+                if (value === '' && !firstEmptyField) {
+                    firstEmptyField = field;
+                }
+            });
 
-                    }
+            if (firstEmptyField) {
+                firstEmptyField.focus();
+                showVariableToast(
+                    `Please fill ${firstEmptyField.closest('.prompt-variable-field')?.querySelector('.prompt-variable-label')?.textContent.trim() || 'Variable ' + firstEmptyField.dataset.variable}.`
                 );
+                return;
+            }
 
+            const textToCopy = originalText.replace(
+                /\[([^\[\]]+)\]/g,
+                function (match, variableToken) {
+                    const key = variableToken.trim();
 
-            /*
-             * Empty variables ke baad unwanted
-             * punctuation / connector words clean karo.
-             */
-
-            textToCopy =
-                cleanPromptText(textToCopy);
-
+                    return Object.prototype.hasOwnProperty.call(
+                        values,
+                        key
+                    )
+                        ? values[key]
+                        : match;
+                }
+            );
 
             copyTextToClipboard(
                 textToCopy,
                 btnElement,
                 promptId
             );
-
         }
 
 
         /* =====================================================
-           CLEAN PROMPT TEXT
-           REMOVE EMPTY VARIABLE LEFTOVERS
+           SYNC VARIABLE INPUTS
         ===================================================== */
 
-        function cleanPromptText(text)
-        {
-
-            /*
-             * New lines ke unnecessary spaces.
-             */
-
-            text =
-                text.replace(
-                    /[ \t]+/g,
-                    ' '
+        document.addEventListener(
+            'input',
+            function (event) {
+                const field = event.target.closest(
+                    '.prompt-variable-input'
                 );
 
-
-            /*
-             * Comma ke baad empty connector.
-             *
-             * Example:
-             *
-             * "portrait, wearing , in studio"
-             *
-             * becomes:
-             *
-             * "portrait, in studio"
-             */
-
-            text =
-                text.replace(
-                    /,\s*(with|wearing|in|on|at|for|from|using|featuring|including|showing|holding|against|beside|near)\s*(?=[,.;!?]|$)/gi,
-                    ''
-                );
-
-
-            /*
-             * Agar connector ke baad comma aa gaya.
-             *
-             * Example:
-             *
-             * "portrait with ,"
-             *
-             * becomes:
-             *
-             * "portrait"
-             */
-
-            text =
-                text.replace(
-                    /\s+(with|wearing|in|on|at|for|from|using|featuring|including|showing|holding|against|beside|near)\s*(?=[,.;!?]|$)/gi,
-                    ''
-                );
-
-
-            /*
-             * Empty "and".
-             */
-
-            text =
-                text.replace(
-                    /,\s*and\s*(?=[,.;!?]|$)/gi,
-                    ''
-                );
-
-
-            /*
-             * Empty "with" / "in" etc before punctuation.
-             */
-
-            text =
-                text.replace(
-                    /\b(with|wearing|in|on|at|from|using|featuring|including|showing|holding|against|beside|near)\s*,/gi,
-                    ','
-                );
-
-
-            /*
-             * Double commas.
-             */
-
-            text =
-                text.replace(
-                    /,\s*,+/g,
-                    ','
-                );
-
-
-            /*
-             * Comma directly before punctuation.
-             */
-
-            text =
-                text.replace(
-                    /,\s*\./g,
-                    '.'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*!/g,
-                    '!'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*\?/g,
-                    '?'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*;/g,
-                    ';'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*:/g,
-                    ':'
-                );
-
-
-            /*
-             * Punctuation se pehle unwanted spaces.
-             */
-
-            text =
-                text.replace(
-                    /\s+([,.!?;:])/g,
-                    '$1'
-                );
-
-
-            /*
-             * Duplicate punctuation.
-             */
-
-            text =
-                text.replace(
-                    /([,.!?])\1+/g,
-                    '$1'
-                );
-
-
-            /*
-             * Multiple spaces.
-             */
-
-            text =
-                text.replace(
-                    /[ \t]{2,}/g,
-                    ' '
-                );
-
-
-            /*
-             * Multiple blank lines ko clean karo,
-             * lekin normal paragraph structure preserve rahe.
-             */
-
-            text =
-                text.replace(
-                    /\n[ \t]+/g,
-                    '\n'
-                );
-
-
-            text =
-                text.replace(
-                    /\n{3,}/g,
-                    '\n\n'
-                );
-
-
-            return text.trim();
-
-        }
-
-
-        /* =====================================================
-           CLIPBOARD HELPER
-        ===================================================== */
-
-        function copyTextToClipboard(
-            textToCopy,
-            btnElement,
-            promptId
-        )
-        {
-
-            navigator.clipboard
-                .writeText(textToCopy)
-                .then(
-                    function () {
-
-                        const originalContent =
-                            btnElement.innerHTML;
-
-
-                        btnElement.innerHTML =
-                            '<i class="bi bi-check2 me-1"></i> Copied!';
-
-
-                        btnElement.classList.remove(
-                            'copy-btn'
-                        );
-
-
-                        btnElement.classList.add(
-                            'btn-dark'
-                        );
-
-
-                        setTimeout(
-                            function () {
-
-                                btnElement.innerHTML =
-                                    originalContent;
-
-
-                                btnElement.classList.remove(
-                                    'btn-dark'
-                                );
-
-
-                                btnElement.classList.add(
-                                    'copy-btn'
-                                );
-
-                            },
-                            2000
-                        );
-
-
-                        /*
-                         * Copy tracking same as before.
-                         */
-
-                        fetch(
-                            `/prompts/${promptId}/copy-track`,
-                            {
-                                method: 'POST',
-
-                                headers: {
-
-                                    'Content-Type':
-                                        'application/json',
-
-                                    'X-CSRF-TOKEN':
-                                        document
-                                            .querySelector(
-                                                'meta[name="csrf-token"]'
-                                            )
-                                            .getAttribute(
-                                                'content'
-                                            )
-
-                                }
-                            }
-                        )
-                        .catch(
-                            function (err) {
-
-                                console.error(
-                                    'Tracking Error:',
-                                    err
-                                );
-
-                            }
-                        );
-
-                    }
-                )
-                .catch(
-                    function (err) {
-
-                        console.error(
-                            'Failed to copy:',
-                            err
-                        );
-
-
-                        showVariableToast(
-                            'Unable to copy the prompt.'
-                        );
-
-                    }
-                );
-
-        }
+                if (!field) {
+                    return;
+                }
+
+                const promptId = field.dataset.promptId;
+                const variable = field.dataset.variable;
+                const value = field.value;
+
+                document
+                    .querySelectorAll(
+                        `.prompt-variable-input[data-prompt-id="${promptId}"][data-variable="${variable}"]`
+                    )
+                    .forEach(function (otherField) {
+                        if (otherField !== field) {
+                            otherField.value = value;
+                        }
+                    });
+            }
+        );
 
 
         /* =====================================================

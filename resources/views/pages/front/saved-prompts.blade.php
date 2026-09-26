@@ -369,6 +369,15 @@
     margin-bottom: 8px;
 }
 
+.saved-view-modal .prompt-variable-field + .prompt-variable-field {
+    margin-top: 8px;
+}
+
+.saved-view-modal .prompt-variable-input::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
 .saved-view-modal .prompt-variable-field {
     margin-bottom: 7px;
 }
@@ -657,30 +666,109 @@
 
                 @php
 
+                    /*
+                    |----------------------------------------------------------
+                    | PROMPT TEXT + VARIABLE METADATA
+                    |----------------------------------------------------------
+                    | Admin Create/Edit stores the variable label and example
+                    | value at the end of prompt_text using this hidden marker:
+                    |
+                    | <!--AI_PROMPT_VARIABLES:ENCODED_JSON-->
+                    |
+                    | The marker is removed before anything is displayed/copied.
+                    */
+
                     $promptText =
                         $prompt->prompt_text
                         ?? $prompt->prompt
                         ?? $prompt->description
                         ?? '';
 
+                    $variableMeta = [];
+
+                    if (
+                        preg_match(
+                            '/<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i',
+                            $promptText,
+                            $metaMatch
+                        )
+                    ) {
+
+                        $decodedMeta = json_decode(
+                            urldecode($metaMatch[1]),
+                            true
+                        );
+
+                        if (is_array($decodedMeta)) {
+                            $variableMeta = $decodedMeta;
+                        }
+
+                        $promptText = preg_replace(
+                            '/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i',
+                            '',
+                            $promptText
+                        );
+                    }
+
+                    /*
+                    |----------------------------------------------------------
+                    | DETECT BOTH VARIABLE FORMATS
+                    |----------------------------------------------------------
+                    | New prompts normally use [1], [2], [3]...
+                    | Older prompts may contain descriptive placeholders such as:
+                    | [young Indian woman]
+                    | [elegant black formal suit]
+                    | [soft golden-hour lighting]
+                    |
+                    | Both formats are supported here so existing saved prompts
+                    | also get the customize inputs.
+                    */
                     preg_match_all(
-                        '/\[(\d+)\]/',
+                        '/\[([^\[\]]+)\]/',
                         $promptText,
                         $matches
                     );
 
                     $promptVariables = collect($matches[1] ?? [])
+                        ->map(fn ($value) => trim($value))
+                        ->filter()
                         ->unique()
-                        ->sortBy(fn ($value) => (int) $value)
                         ->values();
 
-                    $variableLabels = [
-                        1 => 'Main Detail',
-                        2 => 'Supporting Detail',
-                        3 => 'Additional Detail',
-                        4 => 'Extra Detail',
-                        5 => 'More Details',
-                    ];
+                    /*
+                    | Variable definitions are used only by this Blade view.
+                    | For numeric placeholders, admin-saved metadata is used.
+                    | For old descriptive placeholders, the text inside [ ] is
+                    | used as the example so the user knows what to enter.
+                    */
+                    $variableDefinitions = $promptVariables
+                        ->values()
+                        ->map(function ($variable, $index) use ($variableMeta) {
+                            $variableKey = (string) $variable;
+                            $settings = [];
+
+                            if (preg_match('/^\d+$/', $variableKey)) {
+                                $settings = $variableMeta[$variableKey] ?? [];
+                            }
+
+                            $label = trim($settings['label'] ?? '');
+                            $example = trim($settings['example'] ?? '');
+
+                            if ($label === '') {
+                                $label = 'Variable ' . ($index + 1);
+                            }
+
+                            if ($example === '' && !preg_match('/^\d+$/', $variableKey)) {
+                                $example = $variableKey;
+                            }
+
+                            return [
+                                'key' => $variableKey,
+                                'label' => $label,
+                                'example' => $example,
+                                'index' => $index + 1,
+                            ];
+                        });
 
                     $isLongPrompt =
                         Str::length($promptText) > 150;
@@ -777,17 +865,36 @@
 
                         <div class="saved-card-actions">
 
-                            <button
-                                type="button"
-                                class="btn saved-copy-btn"
-                                onclick="copySavedPrompt({{ $prompt->id }}, this)"
-                            >
+                            @if($promptVariables->isNotEmpty())
 
-                                <i class="bi bi-clipboard"></i>
+                                <button
+                                    type="button"
+                                    class="btn saved-copy-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#savedPromptModal{{ $prompt->id }}"
+                                >
 
-                                Copy
+                                    <i class="bi bi-sliders2"></i>
 
-                            </button>
+                                    Customize &amp; Copy
+
+                                </button>
+
+                            @else
+
+                                <button
+                                    type="button"
+                                    class="btn saved-copy-btn"
+                                    onclick="copySavedPrompt({{ $prompt->id }}, this)"
+                                >
+
+                                    <i class="bi bi-clipboard"></i>
+
+                                    Copy
+
+                                </button>
+
+                            @endif
 
 
                             <button
@@ -918,7 +1025,15 @@
                                             src="{{ asset('storage/' . $prompt->image) }}"
                                             alt="{{ $prompt->title }}"
                                             class="saved-modal-image"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                         >
+
+                                        <div
+                                            class="saved-modal-no-image"
+                                            style="display:none;"
+                                        >
+                                            <i class="bi bi-stars"></i>
+                                        </div>
 
                                     </div>
 
@@ -950,40 +1065,39 @@
 
                                         <div class="prompt-variable-hint">
 
-                                            Add any details you want. All fields are optional.
+                                            Fill in all the details below before copying.
 
                                         </div>
 
 
-                                        @foreach($promptVariables as $variable)
-
-                                            @php
-                                                $variableNumber = (int) $variable;
-
-                                                $variableLabel =
-                                                    $variableLabels[$variableNumber]
-                                                    ?? 'Additional Detail';
-                                            @endphp
+                                        @foreach($variableDefinitions as $variableDefinition)
 
                                             <div class="prompt-variable-field">
 
                                                 <label
                                                     class="prompt-variable-label"
-                                                    for="saved-prompt-variable-{{ $prompt->id }}-{{ $variable }}"
+                                                    for="saved-prompt-variable-{{ $prompt->id }}-{{ $variableDefinition['index'] }}"
                                                 >
 
-                                                    {{ $variableLabel }}
+                                                    {{ $variableDefinition['label'] }}
+
+                                                    <span
+                                                        class="text-danger"
+                                                        title="Required"
+                                                    >
+                                                        *
+                                                    </span>
 
                                                 </label>
-
 
                                                 <input
                                                     type="text"
                                                     class="prompt-variable-input"
-                                                    id="saved-prompt-variable-{{ $prompt->id }}-{{ $variable }}"
-                                                    data-variable="{{ $variable }}"
+                                                    id="saved-prompt-variable-{{ $prompt->id }}-{{ $variableDefinition['index'] }}"
+                                                    data-variable="{{ $variableDefinition['index'] }}"
+                                                    data-placeholder="{{ $variableDefinition['key'] }}"
                                                     data-prompt-id="{{ $prompt->id }}"
-                                                    placeholder="Enter {{ strtolower($variableLabel) }} (optional)"
+                                                    placeholder="{{ $variableDefinition['example'] ?: 'Enter your answer' }}"
                                                     autocomplete="off"
                                                 >
 
@@ -1280,7 +1394,11 @@ function copySavedModalPrompt(
         );
 
     if (!originalTextarea) {
-        showSavedToast('Prompt text not found.');
+
+        showSavedToast(
+            'Prompt text not found.'
+        );
+
         return;
     }
 
@@ -1292,33 +1410,13 @@ function copySavedModalPrompt(
             `.prompt-variable-input[data-prompt-id="${promptId}"]`
         );
 
-    const values = {};
-    let hasAnyValue = false;
-
-    fields.forEach(function (field) {
-
-        const variableNumber =
-            field.dataset.variable;
-
-        const value =
-            field.value.trim();
-
-        values[variableNumber] =
-            value;
-
-        if (value !== '') {
-            hasAnyValue = true;
-        }
-
-    });
-
     /*
-     * Important:
-     * If every field is empty, copy the original prompt
-     * exactly as it is, including [1], [2], etc.
-     */
+    |----------------------------------------------------------
+    | NO VARIABLES
+    |----------------------------------------------------------
+    */
 
-    if (!hasAnyValue) {
+    if (fields.length === 0) {
 
         copySavedTextToClipboard(
             originalText,
@@ -1329,12 +1427,86 @@ function copySavedModalPrompt(
     }
 
 
-    /*
-     * If at least one field is filled:
-     * replace filled variables and remove empty variables.
-     */
+    const values = {};
+    let firstEmptyField = null;
 
-    let textToCopy =
+
+    /*
+    |----------------------------------------------------------
+    | COLLECT ALL VALUES
+    |----------------------------------------------------------
+    */
+
+    fields.forEach(function (field) {
+
+        const variableIndex =
+            field.dataset.variable;
+
+        const placeholder =
+            field.dataset.placeholder || variableIndex;
+
+        const value =
+            field.value.trim();
+
+        values[variableIndex] = {
+            placeholder: placeholder,
+            value: value
+        };
+
+        if (
+            value === ''
+            &&
+            !firstEmptyField
+        ) {
+
+            firstEmptyField =
+                field;
+        }
+
+    });
+
+
+    /*
+    |----------------------------------------------------------
+    | ALL VARIABLES ARE REQUIRED
+    |----------------------------------------------------------
+    */
+
+    if (firstEmptyField) {
+
+        firstEmptyField.focus();
+
+        const label =
+            firstEmptyField
+                .closest('.prompt-variable-field')
+                ?.querySelector(
+                    '.prompt-variable-label'
+                );
+
+        const variableName =
+            label
+                ? label.textContent
+                    .replace('*', '')
+                    .trim()
+                : `Variable ${firstEmptyField.dataset.variable}`;
+
+        showSavedToast(
+            `Please fill ${variableName}.`
+        );
+
+        return;
+    }
+
+
+    /*
+    |----------------------------------------------------------
+    | REPLACE NUMERIC OR DESCRIPTIVE [PLACEHOLDERS]
+    |----------------------------------------------------------
+    | Use the original text only once so values containing
+    | placeholder-like text are not recursively replaced.
+    */
+
+    const textToCopy =
         originalText.replace(
             /\[(\d+)\]/g,
             function (
@@ -1342,16 +1514,16 @@ function copySavedModalPrompt(
                 variableNumber
             ) {
 
-                return values[variableNumber]
-                    || '';
+                const matchingField =
+                    Object.values(values).find(function (item) {
+                        return item.placeholder === variableNumber;
+                    });
+
+                return matchingField
+                    ? matchingField.value
+                    : match;
 
             }
-        );
-
-
-    textToCopy =
-        cleanSavedPromptText(
-            textToCopy
         );
 
 
@@ -1359,82 +1531,6 @@ function copySavedModalPrompt(
         textToCopy,
         button
     );
-}
-
-
-/* =========================================================
-   CLEAN EMPTY VARIABLE GAPS
-========================================================= */
-
-function cleanSavedPromptText(text)
-{
-    text =
-        text.replace(
-            /,\s*(with|wearing|in|on|at|for|from|using|featuring|including|showing|holding|against|beside|near)\s*(?=[,.;!?]|$)/gi,
-            ''
-        );
-
-    text =
-        text.replace(
-            /\s+(with|wearing|in|on|at|for|from|using|featuring|including|showing|holding|against|beside|near)\s*(?=[,.;!?]|$)/gi,
-            ''
-        );
-
-    text =
-        text.replace(
-            /,\s*and\s*(?=[,.;!?]|$)/gi,
-            ''
-        );
-
-    text =
-        text.replace(
-            /\b(of|for|with|in|on|at|from|by|to)\s*,/gi,
-            '$1'
-        );
-
-    text =
-        text.replace(
-            /\s+,/g,
-            ','
-        );
-
-    text =
-        text.replace(
-            /,\s*\./g,
-            '.'
-        );
-
-    text =
-        text.replace(
-            /,\s*!/g,
-            '!'
-        );
-
-    text =
-        text.replace(
-            /,\s*\?/g,
-            '?'
-        );
-
-    text =
-        text.replace(
-            /[ \t]{2,}/g,
-            ' '
-        );
-
-    text =
-        text.replace(
-            /\s+([,.!?;:])/g,
-            '$1'
-        );
-
-    text =
-        text.replace(
-            /([,.!?])\1+/g,
-            '$1'
-        );
-
-    return text.trim();
 }
 
 
@@ -1498,6 +1594,47 @@ function copySavedTextToClipboard(
 
         });
 }
+
+
+/* =========================================================
+   SYNC VARIABLE INPUTS
+========================================================= */
+
+document.addEventListener(
+    'input',
+    function (event) {
+
+        const field =
+            event.target.closest(
+                '.prompt-variable-input'
+            );
+
+        if (!field) {
+            return;
+        }
+
+        const promptId =
+            field.dataset.promptId;
+
+        const variable =
+            field.dataset.variable;
+
+        const value =
+            field.value;
+
+        document
+            .querySelectorAll(
+                `.prompt-variable-input[data-prompt-id="${promptId}"][data-variable="${variable}"]`
+            )
+            .forEach(function (otherField) {
+
+                if (otherField !== field) {
+                    otherField.value = value;
+                }
+
+            });
+    }
+);
 
 
 /* =========================================================

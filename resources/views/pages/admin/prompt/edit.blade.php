@@ -86,13 +86,37 @@
                         <label class="fw-bold">
                             Prompt Text
                         </label>
+                        @php
+                            $editPromptRawText = old('prompt_text', $prompt->prompt_text);
+                            $editVariableMeta = [];
+
+                            if (preg_match('/<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i', $editPromptRawText, $editMetaMatch)) {
+                                $decodedEditMeta = json_decode(urldecode($editMetaMatch[1]), true);
+                                if (is_array($decodedEditMeta)) {
+                                    $editVariableMeta = $decodedEditMeta;
+                                }
+                                $editPromptRawText = preg_replace('/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i', '', $editPromptRawText);
+                            }
+                        @endphp
+
                         <textarea
-                           
-    name="prompt_text"
-    class="form-control"
-    rows="7"
-    required
->{{ old('prompt_text', $prompt->prompt_text) }}</textarea>
+                            name="prompt_text"
+                            id="edit_prompt_text"
+                            class="form-control"
+                            rows="7"
+                            required
+                        >{{ $editPromptRawText }}</textarea>
+
+                        <small class="text-muted d-block mt-2">
+                            Use placeholders like <code>[1]</code>, <code>[2]</code>, <code>[3]</code>.
+                            They will automatically become user input fields.
+                        </small>
+
+                        <div class="variable-settings-box" id="edit-variable-settings">
+                            <div class="variable-settings-title"><i class="bi bi-sliders2-vertical me-1"></i>User Input Settings</div>
+                            <div class="variable-settings-help">Give each placeholder a clear name and an example so users know what to enter.</div>
+                            <div class="variable-settings-list"></div>
+                        </div>
                     </div>
 
                     {{-- ================= AI TOOLS ================= --}}
@@ -400,13 +424,30 @@
 .ai-tools-dropdown-menu::-webkit-scrollbar-thumb:hover {
     background: #6c757d;
 }
+
+.variable-settings-box{margin-top:12px;padding:14px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;display:none}.variable-settings-box.has-variables{display:block}.variable-settings-title{font-weight:700;color:#343a40;margin-bottom:4px}.variable-settings-help{font-size:12px;color:#6c757d;margin-bottom:12px}.variable-row{padding:10px;margin-bottom:10px;border:1px solid #e2e8f0;border-radius:7px;background:#fff}.variable-row:last-child{margin-bottom:0}.variable-number{font-size:12px;font-weight:700;color:#0d6efd;margin-bottom:8px}
 </style>
 
 {{-- ========================================================= --}}
 {{-- JAVASCRIPT --}}
 {{-- ========================================================= --}}
 <script>
+const VARIABLE_META_MARKER='<!--AI_PROMPT_VARIABLES:';
+const existingVariableMeta=@json($editVariableMeta);
+function stripVariableMeta(text){return String(text||'').replace(/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i,'').trimEnd();}
+function detectPromptVariables(text){const m=String(text||'').match(/\[(\d+)\]/g)||[];return [...new Set(m.map(x=>x.replace(/\[|\]/g,'')))].sort((a,b)=>Number(a)-Number(b));}
+function escAttr(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderVariableSettings(text){const box=document.getElementById('edit-variable-settings'),list=box?.querySelector('.variable-settings-list');if(!box||!list)return;const vars=detectPromptVariables(text);list.innerHTML='';if(!vars.length){box.classList.remove('has-variables');return;}box.classList.add('has-variables');vars.forEach(v=>{const x=existingVariableMeta[v]||{};list.insertAdjacentHTML('beforeend',`<div class="variable-row" data-variable-row="${v}"><div class="variable-number">Variable [${v}]</div><div class="row g-2"><div class="col-md-6"><label class="form-label fw-semibold mb-1">What should the user enter?</label><input type="text" class="form-control variable-label-input" data-variable="${v}" value="${escAttr(x.label||'')}" placeholder="e.g. Person / Subject"></div><div class="col-md-6"><label class="form-label fw-semibold mb-1">Example / Dummy Value</label><input type="text" class="form-control variable-example-input" data-variable="${v}" value="${escAttr(x.example||'')}" placeholder="e.g. young Indian woman"></div></div></div>`);});}
+function collectVariableMeta(){const meta={};document.querySelectorAll('#edit-variable-settings .variable-row').forEach(row=>{const v=row.dataset.variableRow;meta[v]={example:row.querySelector('.variable-example-input')?.value.trim()||''};});return meta;}
+function validateVariableSettings(){for(const row of document.querySelectorAll('#edit-variable-settings .variable-row')){const v=row.dataset.variableRow,l=row.querySelector('.variable-label-input'),e=row.querySelector('.variable-example-input');if(!l?.value.trim()){l?.focus();alert(`Please enter a name for Variable [${v}].`);return false;}if(!e?.value.trim()){e?.focus();alert(`Please enter an example value for Variable [${v}].`);return false;}}return true;}
+function appendVariableMeta(text,meta){const clean=stripVariableMeta(text);if(!detectPromptVariables(clean).length)return clean;return clean+VARIABLE_META_MARKER+encodeURIComponent(JSON.stringify(meta))+'-->';}
+
 document.addEventListener('DOMContentLoaded', function () {
+    const editPromptText=document.getElementById('edit_prompt_text');
+    if(editPromptText){renderVariableSettings(editPromptText.value);editPromptText.addEventListener('input',function(){renderVariableSettings(stripVariableMeta(this.value));});}
+    const form=editPromptText?editPromptText.closest('form'):null;
+    if(form){form.addEventListener('submit',function(event){if(!validateVariableSettings()){event.preventDefault();return;}editPromptText.value=appendVariableMeta(editPromptText.value,collectVariableMeta());});}
+
     const dropdownBtn = document.getElementById('aiToolsDropdownBtn');
     const dropdownMenu = document.getElementById('aiToolsDropdownMenu');
     const selectedText = document.getElementById('aiToolsSelectedText');
