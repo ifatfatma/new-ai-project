@@ -87,11 +87,12 @@
                             Prompt Text
                         </label>
                         <textarea
-                            name="prompt_text"
-                            class="form-control"
-                            rows="7"
-                            required
-                        >{{ old('prompt_text', $prompt->prompt_text) }}</textarea>
+                           
+    name="prompt_text"
+    class="form-control"
+    rows="7"
+    required
+>{{ old('prompt_text', $prompt->prompt_text) }}</textarea>
                     </div>
 
                     {{-- ================= AI TOOLS ================= --}}
