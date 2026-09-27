@@ -652,7 +652,7 @@
 
                                 <div class="variable-settings-box" data-variable-settings="0">
                                     <div class="variable-settings-title"><i class="mdi mdi-tune-vertical me-1"></i>User Input Settings</div>
-                                    <div class="variable-settings-help">Give each placeholder a clear name and an example so users know what to enter.</div>
+                                    <div class="variable-settings-help">Enter only an example / dummy value for each placeholder.</div>
                                     <div class="variable-settings-list"></div>
                                 </div>
 
@@ -804,10 +804,10 @@ function stripVariableMeta(text){return String(text||'').replace(/<!--AI_PROMPT_
 function detectPromptVariables(text){const m=String(text||'').match(/\[(\d+)\]/g)||[];return [...new Set(m.map(x=>x.replace(/\[|\]/g,'')))].sort((a,b)=>Number(a)-Number(b));}
 function getVariableMeta(text){const m=String(text||'').match(/<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i);if(!m)return {};try{const x=JSON.parse(decodeURIComponent(m[1]));return x&&typeof x==='object'?x:{}}catch(e){return {}}}
 function escAttr(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function renderVariableSettings(box,text){if(!box)return;const list=box.querySelector('.variable-settings-list');if(!list)return;const vars=detectPromptVariables(text);list.innerHTML='';if(!vars.length){box.classList.remove('has-variables');return;}box.classList.add('has-variables');const old=getVariableMeta(text);vars.forEach(v=>{const x=old[v]||{};list.insertAdjacentHTML('beforeend',`<div class="variable-row" data-variable-row="${v}"><div class="variable-number">Variable [${v}]</div><div class="row g-2"><div class="col-md-6"><label class="form-label-custom mb-1">What should the user enter?</label><input type="text" class="form-control variable-label-input" data-variable="${v}" value="${escAttr(x.label||'')}" placeholder="e.g. Person / Subject"></div><div class="col-md-6"><label class="form-label-custom mb-1">Example / Dummy Value</label><input type="text" class="form-control variable-example-input" data-variable="${v}" value="${escAttr(x.example||'')}" placeholder="e.g. young Indian woman"></div></div></div>`);});}
+function renderVariableSettings(box,text){if(!box)return;const list=box.querySelector('.variable-settings-list');if(!list)return;const vars=detectPromptVariables(text);list.innerHTML='';if(!vars.length){box.classList.remove('has-variables');return;}box.classList.add('has-variables');const old=getVariableMeta(text);vars.forEach(v=>{const x=old[v]||{};list.insertAdjacentHTML('beforeend',`<div class="variable-row" data-variable-row="${v}"><div class="variable-number">Variable [${v}]</div><label class="form-label-custom mb-1">Example / Dummy Value</label><input type="text" class="form-control variable-example-input" data-variable="${v}" value="${escAttr(x.example||'')}" placeholder="e.g. young Indian woman"></div>`);});}
 function attachVariableSettings(textarea,box){if(!textarea||!box)return;renderVariableSettings(box,textarea.value);textarea.addEventListener('input',function(){renderVariableSettings(box,stripVariableMeta(this.value));});}
 function collectVariableMeta(box){const meta={};if(!box)return meta;box.querySelectorAll('.variable-row').forEach(row=>{const v=row.dataset.variableRow;meta[v]={example:row.querySelector('.variable-example-input')?.value.trim()||''};});return meta;}
-function validateVariableSettings(box){if(!box||!box.classList.contains('has-variables'))return true;for(const row of box.querySelectorAll('.variable-row')){const v=row.dataset.variableRow,l=row.querySelector('.variable-label-input'),e=row.querySelector('.variable-example-input');if(!l?.value.trim()){l?.focus();alert(`Please enter a name for Variable [${v}].`);return false;}if(!e?.value.trim()){e?.focus();alert(`Please enter an example value for Variable [${v}].`);return false;}}return true;}
+function validateVariableSettings(box){if(!box||!box.classList.contains('has-variables'))return true;for(const row of box.querySelectorAll('.variable-row')){const v=row.dataset.variableRow,e=row.querySelector('.variable-example-input');if(!e?.value.trim()){e?.focus();alert(`Please enter an example / dummy value for Variable [${v}].`);return false;}}return true;}
 function appendVariableMeta(text,meta){const clean=stripVariableMeta(text);if(!detectPromptVariables(clean).length)return clean;return clean+VARIABLE_META_MARKER+encodeURIComponent(JSON.stringify(meta))+'-->';}
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -1229,7 +1229,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         <div class="variable-settings-box" data-variable-settings="${index}">
                             <div class="variable-settings-title"><i class="mdi mdi-tune-vertical me-1"></i>User Input Settings</div>
-                            <div class="variable-settings-help">Give each placeholder a clear name and an example so users know what to enter.</div>
+                            <div class="variable-settings-help">Enter only an example / dummy value for each placeholder.</div>
                             <div class="variable-settings-list"></div>
                         </div>
 

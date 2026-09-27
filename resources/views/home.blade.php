@@ -3123,6 +3123,78 @@ Use [1], [2], [3] for optional details that users can customize."
 
 
         /* =====================================================
+           CLIPBOARD COPY HELPER
+        ===================================================== */
+
+        function copyTextToClipboard(text, btnElement, promptId)
+        {
+            const showCopied = function () {
+                if (!btnElement) {
+                    return;
+                }
+
+                const originalContent = btnElement.innerHTML;
+
+                btnElement.innerHTML =
+                    '<i class="bi bi-check2 me-1"></i> Copied!';
+
+                btnElement.classList.add('copy-success');
+
+                setTimeout(function () {
+                    btnElement.innerHTML = originalContent;
+                    btnElement.classList.remove('copy-success');
+                }, 1500);
+            };
+
+            const fallbackCopy = function () {
+                const textarea = document.createElement('textarea');
+
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '0';
+
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+
+                let copied = false;
+
+                try {
+                    copied = document.execCommand('copy');
+                } catch (error) {
+                    copied = false;
+                    console.error('Fallback copy failed:', error);
+                }
+
+                textarea.remove();
+
+                if (copied) {
+                    showCopied();
+                } else {
+                    window.prompt('Copy this prompt:', text);
+                }
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text)
+                    .then(function () {
+                        showCopied();
+                    })
+                    .catch(function (error) {
+                        console.error('Clipboard API failed:', error);
+                        fallbackCopy();
+                    });
+
+                return;
+            }
+
+            fallbackCopy();
+        }
+
+
+        /* =====================================================
            SYNC VARIABLE INPUTS
         ===================================================== */
 

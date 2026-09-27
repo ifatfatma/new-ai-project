@@ -1,1638 +1,1164 @@
- <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    ></script>
+{{-- =====================================================
+     BOOTSTRAP JS
+====================================================== --}}
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+></script>
 
+{{-- =====================================================
+     JQUERY
+====================================================== --}}
+<script
+    src="https://code.jquery.com/jquery-3.6.0.min.js"
+></script>
 
-    <script
-        src="https://code.jquery.com/jquery-3.6.0.min.js"
-    ></script>
+<script>
+    /* =====================================================
+       CUSTOM AI TOOLS DROPDOWN
+    ===================================================== */
 
+    document.addEventListener('DOMContentLoaded', function () {
 
-    <script>
+        const dropdown =
+            document.getElementById('aiToolsDropdown');
 
+        const dropdownBtn =
+            document.getElementById('aiToolsDropdownBtn');
 
-        /* =====================================================
-           CUSTOM AI TOOLS DROPDOWN
-        ===================================================== */
+        const dropdownMenu =
+            document.getElementById('aiToolsDropdownMenu');
 
-        document.addEventListener(
-            'DOMContentLoaded',
-            function () {
+        const selectedToolsText =
+            document.getElementById('selectedToolsText');
 
-                const dropdown =
-                    document.getElementById(
-                        'aiToolsDropdown'
-                    );
+        if (
+            !dropdown ||
+            !dropdownBtn ||
+            !dropdownMenu ||
+            !selectedToolsText
+        ) {
+            return;
+        }
 
-                const dropdownBtn =
-                    document.getElementById(
-                        'aiToolsDropdownBtn'
-                    );
+        function updateSelectedTools() {
 
-                const dropdownMenu =
-                    document.getElementById(
-                        'aiToolsDropdownMenu'
-                    );
+            const checkedTools =
+                dropdownMenu.querySelectorAll(
+                    'input[type="checkbox"]:checked'
+                );
 
-                const selectedToolsText =
-                    document.getElementById(
-                        'selectedToolsText'
-                    );
+            if (checkedTools.length === 0) {
 
+                selectedToolsText.textContent =
+                    'Select AI Tools';
 
-                if (
-                    !dropdown ||
-                    !dropdownBtn ||
-                    !dropdownMenu ||
-                    !selectedToolsText
-                ) {
-                    return;
-                }
+                selectedToolsText.classList.remove(
+                    'has-selection'
+                );
 
+                return;
+            }
 
-                function updateSelectedTools()
-                {
+            const selectedNames = [];
 
-                    const checkedTools =
-                        dropdownMenu.querySelectorAll(
-                            'input[type="checkbox"]:checked'
-                        );
+            checkedTools.forEach(function (checkbox) {
 
+                const option =
+                    checkbox.closest('.ai-tool-option');
 
-                    if (checkedTools.length === 0) {
+                const name =
+                    option
+                        ? option.querySelector('.ai-tool-name')
+                        : null;
 
-                        selectedToolsText.textContent =
-                            'Select AI Tools';
-
-                        selectedToolsText.classList.remove(
-                            'has-selection'
-                        );
-
-                        return;
-                    }
-
-
-                    const selectedNames = [];
-
-
-                    checkedTools.forEach(
-                        function (checkbox) {
-
-                            const option =
-                                checkbox.closest(
-                                    '.ai-tool-option'
-                                );
-
-                            const name =
-                                option
-                                    ? option.querySelector(
-                                        '.ai-tool-name'
-                                    )
-                                    : null;
-
-
-                            if (name) {
-
-                                selectedNames.push(
-                                    name.textContent.trim()
-                                );
-
-                            }
-
-                        }
-                    );
-
-
-                    selectedToolsText.textContent =
-                        selectedNames.join(', ');
-
-                    selectedToolsText.classList.add(
-                        'has-selection'
+                if (name) {
+                    selectedNames.push(
+                        name.textContent.trim()
                     );
                 }
+            });
 
+            selectedToolsText.textContent =
+                selectedNames.join(', ');
 
-                dropdownBtn.addEventListener(
-                    'click',
-                    function (event) {
+            selectedToolsText.classList.add(
+                'has-selection'
+            );
+        }
 
-                        event.stopPropagation();
+        dropdownBtn.addEventListener(
+            'click',
+            function (event) {
 
-                        dropdown.classList.toggle(
-                            'open'
-                        );
+                event.stopPropagation();
 
-                    }
-                );
-
-
-                const checkboxes =
-                    dropdownMenu.querySelectorAll(
-                        'input[type="checkbox"]'
-                    );
-
-
-                checkboxes.forEach(
-                    function (checkbox) {
-
-                        checkbox.addEventListener(
-                            'change',
-                            function () {
-
-                                updateSelectedTools();
-
-                            }
-                        );
-
-                    }
-                );
-
-
-                document.addEventListener(
-                    'click',
-                    function (event) {
-
-                        if (
-                            !dropdown.contains(
-                                event.target
-                            )
-                        ) {
-
-                            dropdown.classList.remove(
-                                'open'
-                            );
-
-                        }
-
-                    }
-                );
-
-
-                updateSelectedTools();
-
+                dropdown.classList.toggle('open');
             }
         );
 
-
-        /* =====================================================
-           COPY PROMPT
-           VARIABLES ARE OPTIONAL
-        ===================================================== */
-
-        function copyPrompt(
-            elementId,
-            btnElement,
-            promptId
-        )
-        {
-
-            const element =
-                document.getElementById(elementId);
-
-
-            if (!element) {
-                return;
-            }
-
-
-            const originalText =
-                element.value;
-
-
-            let scope =
-                btnElement.closest('.modal');
-
-
-            if (!scope) {
-
-                scope =
-                    btnElement.closest('.prompt-card');
-
-            }
-
-
-            if (!scope) {
-                scope = document;
-            }
-
-
-            const variableFields =
-                scope.querySelectorAll(
-                    `.prompt-variable-input[data-prompt-id="${promptId}"]`
-                );
-
-
-            /*
-             * Agar prompt mein variables hi nahi hain,
-             * to normal prompt copy hoga.
-             */
-
-            if (variableFields.length === 0) {
-
-                copyTextToClipboard(
-                    originalText,
-                    btnElement,
-                    promptId
-                );
-
-                return;
-
-            }
-
-
-            const values = {};
-
-            let hasAnyValue = false;
-
-
-            /*
-             * Sabhi variable values collect karo.
-             * Empty fields allowed hain.
-             */
-
-            variableFields.forEach(
-                function (field) {
-
-                    const variableNumber =
-                        field.dataset.variable;
-
-                    const value =
-                        field.value.trim();
-
-
-                    values[variableNumber] =
-                        value;
-
-
-                    if (value !== '') {
-
-                        hasAnyValue = true;
-
-                    }
-
-                }
+        const checkboxes =
+            dropdownMenu.querySelectorAll(
+                'input[type="checkbox"]'
             );
 
+        checkboxes.forEach(function (checkbox) {
 
-            /*
-             * IMPORTANT:
-             *
-             * Agar user ne ek bhi field fill nahi kiya,
-             * to ORIGINAL prompt exactly copy hoga.
-             *
-             * Example:
-             *
-             * "Create [1] image with [2] background."
-             *
-             * Result:
-             *
-             * "Create [1] image with [2] background."
-             */
+            checkbox.addEventListener(
+                'change',
+                updateSelectedTools
+            );
+        });
 
-            if (!hasAnyValue) {
+        document.addEventListener(
+            'click',
+            function (event) {
 
-                copyTextToClipboard(
-                    originalText,
-                    btnElement,
-                    promptId
-                );
+                if (!dropdown.contains(event.target)) {
 
-                return;
-
+                    dropdown.classList.remove('open');
+                }
             }
+        );
+
+        updateSelectedTools();
+    });
 
 
-            /*
-             * Kam se kam ek field filled hai.
-             *
-             * Filled variables replace honge.
-             * Empty variables remove honge.
-             */
+    /* =====================================================
+       COPY PROMPT
+    ===================================================== */
 
-            let textToCopy =
-                originalText.replace(
-                    /\[(\d+)\]/g,
-                    function (
-                        match,
-                        variableNumber
-                    ) {
+    function copyPrompt(
+        elementId,
+        btnElement,
+        promptId
+    ) {
 
-                        return values[variableNumber] || '';
+        const element =
+            document.getElementById(elementId);
 
-                    }
-                );
+        if (!element) {
+            return;
+        }
 
+        const originalText =
+            element.value;
 
-            /*
-             * Empty variables ke baad unwanted
-             * punctuation / connector words clean karo.
-             */
+        let scope =
+            btnElement
+                ? btnElement.closest('.modal')
+                : null;
 
-            textToCopy =
-                cleanPromptText(textToCopy);
+        if (!scope && btnElement) {
+            scope =
+                btnElement.closest('.prompt-card');
+        }
 
+        if (!scope) {
+            scope = document;
+        }
+
+        const variableFields =
+            scope.querySelectorAll(
+                `.prompt-variable-input[data-prompt-id="${promptId}"]`
+            );
+
+        if (variableFields.length === 0) {
 
             copyTextToClipboard(
-                textToCopy,
+                originalText,
                 btnElement,
                 promptId
             );
 
+            return;
         }
 
+        const values = {};
+        let firstEmptyField = null;
 
-        /* =====================================================
-           CLEAN PROMPT TEXT
-           REMOVE EMPTY VARIABLE LEFTOVERS
-        ===================================================== */
+        variableFields.forEach(function (field) {
 
-        function cleanPromptText(text)
-        {
+            const variableNumber =
+                field.dataset.variable;
 
-            /*
-             * New lines ke unnecessary spaces.
-             */
+            const value =
+                field.value.trim();
 
-            text =
-                text.replace(
-                    /[ \t]+/g,
-                    ' '
-                );
+            values[variableNumber] =
+                value;
 
+            if (
+                value === '' &&
+                !firstEmptyField
+            ) {
+                firstEmptyField = field;
+            }
+        });
 
-            /*
-             * Comma ke baad empty connector.
-             *
-             * Example:
-             *
-             * "portrait, wearing , in studio"
-             *
-             * becomes:
-             *
-             * "portrait, in studio"
-             */
+        if (firstEmptyField) {
 
-            text =
-                text.replace(
-                    /,\s*(with|wearing|in|on|at|for|from|using|featuring|including|showing|holding|against|beside|near)\s*(?=[,.;!?]|$)/gi,
-                    ''
-                );
+            firstEmptyField.focus();
 
+            const label =
+                firstEmptyField
+                    .closest('.prompt-variable-field')
+                    ?.querySelector('.prompt-variable-label')
+                    ?.textContent
+                    ?.trim();
 
-            /*
-             * Agar connector ke baad comma aa gaya.
-             *
-             * Example:
-             *
-             * "portrait with ,"
-             *
-             * becomes:
-             *
-             * "portrait"
-             */
+            showVariableToast(
+                `Please fill ${label || 'Variable ' + firstEmptyField.dataset.variable}.`
+            );
 
-            text =
-                text.replace(
-                    /\s+(with|wearing|in|on|at|for|from|using|featuring|including|showing|holding|against|beside|near)\s*(?=[,.;!?]|$)/gi,
-                    ''
-                );
-
-
-            /*
-             * Empty "and".
-             */
-
-            text =
-                text.replace(
-                    /,\s*and\s*(?=[,.;!?]|$)/gi,
-                    ''
-                );
-
-
-            /*
-             * Empty "with" / "in" etc before punctuation.
-             */
-
-            text =
-                text.replace(
-                    /\b(with|wearing|in|on|at|from|using|featuring|including|showing|holding|against|beside|near)\s*,/gi,
-                    ','
-                );
-
-
-            /*
-             * Double commas.
-             */
-
-            text =
-                text.replace(
-                    /,\s*,+/g,
-                    ','
-                );
-
-
-            /*
-             * Comma directly before punctuation.
-             */
-
-            text =
-                text.replace(
-                    /,\s*\./g,
-                    '.'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*!/g,
-                    '!'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*\?/g,
-                    '?'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*;/g,
-                    ';'
-                );
-
-
-            text =
-                text.replace(
-                    /,\s*:/g,
-                    ':'
-                );
-
-
-            /*
-             * Punctuation se pehle unwanted spaces.
-             */
-
-            text =
-                text.replace(
-                    /\s+([,.!?;:])/g,
-                    '$1'
-                );
-
-
-            /*
-             * Duplicate punctuation.
-             */
-
-            text =
-                text.replace(
-                    /([,.!?])\1+/g,
-                    '$1'
-                );
-
-
-            /*
-             * Multiple spaces.
-             */
-
-            text =
-                text.replace(
-                    /[ \t]{2,}/g,
-                    ' '
-                );
-
-
-            /*
-             * Multiple blank lines ko clean karo,
-             * lekin normal paragraph structure preserve rahe.
-             */
-
-            text =
-                text.replace(
-                    /\n[ \t]+/g,
-                    '\n'
-                );
-
-
-            text =
-                text.replace(
-                    /\n{3,}/g,
-                    '\n\n'
-                );
-
-
-            return text.trim();
-
+            return;
         }
 
+        const textToCopy =
+            originalText.replace(
+                /\[([^\[\]]+)\]/g,
+                function (match, variableToken) {
 
-        /* =====================================================
-           CLIPBOARD HELPER
-        ===================================================== */
+                    const key =
+                        variableToken.trim();
 
-        function copyTextToClipboard(
+                    return Object.prototype.hasOwnProperty.call(
+                        values,
+                        key
+                    )
+                        ? values[key]
+                        : match;
+                }
+            );
+
+        copyTextToClipboard(
             textToCopy,
             btnElement,
             promptId
-        )
-        {
+        );
+    }
+
+
+    /* =====================================================
+       CLIPBOARD HELPER
+    ===================================================== */
+
+    function copyTextToClipboard(
+        text,
+        btnElement,
+        promptId
+    ) {
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
 
             navigator.clipboard
-                .writeText(textToCopy)
-                .then(
-                    function () {
+                .writeText(text)
+                .then(function () {
 
-                        const originalContent =
-                            btnElement.innerHTML;
+                    showCopySuccess(
+                        btnElement
+                    );
 
+                })
+                .catch(function () {
 
-                        btnElement.innerHTML =
-                            '<i class="bi bi-check2 me-1"></i> Copied!';
+                    fallbackCopyText(
+                        text,
+                        btnElement
+                    );
+                });
 
-
-                        btnElement.classList.remove(
-                            'copy-btn'
-                        );
-
-
-                        btnElement.classList.add(
-                            'btn-dark'
-                        );
-
-
-                        setTimeout(
-                            function () {
-
-                                btnElement.innerHTML =
-                                    originalContent;
-
-
-                                btnElement.classList.remove(
-                                    'btn-dark'
-                                );
-
-
-                                btnElement.classList.add(
-                                    'copy-btn'
-                                );
-
-                            },
-                            2000
-                        );
-
-
-                        /*
-                         * Copy tracking same as before.
-                         */
-
-                        fetch(
-                            `/prompts/${promptId}/copy-track`,
-                            {
-                                method: 'POST',
-
-                                headers: {
-
-                                    'Content-Type':
-                                        'application/json',
-
-                                    'X-CSRF-TOKEN':
-                                        document
-                                            .querySelector(
-                                                'meta[name="csrf-token"]'
-                                            )
-                                            .getAttribute(
-                                                'content'
-                                            )
-
-                                }
-                            }
-                        )
-                        .catch(
-                            function (err) {
-
-                                console.error(
-                                    'Tracking Error:',
-                                    err
-                                );
-
-                            }
-                        );
-
-                    }
-                )
-                .catch(
-                    function (err) {
-
-                        console.error(
-                            'Failed to copy:',
-                            err
-                        );
-
-
-                        showVariableToast(
-                            'Unable to copy the prompt.'
-                        );
-
-                    }
-                );
-
+            return;
         }
 
+        fallbackCopyText(
+            text,
+            btnElement
+        );
+    }
 
-        /* =====================================================
-           RESET VARIABLES
-        ===================================================== */
 
-        function resetPromptVariables(promptId)
-        {
+    /* =====================================================
+       FALLBACK COPY
+    ===================================================== */
+
+    function fallbackCopyText(
+        text,
+        btnElement
+    ) {
+
+        const textarea =
+            document.createElement('textarea');
+
+        textarea.value =
+            text;
+
+        textarea.style.position =
+            'fixed';
+
+        textarea.style.opacity =
+            '0';
+
+        document.body.appendChild(
+            textarea
+        );
+
+        textarea.select();
+
+        try {
+
+            document.execCommand(
+                'copy'
+            );
+
+            showCopySuccess(
+                btnElement
+            );
+
+        } catch (error) {
+
+            console.error(
+                'Copy failed:',
+                error
+            );
+        }
+
+        textarea.remove();
+    }
+
+
+    /* =====================================================
+       COPY SUCCESS
+    ===================================================== */
+
+    function showCopySuccess(
+        btnElement
+    ) {
+
+        if (!btnElement) {
+            return;
+        }
+
+        const originalHTML =
+            btnElement.innerHTML;
+
+        btnElement.innerHTML =
+            '<i class="bi bi-check2 me-1"></i> Copied!';
+
+        setTimeout(function () {
+
+            btnElement.innerHTML =
+                originalHTML;
+
+        }, 2000);
+    }
+
+
+    /* =====================================================
+       SYNC VARIABLE INPUTS
+    ===================================================== */
+
+    document.addEventListener(
+        'input',
+        function (event) {
+
+            const field =
+                event.target.closest(
+                    '.prompt-variable-input'
+                );
+
+            if (!field) {
+                return;
+            }
+
+            const promptId =
+                field.dataset.promptId;
+
+            const variable =
+                field.dataset.variable;
+
+            const value =
+                field.value;
 
             document
                 .querySelectorAll(
-                    `.prompt-variable-input[data-prompt-id="${promptId}"]`
+                    `.prompt-variable-input[data-prompt-id="${promptId}"][data-variable="${variable}"]`
                 )
-                .forEach(
-                    function (field) {
+                .forEach(function (otherField) {
 
-                        field.value = '';
+                    if (otherField !== field) {
 
+                        otherField.value =
+                            value;
                     }
-                );
-
+                });
         }
+    );
 
 
-        /* =====================================================
-           VARIABLE TOAST
-        ===================================================== */
+    /* =====================================================
+       RESET VARIABLES
+    ===================================================== */
 
-        function showVariableToast(message)
-        {
+    function resetPromptVariables(
+        promptId
+    ) {
 
-            const oldToast =
-                document.getElementById(
-                    'promptVariableToast'
-                );
+        document
+            .querySelectorAll(
+                `.prompt-variable-input[data-prompt-id="${promptId}"]`
+            )
+            .forEach(function (field) {
 
-
-            if (oldToast) {
-                oldToast.remove();
-            }
-
-
-            const toast =
-                document.createElement('div');
+                field.value = '';
+            });
+    }
 
 
-            toast.id =
-                'promptVariableToast';
+    /* =====================================================
+       VARIABLE TOAST
+    ===================================================== */
 
+    function showVariableToast(
+        message
+    ) {
 
-            toast.innerHTML = `
-                <i class="bi bi-exclamation-circle-fill me-2"></i>
-                <span>${message}</span>
-            `;
-
-
-            toast.style.position =
-                'fixed';
-
-            toast.style.bottom =
-                '25px';
-
-            toast.style.left =
-                '50%';
-
-            toast.style.transform =
-                'translateX(-50%)';
-
-            toast.style.zIndex =
-                '99999';
-
-            toast.style.background =
-                '#111827';
-
-            toast.style.color =
-                '#ffffff';
-
-            toast.style.padding =
-                '12px 18px';
-
-            toast.style.borderRadius =
-                '10px';
-
-            toast.style.boxShadow =
-                '0 10px 30px rgba(0,0,0,0.20)';
-
-            toast.style.fontWeight =
-                '600';
-
-            toast.style.fontSize =
-                '13px';
-
-            toast.style.display =
-                'flex';
-
-            toast.style.alignItems =
-                'center';
-
-
-            document.body.appendChild(
-                toast
+        const oldToast =
+            document.getElementById(
+                'promptVariableToast'
             );
 
-
-            setTimeout(
-                function () {
-
-                    if (toast) {
-                        toast.remove();
-                    }
-
-                },
-                2500
-            );
-
+        if (oldToast) {
+            oldToast.remove();
         }
 
+        const toast =
+            document.createElement('div');
 
-        /* =====================================================
-           SHARE PROMPT
-        ===================================================== */
+        toast.id =
+            'promptVariableToast';
 
-        function sharePrompt(
-            promptId,
-            promptTitle
-        )
-        {
+        toast.innerHTML = `
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            <span>${message}</span>
+        `;
 
-            const shareUrl =
-                `${window.location.origin}/prompts/${promptId}`;
+        Object.assign(
+            toast.style,
+            {
+                position: 'fixed',
+                bottom: '25px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: '99999',
+                background: '#111827',
+                color: '#ffffff',
+                padding: '12px 18px',
+                borderRadius: '10px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.20)',
+                fontWeight: '600',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center'
+            }
+        );
 
+        document.body.appendChild(
+            toast
+        );
 
-            const shareData = {
+        setTimeout(function () {
 
-                title:
-                    promptTitle,
-
-                text:
-                    `Check out this AI Prompt: ${promptTitle}`,
-
-                url:
-                    shareUrl
-
-            };
-
-
-            if (navigator.share) {
-
-                navigator.share(
-                    shareData
-                )
-                .catch(
-                    function (error) {
-
-                        if (
-                            error.name !==
-                            'AbortError'
-                        ) {
-
-                            console.error(
-                                'Share failed:',
-                                error
-                            );
-
-                        }
-
-                    }
-                );
-
-                return;
+            if (toast) {
+                toast.remove();
             }
 
+        }, 2500);
+    }
+
+
+    /* =====================================================
+       SHARE PROMPT
+    ===================================================== */
+
+    function sharePrompt(
+        promptId,
+        promptTitle
+    ) {
+
+        const shareUrl =
+            `${window.location.origin}/prompts/${promptId}`;
+
+        const shareData = {
+            title:
+                promptTitle,
+
+            text:
+                `Check out this AI Prompt: ${promptTitle}`,
+
+            url:
+                shareUrl
+        };
+
+        if (navigator.share) {
+
+            navigator.share(
+                shareData
+            )
+            .catch(function (error) {
+
+                if (
+                    error.name !==
+                    'AbortError'
+                ) {
+
+                    console.error(
+                        'Share failed:',
+                        error
+                    );
+                }
+            });
+
+            return;
+        }
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
 
             navigator.clipboard
                 .writeText(shareUrl)
-                .then(
-                    function () {
+                .then(function () {
 
-                        showShareToast();
+                    showShareToast();
 
-                    }
-                )
-                .catch(
-                    function () {
+                })
+                .catch(function () {
 
-                        window.prompt(
-                            'Copy this prompt link:',
-                            shareUrl
-                        );
+                    window.prompt(
+                        'Copy this prompt link:',
+                        shareUrl
+                    );
+                });
 
-                    }
-                );
-
+            return;
         }
 
-
-        /* =====================================================
-           SHARE TOAST
-        ===================================================== */
-
-        function showShareToast()
-        {
-
-            const oldToast =
-                document.getElementById(
-                    'shareSuccessToast'
-                );
+        window.prompt(
+            'Copy this prompt link:',
+            shareUrl
+        );
+    }
 
 
-            if (oldToast) {
-                oldToast.remove();
-            }
+    /* =====================================================
+       SHARE TOAST
+    ===================================================== */
 
+    function showShareToast() {
 
-            const toast =
-                document.createElement('div');
-
-
-            toast.id =
-                'shareSuccessToast';
-
-
-            toast.innerHTML = `
-
-                <i class="bi bi-check-circle-fill me-2"></i>
-
-                Prompt link copied!
-
-            `;
-
-
-            toast.style.position =
-                'fixed';
-
-            toast.style.bottom =
-                '25px';
-
-            toast.style.right =
-                '25px';
-
-            toast.style.zIndex =
-                '9999';
-
-            toast.style.background =
-                'linear-gradient(135deg,#6366f1,#7c3aed)';
-
-            toast.style.color =
-                '#ffffff';
-
-            toast.style.padding =
-                '12px 18px';
-
-            toast.style.borderRadius =
-                '12px';
-
-            toast.style.boxShadow =
-                '0 12px 30px rgba(79,70,229,0.28)';
-
-            toast.style.fontWeight =
-                '600';
-
-            toast.style.fontSize =
-                '14px';
-
-
-            document.body.appendChild(
-                toast
+        const oldToast =
+            document.getElementById(
+                'shareSuccessToast'
             );
 
-
-            setTimeout(
-                function () {
-
-                    toast.remove();
-
-                },
-                2500
-            );
-
+        if (oldToast) {
+            oldToast.remove();
         }
 
-
-        /* =====================================================
-           MODAL COPY
-        ===================================================== */
-
-        function copyModalPrompt()
-        {
-
-            const textarea =
-                document.getElementById(
-                    'modalHiddenTextarea'
-                );
-
-
-            const btnElement =
-                document.getElementById(
-                    'modalCopyBtn'
-                );
-
-
-            if (
-                !textarea ||
-                !btnElement
-            ) {
-                return;
-            }
-
-
-            const textToCopy =
-                textarea.value;
-
-
-            navigator.clipboard
-                .writeText(textToCopy)
-                .then(
-                    function () {
-
-                        const originalContent =
-                            btnElement.innerHTML;
-
-
-                        btnElement.innerHTML =
-                            '<i class="bi bi-check2 me-1"></i> Copied!';
-
-
-                        btnElement.classList.remove(
-                            'copy-btn'
-                        );
-
-
-                        btnElement.classList.add(
-                            'btn-dark'
-                        );
-
-
-                        setTimeout(
-                            function () {
-
-                                btnElement.innerHTML =
-                                    originalContent;
-
-
-                                btnElement.classList.remove(
-                                    'btn-dark'
-                                );
-
-
-                                btnElement.classList.add(
-                                    'copy-btn'
-                                );
-
-                            },
-                            2000
-                        );
-
-                    }
-                )
-                .catch(
-                    function (err) {
-
-                        console.error(
-                            'Failed to copy:',
-                            err
-                        );
-
-                    }
-                );
-
-        }
-
-
-        /* =====================================================
-           SEARCH SUGGESTIONS
-        ===================================================== */
-
-        $(document).ready(
-            function () {
-
-                $('#prompt-search').on(
-                    'keyup',
-                    function () {
-
-                        let query =
-                            $(this).val();
-
-
-                        if (query.length > 1) {
-
-                            $.ajax({
-
-                                url:
-                                    "{{ route('search.suggestions') }}",
-
-                                method:
-                                    "GET",
-
-                                data: {
-
-                                    query:
-                                        query
-
-                                },
-
-
-                                success:
-                                    function (data) {
-
-                                        let list =
-                                            $('#suggestionList');
-
-
-                                        list.empty();
-
-
-                                        if (
-                                            data.length > 0
-                                        ) {
-
-                                            list.show();
-
-
-                                            data.forEach(
-                                                function (item) {
-
-                                                    let safeItem =
-                                                        encodeURIComponent(
-                                                            JSON.stringify(
-                                                                item
-                                                            )
-                                                        );
-
-
-                                                    list.append(`
-
-                                                        <li
-                                                            class="list-group-item list-group-item-action text-dark"
-                                                            style="cursor:pointer;"
-                                                            onclick="openSuggestionModal('${safeItem}')"
-                                                        >
-
-                                                            <i class="bi bi-search me-2 text-primary"></i>
-
-                                                            ${item.title}
-
-                                                        </li>
-
-                                                    `);
-
-                                                }
-                                            );
-
-                                        } else {
-
-                                            list.hide();
-
-                                        }
-
-                                    }
-
-                            });
-
-                        } else {
-
-                            $('#suggestionList')
-                                .hide();
-
-                        }
-
-                    }
-                );
-
+        const toast =
+            document.createElement('div');
+
+        toast.id =
+            'shareSuccessToast';
+
+        toast.innerHTML = `
+            <i class="bi bi-check-circle-fill me-2"></i>
+            Prompt link copied!
+        `;
+
+        Object.assign(
+            toast.style,
+            {
+                position: 'fixed',
+                bottom: '25px',
+                right: '25px',
+                zIndex: '9999',
+                background: 'linear-gradient(135deg,#6366f1,#7c3aed)',
+                color: '#ffffff',
+                padding: '12px 18px',
+                borderRadius: '12px',
+                boxShadow: '0 12px 30px rgba(79,70,229,0.28)',
+                fontWeight: '600',
+                fontSize: '14px'
             }
         );
 
+        document.body.appendChild(
+            toast
+        );
 
-        /* =====================================================
-           OPEN SEARCH SUGGESTION MODAL
-        ===================================================== */
+        setTimeout(function () {
 
-        function openSuggestionModal(
-            encodedItem
-        )
-        {
+            toast.remove();
 
-            let item =
-                JSON.parse(
-                    decodeURIComponent(
-                        encodedItem
-                    )
-                );
+        }, 2500);
+    }
 
 
-            $('#modalPromptTitle')
-                .text(
-                    item.title
-                );
+    /* =====================================================
+       MODAL COPY
+    ===================================================== */
 
+    function copyModalPrompt() {
 
-            $('#modalPromptText')
-                .text(
-                    item.prompt_text
-                );
+        const textarea =
+            document.getElementById(
+                'modalHiddenTextarea'
+            );
 
+        const btnElement =
+            document.getElementById(
+                'modalCopyBtn'
+            );
 
-            $('#modalHiddenTextarea')
-                .val(
-                    item.prompt_text
-                );
-
-
-            $('#modalCategoryBadge')
-                .text(
-                    item.category
-                        ? item.category.name
-                        : 'General'
-                );
-
-
-            if (item.image) {
-
-                $('#modalPromptImage')
-                    .attr(
-                        'src',
-                        "{{ asset('storage') }}/"
-                        + item.image
-                    );
-
-
-                $('#modalImageContainer')
-                    .show();
-
-            } else {
-
-                $('#modalImageContainer')
-                    .hide();
-
-            }
-
-
-            $('#suggestionList')
-                .hide();
-
-
-            $('#prompt-search')
-                .val('');
-
-
-            let myModal =
-                new bootstrap.Modal(
-                    document.getElementById(
-                        'quickSuggestionModal'
-                    )
-                );
-
-
-            myModal.show();
-
+        if (
+            !textarea ||
+            !btnElement
+        ) {
+            return;
         }
 
+        copyTextToClipboard(
+            textarea.value,
+            btnElement
+        );
+    }
 
-        /* =====================================================
-           CLOSE SEARCH SUGGESTIONS
-        ===================================================== */
 
-        $(document).click(
-            function (e) {
+    /* =====================================================
+       SEARCH SUGGESTIONS
+    ===================================================== */
 
-                if (
-                    !$(e.target).closest(
-                        '#prompt-search, #suggestionList'
-                    ).length
-                ) {
+    $(document).ready(function () {
+
+        $('#prompt-search').on(
+            'keyup',
+            function () {
+
+                let query =
+                    $(this).val();
+
+                if (query.length > 1) {
+
+                    $.ajax({
+
+                        url:
+                            "{{ route('search.suggestions') }}",
+
+                        method:
+                            "GET",
+
+                        data: {
+                            query: query
+                        },
+
+                        success:
+                            function (data) {
+
+                                let list =
+                                    $('#suggestionList');
+
+                                list.empty();
+
+                                if (
+                                    data.length > 0
+                                ) {
+
+                                    list.show();
+
+                                    data.forEach(
+                                        function (item) {
+
+                                            let safeItem =
+                                                encodeURIComponent(
+                                                    JSON.stringify(item)
+                                                );
+
+                                            list.append(`
+                                                <li
+                                                    class="list-group-item list-group-item-action text-dark"
+                                                    style="cursor:pointer;"
+                                                    onclick="openSuggestionModal('${safeItem}')"
+                                                >
+                                                    <i class="bi bi-search me-2 text-primary"></i>
+                                                    ${item.title}
+                                                </li>
+                                            `);
+                                        }
+                                    );
+
+                                } else {
+
+                                    list.hide();
+                                }
+                            },
+
+                        error:
+                            function (xhr) {
+
+                                console.error(
+                                    'Search suggestion error:',
+                                    xhr
+                                );
+
+                                $('#suggestionList')
+                                    .hide();
+                            }
+                    });
+
+                } else {
 
                     $('#suggestionList')
                         .hide();
-
                 }
-
             }
         );
+    });
 
 
-        /* =====================================================
-           READ MORE / READ LESS
-        ===================================================== */
+    /* =====================================================
+       OPEN SEARCH SUGGESTION MODAL
+    ===================================================== */
 
-        function toggleModalText(
-            promptId
-        )
-        {
+    function openSuggestionModal(
+        encodedItem
+    ) {
 
-            const shortTextEl =
-                document.getElementById(
-                    `modal-text-short-${promptId}`
+        let item =
+            JSON.parse(
+                decodeURIComponent(
+                    encodedItem
+                )
+            );
+
+        $('#modalPromptTitle')
+            .text(item.title);
+
+        $('#modalPromptText')
+            .text(item.prompt_text);
+
+        $('#modalHiddenTextarea')
+            .val(item.prompt_text);
+
+        $('#modalCategoryBadge')
+            .text(
+                item.category
+                    ? item.category.name
+                    : 'General'
+            );
+
+        if (item.image) {
+
+            $('#modalPromptImage')
+                .attr(
+                    'src',
+                    "{{ asset('storage') }}/" +
+                    item.image
                 );
 
+            $('#modalImageContainer')
+                .show();
 
-            const fullTextEl =
-                document.getElementById(
-                    `modal-text-full-${promptId}`
-                );
+        } else {
 
-
-            if (
-                !shortTextEl ||
-                !fullTextEl
-            ) {
-                return;
-            }
-
-
-            const btnEl =
-                shortTextEl
-                    .closest('.modal-prompt-text')
-                    .querySelector(
-                        'button'
-                    );
-
-
-            if (
-                fullTextEl.style.display === 'none'
-            ) {
-
-                fullTextEl.style.display =
-                    'block';
-
-
-                shortTextEl.style.display =
-                    'none';
-
-
-                btnEl.innerHTML =
-                    'Read Less <i class="bi bi-chevron-up"></i>';
-
-            } else {
-
-                fullTextEl.style.display =
-                    'none';
-
-
-                shortTextEl.style.display =
-                    'block';
-
-
-                btnEl.innerHTML =
-                    'Read More <i class="bi bi-chevron-down"></i>';
-
-            }
-
+            $('#modalImageContainer')
+                .hide();
         }
 
+        $('#suggestionList')
+            .hide();
 
-        /* =====================================================
-           SAVE PROMPT
-        ===================================================== */
+        $('#prompt-search')
+            .val('');
 
-        function toggleSavePrompt(button)
-        {
+        let myModal =
+            new bootstrap.Modal(
+                document.getElementById(
+                    'quickSuggestionModal'
+                )
+            );
 
-            if (!button) {
-                return;
+        myModal.show();
+    }
+
+
+    /* =====================================================
+       CLOSE SEARCH SUGGESTIONS
+    ===================================================== */
+
+    $(document).click(function (e) {
+
+        if (
+            !$(e.target).closest(
+                '#prompt-search, #suggestionList'
+            ).length
+        ) {
+
+            $('#suggestionList')
+                .hide();
+        }
+    });
+
+
+    /* =====================================================
+       READ MORE / READ LESS
+    ===================================================== */
+
+    function toggleModalText(
+        promptId
+    ) {
+
+        const shortTextEl =
+            document.getElementById(
+                `modal-text-short-${promptId}`
+            );
+
+        const fullTextEl =
+            document.getElementById(
+                `modal-text-full-${promptId}`
+            );
+
+        if (
+            !shortTextEl ||
+            !fullTextEl
+        ) {
+            return;
+        }
+
+        const btnEl =
+            shortTextEl
+                .closest('.modal-prompt-text')
+                ?.querySelector('button');
+
+        if (!btnEl) {
+            return;
+        }
+
+        if (
+            fullTextEl.style.display ===
+            'none'
+        ) {
+
+            fullTextEl.style.display =
+                'block';
+
+            shortTextEl.style.display =
+                'none';
+
+            btnEl.innerHTML =
+                'Read Less <i class="bi bi-chevron-up"></i>';
+
+        } else {
+
+            fullTextEl.style.display =
+                'none';
+
+            shortTextEl.style.display =
+                'block';
+
+            btnEl.innerHTML =
+                'Read More <i class="bi bi-chevron-down"></i>';
+        }
+    }
+
+
+    /* =====================================================
+       SAVE PROMPT
+    ===================================================== */
+
+    function toggleSavePrompt(
+        button
+    ) {
+
+        if (!button) {
+            return;
+        }
+
+        if (
+            button.dataset.saving ===
+            '1'
+        ) {
+            return;
+        }
+
+        const promptId =
+            button.dataset.promptId;
+
+        const saveUrl =
+            button.dataset.saveUrl;
+
+        if (
+            !promptId ||
+            !saveUrl
+        ) {
+
+            console.error(
+                'Save Prompt Error: prompt id or save URL missing.'
+            );
+
+            showSaveToast(
+                'Unable to save this prompt.',
+                false
+            );
+
+            return;
+        }
+
+        const currentlySaved =
+            button.dataset.saved ===
+            '1';
+
+        const action =
+            currentlySaved
+                ? 'remove'
+                : 'save';
+
+        button.dataset.saving =
+            '1';
+
+        button.disabled =
+            true;
+
+        fetch(
+            saveUrl,
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json',
+
+                    'X-CSRF-TOKEN':
+                        document
+                            .querySelector(
+                                'meta[name="csrf-token"]'
+                            )
+                            ?.getAttribute(
+                                'content'
+                            ),
+
+                    'Accept':
+                        'application/json'
+                },
+
+                body:
+                    JSON.stringify({
+                        action:
+                            action
+                    })
             }
+        )
+        .then(
+            async function (response) {
 
+                let data = {};
 
-            if (button.dataset.saving === '1') {
-                return;
+                try {
+
+                    data =
+                        await response.json();
+
+                } catch (error) {
+
+                    data = {};
+                }
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        'Unable to update saved prompt.'
+                    );
+                }
+
+                return data;
             }
+        )
+        .then(
+            function (data) {
 
+                const saved =
+                    data.saved === true ||
+                    data.saved === 1 ||
+                    data.saved === '1';
 
-            const promptId =
-                button.dataset.promptId;
+                document
+                    .querySelectorAll(
+                        '.save-btn[data-prompt-id="' +
+                        promptId +
+                        '"]'
+                    )
+                    .forEach(
+                        function (saveButton) {
 
-            const saveUrl =
-                button.dataset.saveUrl;
+                            const saveIcon =
+                                saveButton.querySelector(
+                                    'i'
+                                );
 
+                            const saveText =
+                                saveButton.querySelector(
+                                    'span'
+                                );
 
-            if (
-                !promptId ||
-                !saveUrl
-            ) {
+                            saveButton.dataset.saved =
+                                saved
+                                    ? '1'
+                                    : '0';
+
+                            saveButton.classList.toggle(
+                                'saved',
+                                saved
+                            );
+
+                            saveButton.title =
+                                saved
+                                    ? 'Remove from Saved'
+                                    : 'Save Prompt';
+
+                            if (saveIcon) {
+
+                                saveIcon.classList.remove(
+                                    'bi-bookmark',
+                                    'bi-bookmark-fill'
+                                );
+
+                                saveIcon.classList.add(
+                                    saved
+                                        ? 'bi-bookmark-fill'
+                                        : 'bi-bookmark'
+                                );
+                            }
+
+                            if (saveText) {
+
+                                saveText.textContent =
+                                    saved
+                                        ? 'Saved'
+                                        : 'Save';
+                            }
+                        }
+                    );
+
+                showSaveToast(
+                    saved
+                        ? 'Prompt saved successfully!'
+                        : 'Removed from saved list.',
+                    saved
+                );
+            }
+        )
+        .catch(
+            function (error) {
 
                 console.error(
-                    'Save Prompt Error: prompt id or save URL missing.'
+                    'Save Prompt Error:',
+                    error
                 );
 
                 showSaveToast(
-                    'Unable to save this prompt.',
+                    error.message ||
+                    'Something went wrong. Please try again.',
                     false
                 );
-
-                return;
             }
-
-
-            const currentlySaved =
-                button.dataset.saved === '1';
-
-
-            const action =
-                currentlySaved
-                    ? 'remove'
-                    : 'save';
-
-
-            button.dataset.saving =
-                '1';
-
-            button.disabled =
-                true;
-
-
-            fetch(
-                saveUrl,
-                {
-                    method: 'POST',
-
-                    headers: {
-
-                        'Content-Type':
-                            'application/json',
-
-                        'X-CSRF-TOKEN':
-                            document
-                                .querySelector(
-                                    'meta[name="csrf-token"]'
-                                )
-                                .getAttribute(
-                                    'content'
-                                ),
-
-                        'Accept':
-                            'application/json'
-                    },
-
-                    body:
-                        JSON.stringify({
-                            action:
-                                action
-                        })
-                }
-            )
-            .then(
-                async function (response) {
-
-                    let data = {};
-
-                    try {
-
-                        data =
-                            await response.json();
-
-                    } catch (error) {
-
-                        data = {};
-
-                    }
-
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            data.message ||
-                            'Unable to update saved prompt.'
-                        );
-
-                    }
-
-
-                    return data;
-
-                }
-            )
-            .then(
-                function (data) {
-
-                    const saved =
-                        data.saved === true ||
-                        data.saved === 1 ||
-                        data.saved === '1';
-
-
-                    document
-                        .querySelectorAll(
-                            '.save-btn[data-prompt-id="' +
-                            promptId +
-                            '"]'
-                        )
-                        .forEach(
-                            function (saveButton) {
-
-                                const saveIcon =
-                                    saveButton.querySelector(
-                                        'i'
-                                    );
-
-
-                                const saveText =
-                                    saveButton.querySelector(
-                                        'span'
-                                    );
-
-
-                                saveButton.dataset.saved =
-                                    saved
-                                        ? '1'
-                                        : '0';
-
-
-                                saveButton.classList.toggle(
-                                    'saved',
-                                    saved
-                                );
-
-
-                                saveButton.title =
-                                    saved
-                                        ? 'Remove from Saved'
-                                        : 'Save Prompt';
-
-
-                                if (saveIcon) {
-
-                                    saveIcon.classList.remove(
-                                        'bi-bookmark',
-                                        'bi-bookmark-fill'
-                                    );
-
-
-                                    saveIcon.classList.add(
-                                        saved
-                                            ? 'bi-bookmark-fill'
-                                            : 'bi-bookmark'
-                                    );
-
-                                }
-
-
-                                if (saveText) {
-
-                                    saveText.textContent =
-                                        saved
-                                            ? 'Saved'
-                                            : 'Save';
-
-                                }
-
-                            }
-                        );
-
-
-                    showSaveToast(
-                        saved
-                            ? 'Prompt saved successfully!'
-                            : 'Removed from saved list.',
-                        saved
-                    );
-
-                }
-            )
-            .catch(
-                function (error) {
-
-                    console.error(
-                        'Save Prompt Error:',
-                        error
-                    );
-
-
-                    showSaveToast(
-                        error.message ||
-                        'Something went wrong. Please try again.',
-                        false
-                    );
-
-                }
-            )
-            .finally(
-                function () {
-
-                    button.dataset.saving =
-                        '0';
-
-                    button.disabled =
-                        false;
-
-                }
-            );
-
-        }
-
-
-        /* =====================================================
-           SAVE TOAST
-        ===================================================== */
-
-        function showSaveToast(
-            message,
-            saved = true
         )
-        {
+        .finally(
+            function () {
 
-            const oldToast =
-                document.getElementById(
-                    'saveSuccessToast'
-                );
+                button.dataset.saving =
+                    '0';
 
-
-            if (oldToast) {
-                oldToast.remove();
+                button.disabled =
+                    false;
             }
+        );
+    }
 
 
-            const toast =
-                document.createElement(
-                    'div'
-                );
+    /* =====================================================
+       SAVE TOAST
+    ===================================================== */
 
+    function showSaveToast(
+        message,
+        saved = true
+    ) {
 
-            toast.id =
-                'saveSuccessToast';
-
-
-            toast.innerHTML = `
-                <i class="bi ${
-                    saved
-                        ? 'bi-bookmark-check-fill'
-                        : 'bi-bookmark-x-fill'
-                } me-2"></i>
-
-                <span>${message}</span>
-            `;
-
-
-            toast.style.position =
-                'fixed';
-
-            toast.style.bottom =
-                '25px';
-
-            toast.style.right =
-                '25px';
-
-            toast.style.zIndex =
-                '99999';
-
-            toast.style.background =
-                saved
-                    ? 'linear-gradient(135deg,#6366f1,#7c3aed)'
-                    : 'linear-gradient(135deg,#64748b,#475569)';
-
-            toast.style.color =
-                '#ffffff';
-
-            toast.style.padding =
-                '13px 18px';
-
-            toast.style.borderRadius =
-                '12px';
-
-            toast.style.boxShadow =
-                '0 12px 30px rgba(79,70,229,0.28)';
-
-            toast.style.fontWeight =
-                '600';
-
-            toast.style.fontSize =
-                '14px';
-
-            toast.style.display =
-                'flex';
-
-            toast.style.alignItems =
-                'center';
-
-            toast.style.gap =
-                '2px';
-
-
-            document.body.appendChild(
-                toast
+        const oldToast =
+            document.getElementById(
+                'saveSuccessToast'
             );
 
-
-            setTimeout(
-                function () {
-
-                    if (toast) {
-                        toast.remove();
-                    }
-
-                },
-                2500
-            );
-
+        if (oldToast) {
+            oldToast.remove();
         }
 
-    </script>
+        const toast =
+            document.createElement(
+                'div'
+            );
+
+        toast.id =
+            'saveSuccessToast';
+
+        toast.innerHTML = `
+            <i class="bi ${
+                saved
+                    ? 'bi-bookmark-check-fill'
+                    : 'bi-bookmark-x-fill'
+            } me-2"></i>
+            <span>${message}</span>
+        `;
+
+        Object.assign(
+            toast.style,
+            {
+                position: 'fixed',
+                bottom: '25px',
+                right: '25px',
+                zIndex: '99999',
+                background:
+                    saved
+                        ? 'linear-gradient(135deg,#6366f1,#7c3aed)'
+                        : 'linear-gradient(135deg,#64748b,#475569)',
+                color: '#ffffff',
+                padding: '13px 18px',
+                borderRadius: '12px',
+                boxShadow: '0 12px 30px rgba(79,70,229,0.28)',
+                fontWeight: '600',
+                fontSize: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2px'
+            }
+        );
+
+        document.body.appendChild(
+            toast
+        );
+
+        setTimeout(function () {
+
+            if (toast) {
+                toast.remove();
+            }
+
+        }, 2500);
+    }
+</script>
