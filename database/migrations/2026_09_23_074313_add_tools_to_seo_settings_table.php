@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('seo_settings', function (Blueprint $table) {
-            $table->json('tools')->nullable()->after('meta_keywords');
-        });
+    $table->json('tools')->nullable()->after('meta_keywords');
+});
     }
 
     public function down(): void

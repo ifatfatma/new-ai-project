@@ -77,11 +77,16 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
     ]);
 })->middleware('auth')->name('prompts.copy.track');
 
+// Authenticated Frontend User Routes Group
 Route::middleware(['auth'])->group(function () {
     Route::get('/my-prompts', [FrontendController::class, 'myPrompts'])->name('user.prompts');
     Route::get('/my-prompts/{id}/edit', [FrontendController::class, 'editPrompt'])->name('user.prompts.edit');
     Route::put('/my-prompts/{id}', [FrontendController::class, 'updatePrompt'])->name('user.prompts.update');
     Route::delete('/my-prompts/{id}', [FrontendController::class, 'destroyPrompt'])->name('user.prompts.destroy');
+
+    // Saved Prompts Routes (Shifted here from admin group)
+    Route::post('/prompts/{prompt}/save', [SavedPromptController::class, 'toggle'])->name('prompts.save');
+    Route::get('/my-saved-prompts', [SavedPromptController::class, 'index'])->name('user.saved-prompts');
 });
 
 
@@ -126,7 +131,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/prompts/create', [PromptController::class, 'create'])->name('admin.prompts.create');
         Route::post('/prompts/store', [PromptController::class, 'store'])->name('admin.prompts.store');
         
-        // Yeh line theek ki gayi hai taaki 404 error na aaye
         Route::get('/prompts/{id}', [PromptController::class, 'show'])->name('admin.prompts.show');
         
         Route::get('/prompts/{id}/edit', [PromptController::class, 'edit'])->name('admin.prompts.edit');
@@ -135,18 +139,4 @@ Route::prefix('admin')->group(function () {
         Route::post('/prompts/{id}/approve', [PromptController::class, 'approve'])->name('admin.prompts.approve');
         Route::post('/prompts/{id}/reject', [PromptController::class, 'reject'])->name('admin.prompts.reject');
     });
-
-    Route::middleware('auth')->group(function () {
-
-    Route::post(
-        '/prompts/{prompt}/save',
-        [SavedPromptController::class, 'toggle']
-    )->name('prompts.save');
-
-    Route::get(
-        '/my-saved-prompts',
-        [SavedPromptController::class, 'index']
-    )->name('user.saved-prompts');
-
-});
 });

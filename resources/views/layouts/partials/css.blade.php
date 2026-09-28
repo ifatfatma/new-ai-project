@@ -18,7 +18,7 @@
 
 <style>
     body, .main-panel {
-        padding-top: 70px !important;
+        padding-top: 70px ;
     }
 
     .prompts-container {
@@ -28,14 +28,14 @@
     }
 
     .prompt-card { 
-        break-inside: avoid !important; 
-        margin-bottom: 16px !important; 
-        background: #ffffff !important;
-        border-radius: 16px !important; 
-        border: 1px solid #eaeaea !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
-        display: inline-block !important;
-        width: 100% !important;
+        break-inside: avoid ; 
+        margin-bottom: 16px t; 
+        background: #ffffff t;
+        border-radius: 16px ; 
+        border: 1px solid #eaeaea ;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        display: inline-block ;
+        width: 100% ;
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
@@ -51,8 +51,8 @@
         color: #4b5563;
         line-height: 1.5;
         max-height: 4.5em; 
-        overflow: hidden;        /* Mistake fixed here */
-        text-overflow: ellipsis; /* Mistake fixed here */
+        overflow: hidden;        
+        text-overflow: ellipsis; 
         display: block;
     }
 

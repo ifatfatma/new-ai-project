@@ -2727,7 +2727,7 @@
                                 rows="5"
                                 placeholder="Write your prompt here...
 
-Use [1], [2], [3] for optional details that users can customize."
+Use [1], [2], [3] for optional details that can be customize."
                                 required
                             >{{ old('prompt_text') }}</textarea>
 

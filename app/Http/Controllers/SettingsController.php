@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SeoSetting;
-use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class SettingsController extends Controller
 {
-    public function index()
+   public function index()
     {
-        $user = auth()->user();
-
-        $seo = SeoSetting::first() ?? new SeoSetting();
-
-        return view('pages.admin.setting', compact('user', 'seo'));
+        $user = auth()->user(); 
+        return view('pages.admin.setting', compact('user')); 
     }
 
     public function updateProfile(Request $request)
@@ -43,19 +38,15 @@ class SettingsController extends Controller
         $user = auth()->user();
 
         if ($request->hasFile('logo')) {
-
             $destinationPath = public_path('uploads/logos');
-
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0755, true);
             }
 
-            $imageName = time() . '.' . $request->logo->extension();
-
+            $imageName = time() . '.' . $request->logo->extension();  
             $request->logo->move($destinationPath, $imageName);
-
+            
             $user->logo = 'uploads/logos/' . $imageName;
-
             $user->save();
         }
 
@@ -72,39 +63,32 @@ class SettingsController extends Controller
         $user = auth()->user();
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors([
-                'current_password' => 'Current password does not match.'
-            ]);
+            return back()->withErrors(['current_password' => 'Current password does not match.']);
         }
 
         $user->password = Hash::make($request->password);
-
         $user->save();
 
         return back()->with('success', 'Password changed successfully!');
     }
 
+
+
     public function updateLoginBackground(Request $request)
-    {
-        $request->validate([
-            'login_background' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
+{
+    $request->validate([
+        'login_background' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+    ]);
 
-        if ($request->hasFile('login_background')) {
+    if ($request->hasFile('login_background')) {
+        $imagePath = $request->file('login_background')->store('settings', 'public');
 
-            $imagePath = $request
-                ->file('login_background')
-                ->store('settings', 'public');
-
-            Setting::updateOrCreate(
-                ['key' => 'login_background'],
-                ['value' => $imagePath]
-            );
-        }
-
-        return back()->with(
-            'success',
-            'Admin login background updated successfully!'
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'login_background'],
+            ['value' => $imagePath]
         );
     }
+
+    return back()->with('success', 'Admin login background updated successfully!');
+}
 }
