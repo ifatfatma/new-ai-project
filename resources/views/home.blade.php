@@ -3038,88 +3038,63 @@ Use [1], [2], [3] for optional details that can be customize."
 
         /* =====================================================
            COPY PROMPT
-           VARIABLES ARE REQUIRED
+           VARIABLES ARE OPTIONAL
         ===================================================== */
 
-        function copyPrompt(
-            elementId,
-            btnElement,
-            promptId
-        )
-        {
-            const element = document.getElementById(elementId);
+        function copyPrompt(elementId, btnElement, promptId) {
+    const element = document.getElementById(elementId);
 
-            if (!element) {
-                return;
+    if (!element) {
+        return;
+    }
+
+    const originalText = element.value;
+
+    let scope = btnElement.closest('.modal');
+
+    if (!scope) {
+        scope = btnElement.closest('.prompt-card');
+    }
+
+    if (!scope) {
+        scope = document;
+    }
+
+    const variableFields = scope.querySelectorAll(
+        `.prompt-variable-input[data-prompt-id="${promptId}"]`
+    );
+
+    if (variableFields.length === 0) {
+        copyTextToClipboard(originalText, btnElement, promptId);
+        return;
+    }
+
+    const values = {};
+
+    variableFields.forEach(function (field) {
+        const variable = field.dataset.variable;
+        values[variable] = field.value.trim();
+    });
+
+ 
+    const textToCopy = originalText.replace(
+        /\[([^\[\]]+)\]/g,
+        function (match, variableToken) {
+            const key = variableToken.trim();
+
+            if (
+                Object.prototype.hasOwnProperty.call(values, key) &&
+                values[key] !== ''
+            ) {
+                return values[key];
             }
 
-            const originalText = element.value;
-
-            let scope = btnElement.closest('.modal');
-
-            if (!scope) {
-                scope = btnElement.closest('.prompt-card');
-            }
-
-            if (!scope) {
-                scope = document;
-            }
-
-            const variableFields = scope.querySelectorAll(
-                `.prompt-variable-input[data-prompt-id="${promptId}"]`
-            );
-
-            if (variableFields.length === 0) {
-                copyTextToClipboard(
-                    originalText,
-                    btnElement,
-                    promptId
-                );
-                return;
-            }
-
-            const values = {};
-            let firstEmptyField = null;
-
-            variableFields.forEach(function (field) {
-                const variableNumber = field.dataset.variable;
-                const value = field.value.trim();
-
-                values[variableNumber] = value;
-
-                if (value === '' && !firstEmptyField) {
-                    firstEmptyField = field;
-                }
-            });
-
-            if (firstEmptyField) {
-                firstEmptyField.focus();
-                showVariableToast(
-                    `Please fill ${firstEmptyField.closest('.prompt-variable-field')?.querySelector('.prompt-variable-label')?.textContent.trim() || 'Variable ' + firstEmptyField.dataset.variable}.`
-                );
-                return;
-            }
-
-            const textToCopy = originalText.replace(
-                /\[([^\[\]]+)\]/g,
-                function (match, variableToken) {
-                    const key = variableToken.trim();
-
-                    return Object.prototype.hasOwnProperty.call(
-                        values,
-                        key
-                    )
-                        ? values[key]
-                        : match;
-                }
-            );
-
-            copyTextToClipboard(
-                textToCopy,
-                btnElement,
-                promptId
-            );
+            return match;
         }
+    );
+
+    copyTextToClipboard(textToCopy, btnElement, promptId);
+}
 
 
         /* =====================================================

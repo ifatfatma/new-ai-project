@@ -77,7 +77,7 @@ class PromptController extends Controller
     |--------------------------------------------------------------------------
     */
 
-  public function create()
+    public function create()
     {
         $categories = Category::all();
 
@@ -527,9 +527,9 @@ class PromptController extends Controller
 
 
     /*
-    |--------------------------------------------------------------------------
-    | SHOW PROMPT
-    |--------------------------------------------------------------------------
+   
+    SHOW PROMPT
+    
     */
 
     public function show($id)

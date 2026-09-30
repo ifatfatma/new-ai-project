@@ -1,36 +1,27 @@
 <?php
 
-namespace App\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-
-class User extends Authenticatable
+return new class extends Migration
 {
-    use HasFactory, Notifiable;
-
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'logo',
-        'profile_image',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'otp',
-    ];
-
-    protected function casts(): array
+    public function up(): void
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'otp_expires_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        Schema::table('users', function (Blueprint $table) {
+            if (!Schema::hasColumn('users', 'otp')) {
+                $table->string('otp')->nullable();
+            }
+            if (!Schema::hasColumn('users', 'otp_expires_at')) {
+                $table->timestamp('otp_expires_at')->nullable();
+            }
+        });
     }
-}
+
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['otp', 'otp_expires_at']);
+        });
+    }
+};

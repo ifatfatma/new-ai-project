@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-    {
-        Schema::table('seo_settings', function (Blueprint $table) {
-    $table->json('tools')->nullable()->after('meta_keywords');
-});
-    }
+{
+    Schema::table('seo_settings', function (Blueprint $table) {
+        if (!Schema::hasColumn('seo_settings', 'tools')) {
+            $table->json('tools')->nullable()->after('meta_keywords');
+        }
+    });
+}
 
     public function down(): void
     {

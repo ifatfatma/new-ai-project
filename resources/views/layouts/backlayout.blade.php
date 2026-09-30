@@ -1,61 +1,44 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta charset="utf-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Admin Dashboard - AI Prompt Project</title>
 
-    {{-- CSS --}}
     @include('layouts.partials.css')
-
 </head>
 
 <body>
-
     <div class="container-scroller">
 
-        {{-- Header --}}
+        <!-- Header -->
         @include('layouts.partials.header')
-
 
         <div class="container-fluid page-body-wrapper">
 
-            {{-- Sidebar --}}
+            <!-- Sidebar -->
             @include('layouts.partials.nav')
 
-
+            <!-- Main Panel -->
             <div class="main-panel">
 
-                {{-- Main Content --}}
+                <!-- Main Content -->
                 <div class="content-wrapper">
-
                     @yield('content')
-
                 </div>
-                {{-- content-wrapper ends --}}
 
-
-                {{-- Footer --}}
+                <!-- Footer -->
                 @include('layouts.partials.footer')
 
             </div>
-            {{-- main-panel ends --}}
-
         </div>
-        {{-- page-body-wrapper ends --}}
-
     </div>
-    {{-- container-scroller --}}
 
-
-    {{-- JavaScript --}}
+    <!-- JavaScript -->
     @include('layouts.partials.js')
-
 </body>
-
 </html>

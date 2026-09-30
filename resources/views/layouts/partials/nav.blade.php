@@ -11,7 +11,7 @@
 
     <!-- Categories & Prompts Dropdown -->
     <li class="nav-item">
-     
+      
       <a class="nav-link {{ request()->routeIs('admin.categories.*') || request()->routeIs('admin.prompts.*') ? '' : 'collapsed' }}" id="categoryToggleBtn" href="javascript:void(0);" style="cursor: pointer;">
         <i class="menu-icon mdi mdi-folder-cog-outline"></i>
         <span class="menu-title">Prompts</span>
