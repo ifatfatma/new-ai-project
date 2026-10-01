@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'test@gmail.com'],
             [
                 'name' => 'Admin',
+                'user_type' => 'admin',
                 'password' => Hash::make('12345678'),
             ]
         );

@@ -10,6 +10,7 @@ class UserAccountController extends Controller
     public function edit()
     {
         $user = auth()->user();
+        dd($user->id);
 
         return view('pages.front.edit-account', compact('user'));
     }
