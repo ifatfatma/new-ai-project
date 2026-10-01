@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -11,17 +12,27 @@ return new class extends Migration
         Schema::create('saved_prompts', function (Blueprint $table) {
             $table->id();
 
+            // Admin / existing users
             $table->foreignId('user_id')
-                ->constrained()
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            // Frontend users
+            $table->foreignId('frontend_user_id')
+                ->nullable()
+                ->constrained('frontend_users')
                 ->cascadeOnDelete();
 
             $table->foreignId('prompt_id')
-                ->constrained()
+                ->constrained('prompts')
                 ->cascadeOnDelete();
 
             $table->timestamps();
 
+            // Prevent duplicate saves for each user type
             $table->unique(['user_id', 'prompt_id']);
+            $table->unique(['frontend_user_id', 'prompt_id']);
         });
     }
 

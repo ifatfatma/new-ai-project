@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,15 +9,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('seo_settings', function (Blueprint $table) {
-            $table->json('tools')->nullable()->after('meta_keywords');
+        Schema::table('prompts', function (Blueprint $table) {
+            $table->json('ai_tool')->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::table('seo_settings', function (Blueprint $table) {
-            $table->dropColumn('tools');
+        Schema::table('prompts', function (Blueprint $table) {
+            $table->dropColumn('ai_tool');
         });
     }
 };

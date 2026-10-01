@@ -6,13 +6,14 @@ use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PromptController;
 use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfileController; // Admin Profile Controller
 use App\Models\Prompt;
 use App\Models\PromptCopy;
 use App\Http\Controllers\FrontendAuthController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\SavedPromptController;
+use App\Http\Controllers\UserAccountController; // Frontend User Account Controller
 
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
@@ -27,10 +28,10 @@ Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])->na
 Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
 
-// Frontend / Public Prompt Store Route (Fixes the Route [prompts.store] not defined error)
+// Frontend / Public Prompt Store Route
 Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
 
-// Strict User-Only Copy Tracking Route (1 Email = 1 Count per Day)
+// Strict User-Only Copy Tracking Route
 Route::post('/prompts/{id}/copy-track', function ($id) {
     if (!auth()->check()) {
         return response()->json([
@@ -84,9 +85,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/my-prompts/{id}', [FrontendController::class, 'updatePrompt'])->name('user.prompts.update');
     Route::delete('/my-prompts/{id}', [FrontendController::class, 'destroyPrompt'])->name('user.prompts.destroy');
 
-    // Saved Prompts Routes (Shifted here from admin group)
+    // Saved Prompts Routes
     Route::post('/prompts/{prompt}/save', [SavedPromptController::class, 'toggle'])->name('prompts.save');
     Route::get('/my-saved-prompts', [SavedPromptController::class, 'index'])->name('user.saved-prompts');
+
+
+    Route::get('/my-profile', [UserAccountController::class, 'edit'])->name('user.profile.edit');
+    Route::patch('/my-profile', [UserAccountController::class, 'update'])->name('user.profile.update');
 });
 
 
@@ -103,6 +108,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/analytics/copies', [HomeController::class, 'copyAnalytics'])->name('admin.analytics.copies');
         Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
+        // ADMIN PROFILE ROUTES
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');

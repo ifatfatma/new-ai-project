@@ -6,10 +6,10 @@
           &copy; {{ date('Y') }} <strong class="text-dark">AI Prompt Hub</strong>. All rights reserved.
         </span>
       </div>
-      <div class="col-md-6 text-center text-md-end">
+      <!-- <div class="col-md-6 text-center text-md-end">
         <span class="text-muted small me-2">Need help?</span>
         <a href="mailto:support@ai_prompt_hub.com" class="btn btn-sm btn-outline-primary">Contact Support</a>
-      </div>
+      </div> -->
     </div>
   </div>
 </footer>

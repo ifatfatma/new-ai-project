@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\FrontendUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,9 +14,9 @@ class SendOtpMail extends Mailable
     use Queueable, SerializesModels;
 
     public $otp;
-    public $user;
+    public FrontendUser $user;
 
-    public function __construct($otp, $user)
+    public function __construct(string $otp, FrontendUser $user)
     {
         $this->otp = $otp;
         $this->user = $user;
@@ -31,7 +32,7 @@ class SendOtpMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.otp', // Yeh email view hum agle step me banayenge
+            view: 'emails.otp',
         );
     }
 }
