@@ -7,7 +7,6 @@ use App\Models\FrontendUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log; // <-- Yahan Log facade import karein
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -182,7 +181,7 @@ class FrontendAuthController extends Controller
 
         RateLimiter::clear($verifyKey);
 
-        // 🌟 Yahan zaroori badlaav: Frontend guard use karein
+       
         Auth::guard('frontend')->login($user);
         $request->session()->regenerate();
 
@@ -194,7 +193,7 @@ class FrontendAuthController extends Controller
 
     public function logout(Request $request)
     {
-        // 🌟 Yahan bhi frontend guard use karein
+     
         Auth::guard('frontend')->logout();
 
         $request->session()->invalidate();
