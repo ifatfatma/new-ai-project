@@ -162,7 +162,7 @@ Code:
                 @csrf
                 <div class="mb-3">
                     <label class="form-label fw-bold small text-dark">Email Address</label>
-                    <input type="email" name="email" class="form-control" value="test@gmail.com" required placeholder="name@example.com">
+                    <input type="email" name="email" class="form-control" value="" required placeholder="name@example.com">
                     @error('email')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror

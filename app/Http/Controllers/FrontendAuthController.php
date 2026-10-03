@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log; // <-- Yahan Log facade import karein
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use App\Services\BrevoMailService;
+
 use Throwable;
 
 class FrontendAuthController extends Controller
@@ -20,76 +22,89 @@ class FrontendAuthController extends Controller
         return view('auth.frontend-login');
     }
 
-    public function sendOtp(Request $request)
-    {
-        $request->validate([
-            'email' => ['required', 'email', 'max:255'],
-        ]);
+    public function sendOtp(Request $request, BrevoMailService $brevoMail)
+{
+    $request->validate([
+        'email' => ['required', 'email', 'max:255'],
+    ]);
 
-        $email = Str::lower($request->email);
+    $email = Str::lower($request->email);
 
-        $sendKey = 'otp-send:' . sha1($email . '|' . $request->ip());
+    $sendKey = 'otp-send:' . sha1($email . '|' . $request->ip());
 
-        if (RateLimiter::tooManyAttempts($sendKey, 3)) {
-            $seconds = RateLimiter::availableIn($sendKey);
+    if (RateLimiter::tooManyAttempts($sendKey, 3)) {
+        $seconds = RateLimiter::availableIn($sendKey);
 
-            return back()
-                ->withInput($request->only('email'))
-                ->withErrors([
-                    'email' => "Too many OTP requests. Please try again in {$seconds} seconds.",
-                ]);
-        }
-
-        RateLimiter::hit($sendKey, 60);
-
-        $user = FrontendUser::firstOrCreate(
-            ['email' => $email],
-            [
-                'name' => Str::before($email, '@'),
-                'password' => Str::random(32),
-            ]
-        );
-
-        // Generate a 6-digit OTP.
-        $otp = (string) random_int(100000, 999999);
-
-        // Store the OTP as a hash.
-        $user->otp = Hash::make($otp);
-        $user->otp_expires_at = now()->addMinutes(10);
-        $user->save();
-
-        // 🌟 Yahan OTP ko logs (console) me print karwa rahe hain taaki email fail hone par bhi mil jaye
-        Log::info('--- FRONTEND LOGIN OTP --- : ' . $otp);
-
-        try {
-            // Agar mail config nahi hai ya fail hoti hai, toh try-catch handle kar lega
-            Mail::to($user->email)->send(
-                new SendOtpMail($otp, $user)
-            );
-
-            $request->session()->put('otp_email', $user->email);
-
-            return redirect()
-                ->route('frontend.otp.verify.form')
-                ->with('success', 'OTP sent successfully to your email.');
-
-        } catch (Throwable $e) {
-            // Agar email send fail bhi ho jaye, tab bhi log me OTP mil chuka hoga!
-            logger()->error('OTP email sending failed.', [
-                'email' => $user->email,
-                'error' => $e->getMessage(),
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors([
+                'email' => "Too many OTP requests. Please try again in {$seconds} seconds.",
             ]);
-
-            // Note: Agar aap chahein ki email fail hone par bhi user aage badh sake (local testing ke liye),
-            // toh aap $user->otp = null wala code hata bhi sakte hain. Filhal session put kar dete hain:
-            $request->session()->put('otp_email', $user->email);
-
-            return redirect()
-                ->route('frontend.otp.verify.form')
-                ->with('success', 'OTP generated! (Check log file for OTP since mail failed).');
-        }
     }
 
+    RateLimiter::hit($sendKey, 60);
+
+    $user = FrontendUser::firstOrCreate(
+        ['email' => $email],
+        [
+            'name' => Str::before($email, '@'),
+            'password' => Str::random(32),
+        ]
+    );
+
+    // Generate 6-digit OTP
+    $otp = (string) random_int(100000, 999999);
+
+    // Store hashed OTP
+    $user->otp = Hash::make($otp);
+    $user->otp_expires_at = now()->addMinutes(10);
+    $user->save();
+
+    // Keep OTP in log for development/testing
+    Log::info('--- FRONTEND LOGIN OTP ---', [
+        'email' => $email,
+        'otp' => $otp,
+    ]);
+
+    try {
+
+        // Send through Brevo API
+        $brevoMail->sendOtp(
+            $user->email,
+            $otp,
+            $user
+        );
+
+        // Store email in session only after successful send
+        $request->session()->put('otp_email', $user->email);
+
+        return redirect()
+            ->route('frontend.otp.verify.form')
+            ->with('success', 'OTP sent successfully to your email.');
+
+    } catch (Throwable $e) {
+
+        Log::error('OTP email sending failed.', [
+            'email' => $user->email,
+            'error' => $e->getMessage(),
+        ]);
+
+        /*
+         * Email failed, so invalidate the OTP.
+         * This prevents the user from trying to use an OTP
+         * that was never delivered.
+         */
+        $user->otp = null;
+        $user->otp_expires_at = null;
+        $user->save();
+
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors([
+                'email' => 'Unable to send OTP email. Please try again later.',
+            ]);
+    }
+}
     public function showVerifyForm(Request $request)
     {
         if (!$request->session()->has('otp_email')) {
