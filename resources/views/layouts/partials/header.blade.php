@@ -21,7 +21,8 @@
                 $profileImage
             );
 
-            $profileImageUrl = asset('storage/' . $profileImage);
+            // 🌟 Yahan 'storage/' hata diya hai kyunki file direct public folder me hai
+            $profileImageUrl = asset($profileImage);
         }
     }
 

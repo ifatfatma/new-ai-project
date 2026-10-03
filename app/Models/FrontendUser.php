@@ -15,11 +15,21 @@ class FrontendUser extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'password',       
         'profile_image',
+        'otp',            
+        'otp_expires_at', 
     ];
 
     protected $hidden = [
+        'password',       
         'remember_token',
+        'otp',            
+    ];
+
+    
+    protected $casts = [
+        'otp_expires_at' => 'datetime',
     ];
 
     /**

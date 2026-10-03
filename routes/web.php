@@ -79,7 +79,7 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
 })->middleware('auth')->name('prompts.copy.track');
 
 // Authenticated Frontend User Routes Group
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:frontend'])->group(function () {
     Route::get('/my-prompts', [FrontendController::class, 'myPrompts'])->name('user.prompts');
     Route::get('/my-prompts/{id}/edit', [FrontendController::class, 'editPrompt'])->name('user.prompts.edit');
     Route::put('/my-prompts/{id}', [FrontendController::class, 'updatePrompt'])->name('user.prompts.update');
@@ -89,11 +89,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/prompts/{prompt}/save', [SavedPromptController::class, 'toggle'])->name('prompts.save');
     Route::get('/my-saved-prompts', [SavedPromptController::class, 'index'])->name('user.saved-prompts');
 
-
+    // Frontend User Profile Routes
     Route::get('/my-profile', [UserAccountController::class, 'edit'])->name('user.profile.edit');
     Route::patch('/my-profile', [UserAccountController::class, 'update'])->name('user.profile.update');
 });
-
 
 // 2. ADMIN ROUTES GROUP (/admin)
 Route::prefix('admin')->group(function () {
