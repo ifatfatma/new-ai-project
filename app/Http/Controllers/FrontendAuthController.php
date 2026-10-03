@@ -7,7 +7,6 @@ use App\Models\FrontendUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log; // <-- Yahan Log facade import karein
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -50,19 +49,19 @@ class FrontendAuthController extends Controller
             ]
         );
 
-        // Generate a 6-digit OTP.
+       
         $otp = (string) random_int(100000, 999999);
 
-        // Store the OTP as a hash.
+        
         $user->otp = Hash::make($otp);
         $user->otp_expires_at = now()->addMinutes(10);
         $user->save();
 
-        // 🌟 Yahan OTP ko logs (console) me print karwa rahe hain taaki email fail hone par bhi mil jaye
-        Log::info('--- FRONTEND LOGIN OTP --- : ' . $otp);
+        
+       
 
         try {
-            // Agar mail config nahi hai ya fail hoti hai, toh try-catch handle kar lega
+            
             Mail::to($user->email)->send(
                 new SendOtpMail($otp, $user)
             );
@@ -74,14 +73,13 @@ class FrontendAuthController extends Controller
                 ->with('success', 'OTP sent successfully to your email.');
 
         } catch (Throwable $e) {
-            // Agar email send fail bhi ho jaye, tab bhi log me OTP mil chuka hoga!
+           
             logger()->error('OTP email sending failed.', [
                 'email' => $user->email,
                 'error' => $e->getMessage(),
             ]);
 
-            // Note: Agar aap chahein ki email fail hone par bhi user aage badh sake (local testing ke liye),
-            // toh aap $user->otp = null wala code hata bhi sakte hain. Filhal session put kar dete hain:
+            
             $request->session()->put('otp_email', $user->email);
 
             return redirect()
@@ -167,7 +165,7 @@ class FrontendAuthController extends Controller
 
         RateLimiter::clear($verifyKey);
 
-        // 🌟 Yahan zaroori badlaav: Frontend guard use karein
+       
         Auth::guard('frontend')->login($user);
         $request->session()->regenerate();
 
@@ -179,7 +177,7 @@ class FrontendAuthController extends Controller
 
     public function logout(Request $request)
     {
-        // 🌟 Yahan bhi frontend guard use karein
+     
         Auth::guard('frontend')->logout();
 
         $request->session()->invalidate();
