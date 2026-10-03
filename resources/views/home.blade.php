@@ -179,7 +179,7 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-<<nav class="navbar navbar-expand-lg modern-navbar">
+<nav class="navbar navbar-expand-lg modern-navbar">
     <div class="container-fluid px-3 px-lg-4">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
             @if(auth('frontend')->check() && auth('frontend')->user()->profile_image)

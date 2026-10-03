@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\HomeController;
@@ -15,6 +15,15 @@ use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\SavedPromptController;
 use App\Http\Controllers\UserAccountController; // Frontend User Account Controller
 
+
+
+Route::get('/clear', function () {
+
+    Artisan::call('storage:link');
+    Artisan::call('optimize:clear');
+
+    return Artisan::output();
+});
 // 1. PUBLIC / FRONTEND ROUTES
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
