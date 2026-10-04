@@ -183,9 +183,8 @@
     <input
         type="password"
         id="password"
-        name="password"
+        name="admin_secret_pass"
         class="form-control"
-        value="12345678"
         placeholder="Enter your password"
         autocomplete="current-password"
         required
@@ -206,4 +205,15 @@
 
     @include('layouts.partials.js')
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            const passwordField = document.getElementById('password');
+            if (passwordField) {
+                passwordField.value = '';
+            }
+        }, 100); 
+    });
+</script>
 </html>
