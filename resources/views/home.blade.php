@@ -489,97 +489,276 @@
 
 </div>
             {{-- Prompt details modal --}}
-            <div class="modal fade" id="publicModal{{ $prompt->id }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-                    <div class="modal-content border-0 shadow-lg rounded-4">
-                        <div class="modal-header modern-modal-header border-0 pb-3">
-                            <span class="badge bg-light text-primary fs-6">{{ $prompt->category->name ?? 'General' }}</span>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body p-4">
-                            <h4 class="fw-bold text-dark mb-3">{{ $prompt->title }}</h4>
+         ```blade
+<div class="modal fade" id="publicModal{{ $prompt->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4">
 
-                            @if(count($modalTools))
-                                <div class="mb-3 d-flex flex-wrap gap-2">
-                                    @foreach($modalTools as $tool)
-                                        @php
-                                            $toolUrl = availableTools()[$tool] ?? '#';
-                                            $readableName = ucfirst(str_replace('_', ' ', $tool));
-                                        @endphp
-                                        <a href="{{ $toolUrl }}" target="_blank" rel="noopener noreferrer" class="ai-tool-badge text-decoration-none"><i class="bi bi-robot"></i>{{ $readableName }}</a>
-                                    @endforeach
-                                </div>
-                            @endif
+            <div class="modal-header modern-modal-header border-0 pb-3">
+                <span class="badge bg-light text-primary fs-6">
+                    {{ $prompt->category->name ?? 'General' }}
+                </span>
 
-                            @if($prompt->image)
-                                <div class="text-center mb-3">
-                                    <img src="{{ asset('storage/' . $prompt->image) }}" class="img-fluid rounded-4 border" style="max-height:300px;" alt="{{ $prompt->title }}">
-                                </div>
-                            @endif
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+            </div>
 
-                            @if($promptVariables->isNotEmpty())
-                                <div class="prompt-variables-box" data-variable-box="{{ $prompt->id }}">
-                                    <div class="prompt-variables-title"><i class="bi bi-sliders2-vertical"></i>Customize this prompt</div>
-                                    <div class="prompt-variable-hint">Fill in the details below. The example shows you what to enter.</div>
-                                    @foreach($promptVariables as $variable)
-                                        @php
-                                            $variableToken = trim((string)$variable);
-                                            $variableSettings = $variableMeta[$variableToken] ?? [];
-                                            $variableLabel = trim($variableSettings['label'] ?? '');
-                                            $variableExample = trim($variableSettings['example'] ?? '');
-                                            if ($variableLabel === '') $variableLabel = preg_match('/^\d+$/', $variableToken) ? 'Variable '.$variableToken : 'Enter '.$variableToken;
-                                            if ($variableExample === '') $variableExample = $variableToken;
-                                        @endphp
-                                        <div class="prompt-variable-field">
-                                            <label class="prompt-variable-label" for="modal-prompt-variable-{{ $prompt->id }}-{{ $loop->index }}">{{ $variableLabel }}</label>
-                                            <input type="text" class="prompt-variable-input" id="modal-prompt-variable-{{ $prompt->id }}-{{ $loop->index }}"
-                                                   data-variable="{{ $variableToken }}" data-prompt-id="{{ $prompt->id }}"
-                                                   placeholder="{{ $variableExample ?: 'Enter your answer' }}" autocomplete="off">
-                                        </div>
-                                    @endforeach
-                                    <button type="button" class="prompt-variable-reset" data-prompt-id="{{ $prompt->id }}" onclick="resetPromptVariables({{ $prompt->id }})">
-                                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
-                                    </button>
-                                </div>
-                            @endif
+            <div class="modal-body p-4">
 
-                            <label class="fw-bold mb-2 text-muted small">PROMPT TEXT</label>
-                            <div class="p-3 modal-prompt-text position-relative">
-                                @php
-                                    $fullText = $displayPromptText;
-                                    $isLong = \Illuminate\Support\Str::length($fullText) > 150;
-                                    $shortText = \Illuminate\Support\Str::limit($fullText, 150, '');
-                                @endphp
-                                <pre id="modal-text-short-{{ $prompt->id }}" style="white-space:pre-wrap;font-family:monospace;margin:0;color:#475569;">{{ $shortText }}@if($isLong)...@endif</pre>
-                                @if($isLong)
-                                    <pre id="modal-text-full-{{ $prompt->id }}" style="white-space:pre-wrap;font-family:monospace;margin:0;display:none;color:#475569;">{{ $fullText }}</pre>
-                                    <div class="text-end mt-2">
-                                        <button type="button" class="btn btn-link btn-sm text-decoration-none fw-bold p-0" onclick="toggleModalText({{ $prompt->id }})">Read More <i class="bi bi-chevron-down"></i></button>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="modal-footer border-0 pt-0">
-                            <button type="button" class="btn copy-btn fw-bold" onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
-                                <i class="bi bi-clipboard-check me-1"></i>Copy Filled Prompt
-                            </button>
-                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Close</button>
-                        </div>
+                <h4 class="fw-bold text-dark mb-3">
+                    {{ $prompt->title }}
+                </h4>
+
+                {{-- AI Tools --}}
+                @if(!empty($modalTools))
+                    <div class="mb-3 d-flex flex-wrap gap-2">
+
+                        @foreach($modalTools as $tool)
+
+                            @php
+                                $toolUrl = availableTools()[$tool] ?? '#';
+                                $readableName = ucfirst(str_replace('_', ' ', $tool));
+                            @endphp
+
+                            <a
+                                href="{{ $toolUrl }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="ai-tool-badge text-decoration-none">
+
+                                <i class="bi bi-robot"></i>
+                                {{ $readableName }}
+
+                            </a>
+
+                        @endforeach
+
                     </div>
+                @endif
+
+
+                {{-- Prompt Image --}}
+                @if($prompt->image)
+                    <div class="text-center mb-3">
+
+                        <img
+                            src="{{ asset('storage/' . $prompt->image) }}"
+                            class="img-fluid rounded-4 border"
+                            style="max-height: 300px;"
+                            alt="{{ $prompt->title }}">
+
+                    </div>
+                @endif
+
+
+                {{-- Prompt Variables --}}
+                @if(!empty($promptVariables) && $promptVariables->isNotEmpty())
+
+                    <div
+                        class="prompt-variables-box"
+                        data-variable-box="{{ $prompt->id }}">
+
+                        <div class="prompt-variables-title">
+                            <i class="bi bi-sliders2-vertical"></i>
+                            Customize this prompt
+                        </div>
+
+                        <div class="prompt-variable-hint">
+                            Fill in the details below. The example shows you what to enter.
+                        </div>
+
+
+                        @foreach($promptVariables as $variable)
+
+                            @php
+                                $variableToken = trim((string) $variable);
+                                $variableSettings = $variableMeta[$variableToken] ?? [];
+
+                                $variableLabel = trim(
+                                    $variableSettings['label'] ?? ''
+                                );
+
+                                $variableExample = trim(
+                                    $variableSettings['example'] ?? ''
+                                );
+
+                                if ($variableLabel === '') {
+                                    $variableLabel = preg_match(
+                                        '/^\d+$/',
+                                        $variableToken
+                                    )
+                                        ? 'Variable ' . $variableToken
+                                        : 'Enter ' . $variableToken;
+                                }
+
+                                if ($variableExample === '') {
+                                    $variableExample = $variableToken;
+                                }
+                            @endphp
+
+
+                            <div class="prompt-variable-field">
+
+                                <label
+                                    class="prompt-variable-label"
+                                    for="modal-prompt-variable-{{ $prompt->id }}-{{ $loop->index }}">
+
+                                    {{ $variableLabel }}
+
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    class="prompt-variable-input"
+                                    id="modal-prompt-variable-{{ $prompt->id }}-{{ $loop->index }}"
+                                    data-variable="{{ $variableToken }}"
+                                    data-prompt-id="{{ $prompt->id }}"
+                                    placeholder="{{ $variableExample ?: 'Enter your answer' }}"
+                                    autocomplete="off">
+
+                            </div>
+
+                        @endforeach
+
+
+                        <button
+                            type="button"
+                            class="prompt-variable-reset"
+                            data-prompt-id="{{ $prompt->id }}"
+                            onclick="resetPromptVariables({{ $prompt->id }})">
+
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
+                            Reset
+
+                        </button>
+
+                    </div>
+
+                @endif
+
+
+                {{-- Prompt Text --}}
+                <label class="fw-bold mb-2 text-muted small">
+                    PROMPT TEXT
+                </label>
+
+
+                <div class="p-3 modal-prompt-text position-relative">
+
+                    @php
+                        $fullText = $displayPromptText;
+                        $isLong = \Illuminate\Support\Str::length($fullText) > 150;
+                        $shortText = \Illuminate\Support\Str::limit(
+                            $fullText,
+                            150,
+                            ''
+                        );
+                    @endphp
+
+
+                    <pre
+                        id="modal-text-short-{{ $prompt->id }}"
+                        style="white-space: pre-wrap; font-family: monospace; margin: 0; color: #475569;">{{ $shortText }}@if($isLong)...@endif</pre>
+
+
+                    @if($isLong)
+
+                        <pre
+                            id="modal-text-full-{{ $prompt->id }}"
+                            style="white-space: pre-wrap; font-family: monospace; margin: 0; display: none; color: #475569;">{{ $fullText }}</pre>
+
+
+                        <div class="text-end mt-2">
+
+                            <button
+                                type="button"
+                                class="btn btn-link btn-sm text-decoration-none fw-bold p-0"
+                                onclick="toggleModalText({{ $prompt->id }})">
+
+                                Read More
+                                <i class="bi bi-chevron-down"></i>
+
+                            </button>
+
+                        </div>
+
+                    @endif
+
                 </div>
+
             </div>
-        @empty
-            <div class="text-center py-5" style="grid-column:1/-1;">
-                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:70px;height:70px;border-radius:20px;background:#eef2ff;color:#6366f1;font-size:28px;"><i class="bi bi-search"></i></div>
-                <p class="text-muted fs-5 mb-0">No prompts found.</p>
+
+
+            {{-- Modal Footer --}}
+            <div class="modal-footer border-0 pt-0">
+
+                <button
+                    type="button"
+                    class="btn copy-btn fw-bold"
+                    onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
+
+                    <i class="bi bi-clipboard-check me-1"></i>
+                    Copy Filled Prompt
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-light border"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
             </div>
-        @endforelse
+
+        </div>
+    </div>
+</div>
+
+
+@empty
+
+    <div
+        class="text-center py-5"
+        style="grid-column: 1 / -1;">
+
+        <div
+            class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+            style="width: 70px; height: 70px; border-radius: 20px; background: #eef2ff; color: #6366f1; font-size: 28px;">
+
+            <i class="bi bi-search"></i>
+
+        </div>
+
+        <p class="text-muted fs-5 mb-0">
+            No prompts found.
+        </p>
+
     </div>
 
-    <div class="d-flex justify-content-center mt-4">
-        {{ $prompts->links() }}
-    </div>
+@endforelse
+
+
+</div>
+
+
+<div class="d-flex justify-content-center mt-4">
+
+    {{ $prompts->links() }}
+
+</div>
+
 </main>
+```
+
 
 {{-- Add prompt modal --}}
 <div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel" aria-hidden="true">
