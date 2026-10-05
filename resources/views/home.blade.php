@@ -434,7 +434,7 @@
                 @else
 
                     <a class="btn prompt-action-btn save-btn"
-                       href="{{ route('login') }}"
+                       href="{{ route('frontend.login') }}"
                        title="Login to save prompt">
 
                         <i class="bi bi-bookmark"></i>
@@ -479,17 +479,6 @@
 
         </article>
 
-    @empty
-
-        <div class="text-center py-5">
-            <p class="text-muted">No prompts found.</p>
-        </div>
-
-    @endforelse
-
-</div>
-            {{-- Prompt details modal --}}
-         ```blade
 <div class="modal fade" id="publicModal{{ $prompt->id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4">
@@ -722,42 +711,15 @@
         </div>
     </div>
 </div>
+    @empty
 
-
-@empty
-
-    <div
-        class="text-center py-5"
-        style="grid-column: 1 / -1;">
-
-        <div
-            class="mx-auto mb-3 d-flex align-items-center justify-content-center"
-            style="width: 70px; height: 70px; border-radius: 20px; background: #eef2ff; color: #6366f1; font-size: 28px;">
-
-            <i class="bi bi-search"></i>
-
+        <div class="text-center py-5">
+            <p class="text-muted">No prompts found.</p>
         </div>
 
-        <p class="text-muted fs-5 mb-0">
-            No prompts found.
-        </p>
-
-    </div>
-
-@endforelse
-
+    @endforelse
 
 </div>
-
-
-<div class="d-flex justify-content-center mt-4">
-
-    {{ $prompts->links() }}
-
-</div>
-
-</main>
-```
 
 
 {{-- Add prompt modal --}}
