@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-      /*   // 1. Admin User (Aapke admin panel ke liye)
+        // 1. Admin User (Aapke admin panel ke liye)
          User::updateOrCreate(
             ['email' => 'test@gmail.com'],
             [
@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
                 'user_type' => 'admin',
                 'password' => Hash::make('12345678'),
             ]
-        );  */
+        );  
 
         // 2. Frontend OTP User (Aapke real email testing ke liye)
         User::updateOrCreate(
