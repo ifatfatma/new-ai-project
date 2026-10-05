@@ -7,9 +7,20 @@ use Illuminate\Http\Request;
 
 class SavedPromptController extends Controller
 {
+    /**
+     * Save / unsave a prompt.
+     */
     public function toggle(Prompt $prompt)
     {
-        $user = auth()->user();
+        $user = auth('frontend')->user();
+
+       
+        if (!$user) {
+            return response()->json([
+                'saved' => false,
+                'message' => 'Please login first.',
+            ], 401);
+        }
 
         $saved = $user->savedPrompts()
             ->where('prompt_id', $prompt->id)
@@ -23,7 +34,6 @@ class SavedPromptController extends Controller
                 'saved' => false,
                 'message' => 'Prompt removed from saved list.',
             ]);
-
         }
 
         $user->savedPrompts()->attach($prompt->id);
@@ -34,10 +44,21 @@ class SavedPromptController extends Controller
         ]);
     }
 
+    /**
+     * Show user's saved prompts.
+     */
     public function index()
     {
-        $prompts = auth()->user()
-            ->savedPrompts()
+        $user = auth('frontend')->user();
+
+       
+        if (!$user) {
+            return redirect()
+                ->route('login')
+                ->with('error', 'Please login first.');
+        }
+
+        $prompts = $user->savedPrompts()
             ->with('category')
             ->latest('saved_prompts.created_at')
             ->paginate(12);
