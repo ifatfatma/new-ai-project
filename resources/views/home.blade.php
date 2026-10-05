@@ -363,56 +363,61 @@
 
         <article class="prompt-card">
 
-            {{-- Prompt Image + Title --}}
-            <div class="d-flex align-items-center gap-3 p-3">
+            {{-- Prompt Image with Floating Title --}}
+            @if($prompt->image)
 
-                @if($prompt->image)
+                <div class="prompt-card-image-wrapper"
+                     data-bs-toggle="modal"
+                     data-bs-target="#publicModal{{ $prompt->id }}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="View {{ $prompt->title }}">
 
-                    <div class="prompt-card-image-wrapper flex-shrink-0"
-                         data-bs-toggle="modal"
-                         data-bs-target="#publicModal{{ $prompt->id }}"
-                         role="button"
-                         tabindex="0"
-                         aria-label="View {{ $prompt->title }}"
-                         style="width:110px;height:90px;border-radius:12px;">
+                    <img src="{{ asset('storage/' . $prompt->image) }}"
+                         class="prompt-card-image"
+                         alt="{{ $prompt->title }}"
+                         loading="lazy">
 
-                        <img src="{{ asset('storage/' . $prompt->image) }}"
-                             class="prompt-card-image"
-                             alt="{{ $prompt->title }}"
-                             loading="lazy">
-
-                        <div class="image-view-overlay">
-                            <i class="bi bi-eye"></i>
-                            <span>View</span>
-                        </div>
-
+                    {{-- Floating Prompt Title --}}
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm"
+                              style="backdrop-filter: blur(4px); font-size: 0.85rem; max-width: calc(100% - 20px); white-space: normal; text-align: left;">
+                            <i class="bi bi-stars text-warning me-1"></i>
+                            {{ $prompt->title ?? 'AI Prompt' }}
+                        </span>
                     </div>
 
-                @else
-
-                    <div class="prompt-card-no-image flex-shrink-0"
-                         data-bs-toggle="modal"
-                         data-bs-target="#publicModal{{ $prompt->id }}"
-                         role="button"
-                         tabindex="0"
-                         aria-label="View {{ $prompt->title }}"
-                         style="width:110px;height:90px;border-radius:12px;">
-
-                        <i class="bi bi-image"></i>
-
+                    <div class="image-view-overlay">
+                        <i class="bi bi-eye"></i>
+                        <span>View</span>
                     </div>
 
-                @endif
-
-                {{-- Only Prompt Title --}}
-                <div class="flex-grow-1 min-width-0">
-                    <h5 class="mb-0 fw-bold text-dark"
-                        style="font-size:1rem;line-height:1.4;overflow-wrap:anywhere;">
-                        {{ $prompt->title ?? 'AI Prompt' }}
-                    </h5>
                 </div>
 
-            </div>
+            @else
+
+                <div class="prompt-card-no-image"
+                     data-bs-toggle="modal"
+                     data-bs-target="#publicModal{{ $prompt->id }}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="View {{ $prompt->title }}">
+
+                    <i class="bi bi-image"></i>
+                    <span>View Prompt</span>
+
+                    {{-- Floating Prompt Title --}}
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm"
+                              style="backdrop-filter: blur(4px); font-size: 0.85rem; max-width: calc(100% - 20px); white-space: normal; text-align: left;">
+                            <i class="bi bi-stars text-warning me-1"></i>
+                            {{ $prompt->title ?? 'AI Prompt' }}
+                        </span>
+                    </div>
+
+                </div>
+
+            @endif
 
 
             {{-- Prompt Actions --}}
