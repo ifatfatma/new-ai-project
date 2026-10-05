@@ -319,60 +319,175 @@
         @endforeach
     </div>
 
-    <div class="prompts-container">
-        @forelse($prompts as $prompt)
-            @php
-                $displayPromptText = $prompt->prompt_text ?? '';
-                $variableMeta = [];
-                if (preg_match('/<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i', $displayPromptText, $metaMatch)) {
-                    $decodedMeta = json_decode(urldecode($metaMatch[1]), true);
-                    if (is_array($decodedMeta)) $variableMeta = $decodedMeta;
-                    $displayPromptText = preg_replace('/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i', '', $displayPromptText);
+   <div class="prompts-container">
+
+    @forelse($prompts as $prompt)
+
+        @php
+            $displayPromptText = $prompt->prompt_text ?? '';
+
+            $variableMeta = [];
+
+            if (preg_match('/<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i', $displayPromptText, $metaMatch)) {
+                $decodedMeta = json_decode(urldecode($metaMatch[1]), true);
+
+                if (is_array($decodedMeta)) {
+                    $variableMeta = $decodedMeta;
                 }
-                preg_match_all('/\[([^\[\]]+)\]/', $displayPromptText, $matches);
-                $promptVariables = collect($matches[1] ?? [])->map(fn($value) => trim($value))->filter(fn($value) => $value !== '')->unique()->values();
-                $modalTools = is_array($prompt->ai_tool) ? $prompt->ai_tool : json_decode($prompt->ai_tool ?? '[]', true);
-                if (!is_array($modalTools)) $modalTools = !empty($prompt->ai_tool) ? [$prompt->ai_tool] : [];
-            @endphp
 
-            <article class="prompt-card">
-                @if($prompt->image)
-                    <div class="prompt-card-image-wrapper" data-bs-toggle="modal" data-bs-target="#publicModal{{ $prompt->id }}" role="button" tabindex="0" aria-label="View {{ $prompt->title }}">
-                        <img src="{{ asset('storage/' . $prompt->image) }}" class="prompt-card-image" alt="{{ $prompt->title }}" loading="lazy">
-                        <div class="image-view-overlay"><i class="bi bi-eye"></i><span>View</span></div>
+                $displayPromptText = preg_replace(
+                    '/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i',
+                    '',
+                    $displayPromptText
+                );
+            }
+
+            preg_match_all('/\[([^\[\]]+)\]/', $displayPromptText, $matches);
+
+            $promptVariables = collect($matches[1] ?? [])
+                ->map(fn($value) => trim($value))
+                ->filter(fn($value) => $value !== '')
+                ->unique()
+                ->values();
+
+            $modalTools = is_array($prompt->ai_tool)
+                ? $prompt->ai_tool
+                : json_decode($prompt->ai_tool ?? '[]', true);
+
+            if (!is_array($modalTools)) {
+                $modalTools = !empty($prompt->ai_tool)
+                    ? [$prompt->ai_tool]
+                    : [];
+            }
+        @endphp
+
+        <article class="prompt-card">
+
+            {{-- Prompt Image --}}
+            @if($prompt->image)
+
+                <div class="prompt-card-image-wrapper"
+                     data-bs-toggle="modal"
+                     data-bs-target="#publicModal{{ $prompt->id }}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="View {{ $prompt->title }}">
+
+                    <img src="{{ asset('storage/' . $prompt->image) }}"
+                         class="prompt-card-image"
+                         alt="{{ $prompt->title }}"
+                         loading="lazy">
+
+                    <div class="image-view-overlay">
+                        <i class="bi bi-eye"></i>
+                        <span>View</span>
                     </div>
-                @else
-                    <div class="prompt-card-no-image" data-bs-toggle="modal" data-bs-target="#publicModal{{ $prompt->id }}" role="button" tabindex="0" aria-label="View {{ $prompt->title }}">
-                        <i class="bi bi-image"></i><span>View Prompt</span>
-                    </div>
-                @endif
 
-                <div class="prompt-card-actions">
-                    @auth
-                        @php
-                            $isSaved = auth()->user()->savedPrompts()->where('prompt_id', $prompt->id)->exists();
-                        @endphp
-                        <button type="button" class="btn prompt-action-btn save-btn {{ $isSaved ? 'saved' : '' }}"
-                                data-prompt-id="{{ $prompt->id }}" data-saved="{{ $isSaved ? '1' : '0' }}"
-                                data-save-url="{{ route('prompts.save', $prompt) }}" onclick="toggleSavePrompt(this)"
-                                title="{{ $isSaved ? 'Remove from Saved' : 'Save Prompt' }}">
-                            <i class="bi {{ $isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' }}"></i>
-                            <span>{{ $isSaved ? 'Saved' : 'Save' }}</span>
-                        </button>
-                    @else
-                        <a class="btn prompt-action-btn save-btn" href="{{ route('login') }}" title="Login to save prompt"><i class="bi bi-bookmark"></i><span>Save</span></a>
-                    @endauth
-
-                    <button type="button" class="btn prompt-action-btn copy-btn" onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
-                        <i class="bi bi-clipboard"></i><span>Copy</span>
-                    </button>
-                    <textarea id="prompt-text-{{ $prompt->id }}" class="d-none">{{ $displayPromptText }}</textarea>
-                    <button type="button" class="btn prompt-action-btn share-btn" onclick="sharePrompt({{ $prompt->id }}, @js($prompt->title))" title="Share Prompt">
-                        <i class="bi bi-share"></i><span>Share</span>
-                    </button>
                 </div>
-            </article>
 
+            @else
+
+                <div class="prompt-card-no-image"
+                     data-bs-toggle="modal"
+                     data-bs-target="#publicModal{{ $prompt->id }}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="View {{ $prompt->title }}">
+
+                    <i class="bi bi-image"></i>
+                    <span>View Prompt</span>
+
+                </div>
+
+            @endif
+
+
+            {{-- Prompt Actions --}}
+            <div class="prompt-card-actions">
+
+                {{-- Save Prompt --}}
+                @auth('frontend')
+
+                    @php
+                        $isSaved = auth('frontend')->user()
+                            ->savedPrompts()
+                            ->where('prompt_id', $prompt->id)
+                            ->exists();
+                    @endphp
+
+                    <button type="button"
+                            class="btn prompt-action-btn save-btn {{ $isSaved ? 'saved' : '' }}"
+                            data-prompt-id="{{ $prompt->id }}"
+                            data-saved="{{ $isSaved ? '1' : '0' }}"
+                            data-save-url="{{ route('prompts.save', $prompt) }}"
+                            onclick="toggleSavePrompt(this)"
+                            title="{{ $isSaved ? 'Remove from Saved' : 'Save Prompt' }}">
+
+                        <i class="bi {{ $isSaved ? 'bi-bookmark-fill' : 'bi-bookmark' }}"></i>
+
+                        <span>
+                            {{ $isSaved ? 'Saved' : 'Save' }}
+                        </span>
+
+                    </button>
+
+                @else
+
+                    <a class="btn prompt-action-btn save-btn"
+                       href="{{ route('login') }}"
+                       title="Login to save prompt">
+
+                        <i class="bi bi-bookmark"></i>
+
+                        <span>Save</span>
+
+                    </a>
+
+                @endauth
+
+
+                {{-- Copy Prompt --}}
+                <button type="button"
+                        class="btn prompt-action-btn copy-btn"
+                        onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
+
+                    <i class="bi bi-clipboard"></i>
+
+                    <span>Copy</span>
+
+                </button>
+
+
+                {{-- Hidden Prompt Text --}}
+                <textarea id="prompt-text-{{ $prompt->id }}"
+                          class="d-none">{{ $displayPromptText }}</textarea>
+
+
+                {{-- Share Prompt --}}
+                <button type="button"
+                        class="btn prompt-action-btn share-btn"
+                        onclick="sharePrompt({{ $prompt->id }}, @js($prompt->title))"
+                        title="Share Prompt">
+
+                    <i class="bi bi-share"></i>
+
+                    <span>Share</span>
+
+                </button>
+
+            </div>
+
+        </article>
+
+    @empty
+
+        <div class="text-center py-5">
+            <p class="text-muted">No prompts found.</p>
+        </div>
+
+    @endforelse
+
+</div>
             {{-- Prompt details modal --}}
             <div class="modal fade" id="publicModal{{ $prompt->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
