@@ -465,13 +465,19 @@
 
 
                 {{-- Copy Prompt --}}
-               @auth
-    <button type="button" class="btn prompt-action-btn copy-btn" onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
-        <i class="bi bi-clipboard"></i><span>Copy</span>
+    @auth('frontend')
+    <button type="button"
+            class="btn prompt-action-btn copy-btn"
+            onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
+        <i class="bi bi-clipboard"></i>
+        <span>Copy</span>
     </button>
 @else
-    <a class="btn prompt-action-btn copy-btn" href="{{ route('login') }}" title="Login to copy prompt">
-        <i class="bi bi-clipboard"></i><span>Copy</span>
+    <a class="btn prompt-action-btn copy-btn"
+       href="{{ route('frontend.login') }}"
+       title="Login to copy prompt">
+        <i class="bi bi-clipboard"></i>
+        <span>Copy</span>
     </a>
 @endauth
 
