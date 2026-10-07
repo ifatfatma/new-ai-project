@@ -43,17 +43,32 @@
     */
 
     .prompt-form-card {
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        background: #ffffff;
-    }
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
 
-    .prompt-card {
-        border: 1px solid #e1e5eb !important;
-        border-radius: 10px !important;
-        background: #f8f9fa !important;
-        transition: 0.2s ease;
-    }
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.prompt-form-card::-webkit-scrollbar {
+    width: 7px;
+}
+
+.prompt-form-card::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+}
+
+.prompt-form-card::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 10px;
+}
+
+.prompt-form-card::-webkit-scrollbar-thumb:hover {
+    background: #868e96;
+}
 
     .prompt-card:hover {
         border-color: #b8c2cc !important;
