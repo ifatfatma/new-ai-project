@@ -42,7 +42,10 @@ Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts
 
 // Strict User-Only Copy Tracking Route
 Route::post('/prompts/{id}/copy-track', function ($id) {
-    if (!auth()->check()) {
+
+    $user = auth('frontend')->user();
+
+    if (!$user) {
         return response()->json([
             'success' => false,
             'message' => 'Please login to copy and track prompts.'
@@ -50,6 +53,7 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
     }
 
     $prompt = Prompt::find($id);
+
     if (!$prompt) {
         return response()->json([
             'success' => false,
@@ -57,18 +61,17 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
         ], 404);
     }
 
-    $userEmail = auth()->user()->email;
+    $userEmail = $user->email;
     $today = now()->toDateString();
 
-    $copyRecord = PromptCopy::firstOrCreate(
-        [
-            'prompt_id' => $prompt->id,
-            'email' => $userEmail,
-            'copied_date' => $today,
-        ]
-    );
+    $copyRecord = PromptCopy::firstOrCreate([
+        'prompt_id' => $prompt->id,
+        'email' => $userEmail,
+        'copied_date' => $today,
+    ]);
 
     if ($copyRecord->wasRecentlyCreated) {
+
         $prompt->increment('copies_count');
 
         return response()->json([
@@ -85,7 +88,8 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
         'message' => 'Already counted for today.',
         'total_copies' => (int) $prompt->copies_count
     ]);
-})->middleware('auth')->name('prompts.copy.track');
+
+})->middleware('auth:frontend')->name('prompts.copy.track');
 
 // Authenticated Frontend User Routes Group
 Route::middleware(['auth:frontend'])->group(function () {
