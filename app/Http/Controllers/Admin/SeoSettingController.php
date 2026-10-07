@@ -18,7 +18,6 @@ class SeoSettingController extends Controller
         return view('admin.settings.index', compact('user', 'seo'));
     }
 
-
     public function edit()
     {
         $seo = SeoSetting::first() ?? new SeoSetting();
@@ -26,23 +25,16 @@ class SeoSettingController extends Controller
         return view('pages.admin.seo.seo_edit', compact('seo'));
     }
 
-
     public function update(Request $request)
     {
         $request->validate([
-           // 'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:1000',
 
-            'meta_description' => 'nullable|string',
-
-           // 'meta_keywords' => 'nullable|string',
-
-           // 'tools' => 'nullable|array',
-
-            //'tools.*' => 'string',
+            'tools' => 'nullable|array',
+            'tools.*' => 'string',
 
             'og_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
-
 
         $seo = SeoSetting::first();
 
@@ -50,31 +42,21 @@ class SeoSettingController extends Controller
             $seo = new SeoSetting();
         }
 
-
         /*
         |--------------------------------------------------------------------------
-        | Basic SEO fields
+        | Meta Description
         |--------------------------------------------------------------------------
         */
 
-       // $seo->meta_title = $request->input('meta_title');
-
         $seo->meta_description = $request->input('meta_description');
-
-       // $seo->meta_keywords = $request->input('meta_keywords');
-
 
         /*
         |--------------------------------------------------------------------------
         | Selected Tools
         |--------------------------------------------------------------------------
-        |
-        | If nothing is selected, save an empty array.
-        |
         */
 
         $seo->tools = $request->input('tools', []);
-
 
         /*
         |--------------------------------------------------------------------------
@@ -91,12 +73,10 @@ class SeoSettingController extends Controller
                 Storage::disk('public')->delete($seo->og_image);
             }
 
-
             $seo->og_image = $request
                 ->file('og_image')
                 ->store('seo', 'public');
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -105,7 +85,6 @@ class SeoSettingController extends Controller
         */
 
         $seo->save();
-
 
         return redirect()
             ->back()
