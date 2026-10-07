@@ -11,9 +11,20 @@
         content="{{ $seoSettings->meta_description ?? 'Find the best AI prompts for ChatGPT, Midjourney, and more.' }}">
     <meta name="keywords"
         content="{{ $seoSettings->meta_keywords ?? 'ai prompts, chatgpt prompts, midjourney prompts' }}">
-    @if(!empty($seoSettings?->og_image))
-        <meta property="og:image" content="{{ asset('storage/' . $seoSettings->og_image) }}">
-    @endif
+   @if(!empty($seoSettings?->og_image))
+    <meta property="og:image" content="{{ asset('storage/' . $seoSettings->og_image) }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+@endif
+
+<meta property="og:title"
+      content="{{ $seoSettings->meta_title ?? 'AI Prompt Hub - Discover & Copy Best Prompts' }}">
+
+<meta property="og:description"
+      content="{{ $seoSettings->meta_description ?? 'Find the best AI prompts for ChatGPT, Midjourney, and more.' }}">
+
+<meta property="og:url" content="{{ url('/') }}">
+<meta property="og:type" content="website">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
