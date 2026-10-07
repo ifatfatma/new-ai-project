@@ -233,7 +233,7 @@ class PromptController extends Controller
         */
 
         return redirect()
-            ->route('admin.prompts.index')
+            ->route('admin.prompts.create')
             ->with(
                 'success',
                 'Prompts added successfully and published!'
