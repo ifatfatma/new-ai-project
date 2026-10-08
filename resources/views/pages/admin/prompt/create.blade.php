@@ -353,16 +353,15 @@
                         Add New Prompts
                     </h4>
 
-                    <p class="text-muted mb-0">
-
-                        Select a category and topic title, then add one or
-                        more prompts using the
-                        <strong>Add More Prompt</strong>
-                        button.
-
-                    </p>
-
-                </div>
+<div class="card prompt-form-card p-4"> <!-- Yahan class lagani hai -->
+    
+    <!-- Header jo aapne diya -->
+    <div class="mb-4">
+        <h4 class="card-title mb-2">Add New Prompts</h4>
+        <p class="text-muted mb-0">
+            Select a category and topic title, then add one or more prompts using the <strong>Add More Prompt</strong> button.
+        </p>
+    </div>
 
 
                 
