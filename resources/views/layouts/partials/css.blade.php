@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ asset('admin/assets/css/demo_1/style.css') }}">
 
 <!-- Favicon -->
-<link rel="shortcut icon" href="{{ asset('admin/assets/images/favicon.ico') }}">
+ <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
