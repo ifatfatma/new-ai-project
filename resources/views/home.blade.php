@@ -689,6 +689,83 @@
                 font-size: 2rem;
             }
         }
+
+
+    
+/* =========================================================
+   ADD PROMPT MODAL - SCROLL FIX
+   ========================================================= */
+
+#addPromptModal .modal-dialog {
+    max-height: calc(100vh - 30px);
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#addPromptModal .modal-content {
+    max-height: calc(100vh - 30px);
+    height: auto;
+    overflow: hidden;
+}
+
+/* Only the form content scrolls */
+#addPromptModal form {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#addPromptModal .modal-body {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    max-height: calc(100vh - 180px);
+    min-height: 0;
+}
+
+/* Custom scrollbar */
+#addPromptModal .modal-body::-webkit-scrollbar {
+    width: 7px;
+}
+
+#addPromptModal .modal-body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+#addPromptModal .modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+#addPromptModal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Firefox */
+#addPromptModal .modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+
+    #addPromptModal .modal-dialog {
+        max-height: calc(100vh - 20px);
+        margin: 10px;
+    }
+
+    #addPromptModal .modal-content {
+        max-height: calc(100vh - 20px);
+    }
+
+    #addPromptModal .modal-body {
+        max-height: calc(100vh - 170px);
+        padding: 1rem !important;
+    }
+}
+
+
     </style>
 </head>
 
@@ -1283,8 +1360,8 @@
                                         @endforeach
                                     </div>
                                 </div>
-                                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle"></i> Multiple AI
-                                    tools select kar sakte hain.</small>
+                                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle"></i> Select Multiple AI
+                                    </small>
                             </div>
 
                             <div class="mb-3">

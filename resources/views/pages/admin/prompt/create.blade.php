@@ -3,95 +3,75 @@
 @section('content')
 
 @php
-/* AI TOOLS */
-$availableTools = [
-'chatgpt'    => 'ChatGPT',
-'claude'     => 'Claude',
-'gemini'     => 'Gemini',
-'midjourney' => 'Midjourney',
-'dalle'      => 'DALL-E',
-'perplexity' => 'Perplexity',
-'copilot'    => 'Microsoft Copilot',
-'grok'       => 'Grok',
-'deepseek'   => 'DeepSeek',
-'mistral'    => 'Mistral',
-'meta_ai'    => 'Meta AI',
-'other'      => 'Other',
-];
+    /* AI TOOLS   */
 
-```
-/* OLD AI TOOLS */
-$oldFirstAiTools = old('prompts.0.ai_tool', []);
+    $availableTools = [
+        'chatgpt'    => 'ChatGPT',
+        'claude'     => 'Claude',
+        'gemini'     => 'Gemini',
+        'midjourney' => 'Midjourney',
+        'dalle'      => 'DALL-E',
+        'perplexity' => 'Perplexity',
+        'copilot'    => 'Microsoft Copilot',
+        'grok'       => 'Grok',
+        'deepseek'   => 'DeepSeek',
+        'mistral'    => 'Mistral',
+        'meta_ai'    => 'Meta AI',
+        'other'      => 'Other',
+    ];
 
-if (!is_array($oldFirstAiTools)) {
-    $oldFirstAiTools = [$oldFirstAiTools];
-}
-```
+    /*
+    |--------------------------------------------------------------------------
+    | OLD AI TOOLS
+    |--------------------------------------------------------------------------
+    */
 
+    $oldFirstAiTools = old('prompts.0.ai_tool', []);
+
+    if (!is_array($oldFirstAiTools)) {
+        $oldFirstAiTools = [$oldFirstAiTools];
+    }
 @endphp
 
+
 <style>
-    /*
-    |--------------------------------------------------------------------------
-    | FORM CARD + SCROLLER
-    |--------------------------------------------------------------------------
-    */
-
-    .prompt-form-card {
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        background: #ffffff;
-
-        /*
-        | Fixed height is important so the scrollbar
-        | stays inside the card.
-        */
-        height: calc(100vh - 140px);
-
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .prompt-form-card::-webkit-scrollbar {
-        width: 7px;
-    }
-
-    .prompt-form-card::-webkit-scrollbar-track {
-        background: #f1f3f5;
-        border-radius: 10px;
-    }
-
-    .prompt-form-card::-webkit-scrollbar-thumb {
-        background: #adb5bd;
-        border-radius: 10px;
-    }
-
-    .prompt-form-card::-webkit-scrollbar-thumb:hover {
-        background: #868e96;
-    }
 
     /*
     |--------------------------------------------------------------------------
-    | PROMPT CARD
+    | FORM STYLING
     |--------------------------------------------------------------------------
     */
 
-    .prompt-card {
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        background: #ffffff;
-        transition: border-color 0.2s ease;
-    }
+  CSS
+.prompt-form-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+    height: calc(100vh - 140px); 
+    overflow-y: auto;          
+    overflow-x: hidden;
+}
+.prompt-form-card::-webkit-scrollbar {
+    width: 7px;
+}
+
+.prompt-form-card::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+}
+
+.prompt-form-card::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 10px;
+}
+
+.prompt-form-card::-webkit-scrollbar-thumb:hover {
+    background: #868e96;
+}
 
     .prompt-card:hover {
         border-color: #b8c2cc !important;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | FORM
-    |--------------------------------------------------------------------------
-    */
 
     .form-label-custom {
         font-weight: 600;
@@ -115,11 +95,8 @@ if (!is_array($oldFirstAiTools)) {
         resize: vertical;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | AI TOOL DROPDOWN
-    |--------------------------------------------------------------------------
-    */
+
+    /* AI TOOL DROPDOWN*/
 
     .ai-tool-dropdown {
         position: relative;
@@ -157,17 +134,25 @@ if (!is_array($oldFirstAiTools)) {
 
     .ai-tool-menu {
         display: none;
+
         position: absolute;
         top: calc(100% + 5px);
         left: 0;
+
         width: 100%;
+
         background: #ffffff;
+
         border: 1px solid #dee2e6;
         border-radius: 8px;
+
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+
         padding: 8px;
+
         max-height: 280px;
         overflow-y: auto;
+
         z-index: 9999;
     }
 
@@ -178,12 +163,19 @@ if (!is_array($oldFirstAiTools)) {
     .ai-tool-option {
         display: flex;
         align-items: center;
+
         gap: 10px;
+
         padding: 9px 10px;
+
         margin: 0;
+
         border-radius: 6px;
+
         cursor: pointer;
+
         font-size: 14px;
+
         color: #343a40;
     }
 
@@ -194,6 +186,7 @@ if (!is_array($oldFirstAiTools)) {
     .ai-tool-option input[type="checkbox"] {
         width: 16px;
         height: 16px;
+
         cursor: pointer;
     }
 
@@ -202,11 +195,8 @@ if (!is_array($oldFirstAiTools)) {
         font-weight: 500;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SELECTED AI BADGES
-    |--------------------------------------------------------------------------
-    */
+
+    /*SELECTED AI BADGES*/
 
     .selected-ai-badges {
         display: flex;
@@ -221,11 +211,8 @@ if (!is_array($oldFirstAiTools)) {
         padding: 5px 8px;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | PROMPT HEADER
-    |--------------------------------------------------------------------------
-    */
+
+    /*PROMPT HEADER*/
 
     .prompt-number {
         font-size: 13px;
@@ -233,11 +220,8 @@ if (!is_array($oldFirstAiTools)) {
         padding: 6px 10px;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELP TEXT
-    |--------------------------------------------------------------------------
-    */
+
+    /*HELP TEXT*/
 
     .form-help {
         display: block;
@@ -246,389 +230,169 @@ if (!is_array($oldFirstAiTools)) {
         color: #6c757d;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | BUTTONS
-    |--------------------------------------------------------------------------
-    */
+
+    /* ADD MORE BUTTON*/
 
     .add-more-btn {
         border-radius: 6px;
         font-weight: 600;
     }
 
+
+    /* REMOVE BUTTON */
+
     .remove-prompt-btn {
         border-radius: 5px;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VARIABLE SETTINGS
-    |--------------------------------------------------------------------------
-    */
 
-    .variable-settings-box {
-        margin-top: 12px;
-        padding: 14px;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        background: #f8fafc;
-        display: none;
-    }
-
-    .variable-settings-box.has-variables {
-        display: block;
-    }
-
-    .variable-settings-title {
-        font-weight: 700;
-        color: #343a40;
-        margin-bottom: 4px;
-    }
-
-    .variable-settings-help {
-        font-size: 12px;
-        color: #6c757d;
-        margin-bottom: 12px;
-    }
-
-    .variable-row {
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #e2e8f0;
-        border-radius: 7px;
-        background: #fff;
-    }
-
-    .variable-row:last-child {
-        margin-bottom: 0;
-    }
-
-    .variable-number {
-        font-size: 12px;
-        font-weight: 700;
-        color: #0d6efd;
-        margin-bottom: 8px;
-    }
+    /* VARIABLE SETTINGS */
+    .variable-settings-box { margin-top:12px; padding:14px; border:1px solid #e5e7eb; border-radius:8px; background:#f8fafc; display:none; }
+    .variable-settings-box.has-variables { display:block; }
+    .variable-settings-title { font-weight:700; color:#343a40; margin-bottom:4px; }
+    .variable-settings-help { font-size:12px; color:#6c757d; margin-bottom:12px; }
+    .variable-row { padding:10px; margin-bottom:10px; border:1px solid #e2e8f0; border-radius:7px; background:#fff; }
+    .variable-row:last-child { margin-bottom:0; }
+    .variable-number { font-size:12px; font-weight:700; color:#0d6efd; margin-bottom:8px; }
 </style>
+
 
 {{-- VALIDATION ERRORS --}}
 
-@if ($errors->any()) <div class="alert alert-danger alert-dismissible fade show" role="alert">
 
-```
-    <div class="d-flex align-items-start">
+@if ($errors->any())
 
-        <i class="mdi mdi-alert-circle-outline fs-4 me-2"></i>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
 
-        <div>
-            <strong>
-                Please fix the following errors:
-            </strong>
+        <div class="d-flex align-items-start">
 
-            <ul class="mb-0 mt-2 ps-3">
-                @foreach ($errors->all() as $error)
-                    <li>
-                        {{ $error }}
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+            <i class="mdi mdi-alert-circle-outline fs-4 me-2"></i>
 
-    </div>
+            <div>
 
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close">
-    </button>
+                <strong>
+                    Please fix the following errors:
+                </strong>
 
-</div>
-```
+                <ul class="mb-0 mt-2 ps-3">
 
-@endif
+                    @foreach ($errors->all() as $error)
 
-{{-- SUCCESS MESSAGE --}}
+                        <li>
+                            {{ $error }}
+                        </li>
 
-@if(session('success')) <div
-     class="alert alert-success alert-dismissible fade show"
-     role="alert"
- >
+                    @endforeach
 
-```
-    <i class="mdi mdi-check-circle-outline me-1"></i>
-
-    {{ session('success') }}
-
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close">
-    </button>
-
-</div>
-```
-
-@endif
-
-{{-- MAIN FORM CARD --}}
-
-<div class="row">
-
-```
-<div class="col-12">
-
-    {{-- IMPORTANT: ONLY ONE prompt-form-card --}}
-
-    <div class="card prompt-form-card">
-
-        <div class="card-body p-4">
-
-            {{-- PAGE HEADER --}}
-
-            <div class="mb-4">
-
-                <h4 class="card-title mb-2">
-                    Add New Prompts
-                </h4>
-
-                <p class="text-muted mb-0">
-                    Select a category and topic title, then add one or more prompts using the
-                    <strong>Add More Prompt</strong> button.
-                </p>
+                </ul>
 
             </div>
 
+        </div>
 
-            {{-- FORM --}}
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close">
+        </button>
 
-            <form
-                action="{{ route('admin.prompts.store') }}"
-                method="POST"
-                enctype="multipart/form-data"
-                id="prompt-form"
-            >
+    </div>
 
-                @csrf
-
-
-                {{-- CATEGORY + TITLE --}}
-
-                <div class="row">
-
-                    {{-- CATEGORY --}}
-
-                    <div class="col-md-6 mb-3">
-
-                        <label
-                            for="category_id"
-                            class="form-label-custom"
-                        >
-                            Select Category
-                            <span class="required-star">*</span>
-                        </label>
-
-                        <select
-                            name="category_id"
-                            id="category_id"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="">
-                                -- Select Category --
-                            </option>
-
-                            @foreach($categories as $category)
-
-                                <option
-                                    value="{{ $category->id }}"
-                                    {{ old('category_id') == $category->id ? 'selected' : '' }}
-                                >
-                                    {{ $category->name }}
-                                </option>
-
-                            @endforeach
-
-                        </select>
-
-                    </div>
+@endif
 
 
-                    {{-- TITLE --}}
 
-                    <div class="col-md-6 mb-3">
-
-                        <label
-                            for="title"
-                            class="form-label-custom"
-                        >
-                            Prompt Collection / Topic Title
-                            <span class="required-star">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            name="title"
-                            id="title"
-                            class="form-control"
-                            value="{{ old('title') }}"
-                            placeholder="e.g. SEO Article Blueprint"
-                            required
-                        >
-
-                    </div>
-
-                </div>
+{{-- SUCCESS MESSAGE --}}
 
 
-                <hr class="my-4">
+@if(session('success'))
+
+    <div
+        class="alert alert-success alert-dismissible fade show"
+        role="alert"
+    >
+
+        <i class="mdi mdi-check-circle-outline me-1"></i>
+
+        {{ session('success') }}
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close">
+        </button>
+
+    </div>
+
+@endif
 
 
-                {{-- PROMPTS HEADING --}}
 
-                <div
-                    class="d-flex justify-content-between align-items-center mb-3"
+{{-- MAIN FORM --}}
+
+
+<div class="row">
+
+    <div class="col-12">
+
+        <div class="card prompt-form-card">
+
+            <div class="card-body p-4">
+
+
+               
+                {{-- PAGE HEADER --}}
+        
+
+                <div class="mb-4">
+
+                    <h4 class="card-title mb-2">
+                        Add New Prompts
+                    </h4>
+
+<div class="card prompt-form-card p-4"> 
+    
+    
+    <div class="mb-4">
+        <h4 class="card-title mb-2">Add New Prompts</h4>
+        <p class="text-muted mb-0">
+            Select a category and topic title, then add one or more prompts using the <strong>Add More Prompt</strong> button.
+        </p>
+    </div>
+
+
+                
+                {{-- FORM --}}
+              
+
+                <form
+                    action="{{ route('admin.prompts.store') }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    id="prompt-form"
                 >
 
-                    <div>
-
-                        <h5 class="mb-1 fw-bold">
-                            Prompts List
-                        </h5>
-
-                        <small class="text-muted">
-                            Add multiple prompts under this collection.
-                        </small>
-
-                    </div>
-
-                </div>
+                    @csrf
 
 
-                {{-- PROMPTS CONTAINER --}}
+                    
+                    {{-- CATEGORY + TITLE --}}
+                
 
-                <div id="prompts-container">
+                    <div class="row">
 
-                    {{-- FIRST PROMPT --}}
+                        {{-- CATEGORY --}}
 
-                    <div
-                        class="prompt-card p-4 mb-3"
-                        id="prompt-block-0"
-                    >
-
-                        {{-- PROMPT HEADER --}}
-
-                        <div
-                            class="d-flex justify-content-between align-items-center mb-4"
-                        >
-
-                            <span class="badge bg-primary prompt-number">
-                                Prompt #1
-                            </span>
-
-                        </div>
-
-
-                        {{-- AI TOOL --}}
-
-                        <div class="mb-3">
-
-                            <label class="form-label-custom">
-                                AI Tool / Platform
-                            </label>
-
-                            <div class="ai-tool-dropdown">
-
-                                <button
-                                    type="button"
-                                    class="ai-tool-toggle d-flex align-items-center justify-content-between"
-                                >
-
-                                    <span class="selected-tools-text">
-                                        Select AI Tool(s)
-                                    </span>
-
-                                    <i class="mdi mdi-chevron-down"></i>
-
-                                </button>
-
-
-                                <div class="ai-tool-menu">
-
-                                    @foreach($availableTools as $key => $toolName)
-
-                                        <label class="ai-tool-option">
-
-                                            <input
-                                                type="checkbox"
-                                                name="prompts[0][ai_tool][]"
-                                                value="{{ $key }}"
-                                                {{ in_array($key, $oldFirstAiTools, true) ? 'checked' : '' }}
-                                            >
-
-                                            <span>
-                                                {{ $toolName }}
-                                            </span>
-
-                                        </label>
-
-                                    @endforeach
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="selected-ai-badges"></div>
-
-
-                            <small class="form-help">
-                                Select one or multiple AI platforms for this prompt.
-                            </small>
-
-                        </div>
-
-
-                        {{-- PROMPT LABEL --}}
-
-                        <div class="mb-3">
+                        <div class="col-md-6 mb-3">
 
                             <label
-                                for="prompt_label_0"
+                                for="category_id"
                                 class="form-label-custom"
                             >
-                                Prompt Step / Title
 
-                                <span class="text-muted fw-normal">
-                                    (Optional)
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                name="prompts[0][label]"
-                                id="prompt_label_0"
-                                class="form-control"
-                                value="{{ old('prompts.0.label') }}"
-                                placeholder="e.g. Step 1: Catchy Headline Generator"
-                            >
-
-                        </div>
-
-
-                        {{-- PROMPT TEXT --}}
-
-                        <div class="mb-3">
-
-                            <label
-                                for="prompt_text_0"
-                                class="form-label-custom"
-                            >
-                                Prompt Text
+                                Select Category
 
                                 <span class="required-star">
                                     *
@@ -636,972 +400,286 @@ if (!is_array($oldFirstAiTools)) {
 
                             </label>
 
-                            <textarea
-                                name="prompts[0][text]"
-                                id="prompt_text_0"
-                                class="form-control"
-                                rows="5"
-                                placeholder="Write your complete prompt here..."
+
+                            <select
+                                name="category_id"
+                                id="category_id"
+                                class="form-select"
                                 required
-                            >{{ old('prompts.0.text') }}</textarea>
-
-
-                            <small class="form-help">
-                                Enter the complete prompt that the AI should process.
-                                For dynamic fields, use placeholders like
-                                <code>[1]</code>,
-                                <code>[2]</code>,
-                                <code>[3]</code>.
-                                These will automatically become input fields for users.
-                            </small>
-
-
-                            <div
-                                class="variable-settings-box"
-                                data-variable-settings="0"
                             >
 
-                                <div class="variable-settings-title">
-                                    <i class="mdi mdi-tune-vertical me-1"></i>
-                                    User Input Settings
-                                </div>
+                                <option value="">
+                                    -- Select Category --
+                                </option>
 
-                                <div class="variable-settings-help">
-                                    Enter only an example / dummy value for each placeholder.
-                                </div>
+                                @foreach($categories as $category)
 
-                                <div class="variable-settings-list"></div>
+                                    <option
+                                        value="{{ $category->id }}"
+                                        {{ old('category_id') == $category->id ? 'selected' : '' }}
+                                    >
 
-                            </div>
+                                        {{ $category->name }}
+
+                                    </option>
+
+                                @endforeach
+
+                            </select>
 
                         </div>
 
 
-                        {{-- IMAGE --}}
+                        {{-- TITLE --}}
 
-                        <div class="mb-0">
+                        <div class="col-md-6 mb-3">
 
                             <label
-                                for="img_0"
+                                for="title"
                                 class="form-label-custom"
                             >
 
-                                Example Output Image
+                                Prompt Collection / Topic Title
 
-                                <span class="text-muted fw-normal">
-                                    (Optional)
+                                <span class="required-star">
+                                    *
                                 </span>
 
                             </label>
 
 
-                            <div class="input-group">
+                            <input
+                                type="text"
+                                name="title"
+                                id="title"
+                                class="form-control"
+                                value="{{ old('title') }}"
+                                placeholder="e.g. SEO Article Blueprint"
+                                required
+                            >
 
-                                <input
-                                    type="file"
-                                    name="prompts[0][image]"
-                                    id="img_0"
-                                    class="form-control"
-                                    accept="image/*"
-                                >
+                        </div>
 
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-secondary"
-                                    onclick="clearInput('img_0')"
-                                >
-
-                                    <i class="mdi mdi-close"></i>
-                                    Clear
-
-                                </button>
-
-                            </div>
+                    </div>
 
 
-                            <small class="form-help">
-                                Upload an example output image if available.
+                    <hr class="my-4">
+
+
+                   
+                    {{-- PROMPTS HEADING --}}
+             
+
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-3"
+                    >
+
+                        <div>
+
+                            <h5 class="mb-1 fw-bold">
+                                Prompts List
+                            </h5>
+
+                            <small class="text-muted">
+                                Add multiple prompts under this collection.
                             </small>
 
                         </div>
 
                     </div>
 
-                </div>
 
+                    {{-- PROMPTS CONTAINER --}}
+                
 
-                {{-- ADD MORE --}}
+                    <div id="prompts-container">
 
-                <div class="mb-4 mt-3">
 
-                    <button
-                        type="button"
-                        id="add-more-btn"
-                        class="btn btn-outline-primary btn-sm add-more-btn"
-                    >
+                        
+                        {{-- FIRST PROMPT --}}
+                     
 
-                        <i class="mdi mdi-plus me-1"></i>
-                        Add More Prompt
-
-                    </button>
-
-                </div>
-
-
-                <hr class="my-4">
-
-
-                {{-- SUBMIT --}}
-
-                <div
-                    class="d-flex justify-content-end gap-2"
-                >
-
-                    <button
-                        type="reset"
-                        class="btn btn-light"
-                    >
-
-                        <i class="mdi mdi-refresh me-1"></i>
-                        Reset
-
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="btn btn-success text-white"
-                        id="submit-btn"
-                    >
-
-                        <i class="mdi mdi-content-save-outline me-1"></i>
-                        Save All Prompts
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
-```
-
-</div>
-
-<script>
-
-    /*
-    |--------------------------------------------------------------------------
-    | VARIABLE SETTINGS
-    |--------------------------------------------------------------------------
-    */
-
-    const VARIABLE_META_MARKER = '<!--AI_PROMPT_VARIABLES:';
-
-    function stripVariableMeta(text) {
-
-        return String(text || '')
-            .replace(/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i, '')
-            .trimEnd();
-
-    }
-
-
-    function detectPromptVariables(text) {
-
-        const matches =
-            String(text || '').match(/\[(\d+)\]/g) || [];
-
-        return [
-            ...new Set(
-                matches.map(function (item) {
-                    return item.replace(/\[|\]/g, '');
-                })
-            )
-        ].sort(function (a, b) {
-            return Number(a) - Number(b);
-        });
-
-    }
-
-
-    function getVariableMeta(text) {
-
-        const match =
-            String(text || '').match(
-                /<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i
-            );
-
-        if (!match) {
-            return {};
-        }
-
-        try {
-
-            const data =
-                JSON.parse(
-                    decodeURIComponent(match[1])
-                );
-
-            return data && typeof data === 'object'
-                ? data
-                : {};
-
-        } catch (error) {
-
-            return {};
-
-        }
-
-    }
-
-
-    function escAttr(value) {
-
-        return String(value || '')
-            .replace(/&/g, '&amp;')
-            .replace(/"/g, '&quot;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-
-    }
-
-
-    function renderVariableSettings(box, text) {
-
-        if (!box) {
-            return;
-        }
-
-        const list =
-            box.querySelector('.variable-settings-list');
-
-        if (!list) {
-            return;
-        }
-
-        const variables =
-            detectPromptVariables(text);
-
-        list.innerHTML = '';
-
-        if (!variables.length) {
-
-            box.classList.remove('has-variables');
-
-            return;
-        }
-
-        box.classList.add('has-variables');
-
-        const old =
-            getVariableMeta(text);
-
-        variables.forEach(function (variable) {
-
-            const data =
-                old[variable] || {};
-
-            list.insertAdjacentHTML(
-                'beforeend',
-                `
-                    <div
-                        class="variable-row"
-                        data-variable-row="${variable}"
-                    >
-
-                        <div class="variable-number">
-                            Variable [${variable}]
-                        </div>
-
-                        <label class="form-label-custom mb-1">
-                            Example / Dummy Value
-                        </label>
-
-                        <input
-                            type="text"
-                            class="form-control variable-example-input"
-                            data-variable="${variable}"
-                            value="${escAttr(data.example || '')}"
-                            placeholder="e.g. young Indian woman"
+                        <div
+                            class="prompt-card p-4 mb-3"
+                            id="prompt-block-0"
                         >
 
-                    </div>
-                `
-            );
+                            {{-- PROMPT HEADER --}}
 
-        });
-
-    }
-
-
-    function attachVariableSettings(textarea, box) {
-
-        if (!textarea || !box) {
-            return;
-        }
-
-        renderVariableSettings(
-            box,
-            textarea.value
-        );
-
-        textarea.addEventListener(
-            'input',
-            function () {
-
-                renderVariableSettings(
-                    box,
-                    stripVariableMeta(this.value)
-                );
-
-            }
-        );
-
-    }
-
-
-    function collectVariableMeta(box) {
-
-        const meta = {};
-
-        if (!box) {
-            return meta;
-        }
-
-        box.querySelectorAll(
-            '.variable-row'
-        ).forEach(function (row) {
-
-            const variable =
-                row.dataset.variableRow;
-
-            const input =
-                row.querySelector(
-                    '.variable-example-input'
-                );
-
-            meta[variable] = {
-                example: input
-                    ? input.value.trim()
-                    : ''
-            };
-
-        });
-
-        return meta;
-
-    }
-
-
-    function validateVariableSettings(box) {
-
-        if (
-            !box ||
-            !box.classList.contains('has-variables')
-        ) {
-            return true;
-        }
-
-        for (
-            const row of
-            box.querySelectorAll('.variable-row')
-        ) {
-
-            const variable =
-                row.dataset.variableRow;
-
-            const input =
-                row.querySelector(
-                    '.variable-example-input'
-                );
-
-            if (!input || !input.value.trim()) {
-
-                if (input) {
-                    input.focus();
-                }
-
-                alert(
-                    `Please enter an example / dummy value for Variable [${variable}].`
-                );
-
-                return false;
-            }
-
-        }
-
-        return true;
-
-    }
-
-
-    function appendVariableMeta(text, meta) {
-
-        const clean =
-            stripVariableMeta(text);
-
-        if (
-            !detectPromptVariables(clean).length
-        ) {
-            return clean;
-        }
-
-        return (
-            clean +
-            VARIABLE_META_MARKER +
-            encodeURIComponent(
-                JSON.stringify(meta)
-            ) +
-            '-->'
-        );
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | DOM READY
-    |--------------------------------------------------------------------------
-    */
-
-    document.addEventListener(
-        'DOMContentLoaded',
-        function () {
-
-            /*
-            | AI TOOLS
-            */
-
-            const aiTools =
-                @json($availableTools);
-
-
-            /*
-            | PROMPT COUNTER
-            */
-
-            let count = 1;
-
-
-            /*
-            | FIRST VARIABLE SETTINGS
-            */
-
-            attachVariableSettings(
-                document.getElementById('prompt_text_0'),
-                document.querySelector(
-                    '[data-variable-settings="0"]'
-                )
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | GET AI TOOL OPTIONS
-            |--------------------------------------------------------------------------
-            */
-
-            function getAiToolOptions(index) {
-
-                let html = '';
-
-                Object.entries(aiTools)
-                    .forEach(function ([key, name]) {
-
-                        html += `
-                            <label class="ai-tool-option">
-
-                                <input
-                                    type="checkbox"
-                                    name="prompts[${index}][ai_tool][]"
-                                    value="${key}"
-                                >
-
-                                <span>
-                                    ${name}
-                                </span>
-
-                            </label>
-                        `;
-
-                    });
-
-                return html;
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE SELECTED AI TOOLS
-            |--------------------------------------------------------------------------
-            */
-
-            function updateSelectedTools(dropdown) {
-
-                const checkedInputs =
-                    dropdown.querySelectorAll(
-                        'input[type="checkbox"]:checked'
-                    );
-
-                const textElement =
-                    dropdown.querySelector(
-                        '.selected-tools-text'
-                    );
-
-                const badgeContainer =
-                    dropdown.parentElement.querySelector(
-                        '.selected-ai-badges'
-                    );
-
-                if (!textElement) {
-                    return;
-                }
-
-
-                /*
-                | No selection
-                */
-
-                if (checkedInputs.length === 0) {
-
-                    textElement.textContent =
-                        'Select AI Tool(s)';
-
-                    dropdown.classList.remove(
-                        'has-selection'
-                    );
-
-                    if (badgeContainer) {
-                        badgeContainer.innerHTML = '';
-                    }
-
-                    return;
-                }
-
-
-                /*
-                | Selected names
-                */
-
-                const selectedNames = [];
-
-
-                checkedInputs.forEach(
-                    function (input) {
-
-                        const option =
-                            input.closest(
-                                '.ai-tool-option'
-                            );
-
-                        if (!option) {
-                            return;
-                        }
-
-                        const nameElement =
-                            option.querySelector('span');
-
-                        if (!nameElement) {
-                            return;
-                        }
-
-                        const name =
-                            nameElement.textContent.trim();
-
-                        selectedNames.push(name);
-
-                    }
-                );
-
-
-                /*
-                | Update dropdown text
-                */
-
-                textElement.textContent =
-                    selectedNames.join(', ');
-
-                dropdown.classList.add(
-                    'has-selection'
-                );
-
-
-                /*
-                | Update badges
-                */
-
-                if (badgeContainer) {
-
-                    badgeContainer.innerHTML = '';
-
-                    selectedNames.forEach(
-                        function (name) {
-
-                            const badge =
-                                document.createElement(
-                                    'span'
-                                );
-
-                            badge.className =
-                                'badge bg-info text-dark';
-
-                            badge.innerHTML =
-                                '<i class="mdi mdi-robot me-1"></i>' +
-                                name;
-
-                            badgeContainer.appendChild(
-                                badge
-                            );
-
-                        }
-                    );
-
-                }
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | INITIALIZE AI DROPDOWNS
-            |--------------------------------------------------------------------------
-            */
-
-            function initializeAiDropdowns() {
-
-                document
-                    .querySelectorAll(
-                        '.ai-tool-dropdown'
-                    )
-                    .forEach(
-                        function (dropdown) {
-
-                            updateSelectedTools(
-                                dropdown
-                            );
-
-                        }
-                    );
-
-            }
-
-
-            initializeAiDropdowns();
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | AI DROPDOWN TOGGLE
-            |--------------------------------------------------------------------------
-            */
-
-            document.addEventListener(
-                'click',
-                function (event) {
-
-                    const toggle =
-                        event.target.closest(
-                            '.ai-tool-toggle'
-                        );
-
-
-                    /*
-                    | Open / close dropdown
-                    */
-
-                    if (toggle) {
-
-                        const dropdown =
-                            toggle.closest(
-                                '.ai-tool-dropdown'
-                            );
-
-
-                        /*
-                        | Close other dropdowns
-                        */
-
-                        document
-                            .querySelectorAll(
-                                '.ai-tool-dropdown.open'
-                            )
-                            .forEach(
-                                function (
-                                    openDropdown
-                                ) {
-
-                                    if (
-                                        openDropdown !==
-                                        dropdown
-                                    ) {
-
-                                        openDropdown.classList.remove(
-                                            'open'
-                                        );
-
-                                    }
-
-                                }
-                            );
-
-
-                        dropdown.classList.toggle(
-                            'open'
-                        );
-
-                        return;
-
-                    }
-
-
-                    /*
-                    | Checkbox selected
-                    */
-
-                    const checkbox =
-                        event.target.closest(
-                            '.ai-tool-option input[type="checkbox"]'
-                        );
-
-                    if (checkbox) {
-
-                        const dropdown =
-                            checkbox.closest(
-                                '.ai-tool-dropdown'
-                            );
-
-                        if (dropdown) {
-
-                            updateSelectedTools(
-                                dropdown
-                            );
-
-                        }
-
-                        return;
-
-                    }
-
-
-                    /*
-                    | Click outside
-                    */
-
-                    if (
-                        !event.target.closest(
-                            '.ai-tool-dropdown'
-                        )
-                    ) {
-
-                        document
-                            .querySelectorAll(
-                                '.ai-tool-dropdown.open'
-                            )
-                            .forEach(
-                                function (dropdown) {
-
-                                    dropdown.classList.remove(
-                                        'open'
-                                    );
-
-                                }
-                            );
-
-                    }
-
-                }
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | ADD MORE PROMPT
-            |--------------------------------------------------------------------------
-            */
-
-            document
-                .getElementById('add-more-btn')
-                .addEventListener(
-                    'click',
-                    function () {
-
-                        const index = count;
-
-                        count++;
-
-
-                        const newPromptBox = `
                             <div
-                                class="prompt-card p-4 mb-3"
-                                id="prompt-block-${index}"
+                                class="d-flex justify-content-between align-items-center mb-4"
                             >
 
-                                <!-- PROMPT HEADER -->
+                                <span class="badge bg-primary prompt-number">
 
-                                <div
-                                    class="d-flex justify-content-between align-items-center mb-4"
-                                >
+                                    Prompt #1
 
-                                    <span class="badge bg-primary prompt-number">
-                                        Prompt #${index + 1}
-                                    </span>
+                                </span>
+
+                            </div>
+
+
+                           
+                            {{-- AI TOOL --}}
+                           
+
+                            <div class="mb-3">
+
+                                <label class="form-label-custom">
+
+                                    AI Tool / Platform
+
+                                </label>
+
+
+                                <div class="ai-tool-dropdown">
+
 
                                     <button
                                         type="button"
-                                        class="btn btn-outline-danger btn-sm remove-prompt-btn"
-                                        onclick="deleteBox('prompt-block-${index}')"
+                                        class="ai-tool-toggle d-flex align-items-center justify-content-between"
                                     >
 
-                                        <i class="mdi mdi-delete-outline me-1"></i>
-                                        Remove
+                                        <span class="selected-tools-text">
+
+                                            Select AI Tool(s)
+
+                                        </span>
+
+                                        <i class="mdi mdi-chevron-down"></i>
 
                                     </button>
 
-                                </div>
+
+                                    <div class="ai-tool-menu">
 
 
-                                <!-- AI TOOL -->
+                                        @foreach($availableTools as $key => $toolName)
 
-                                <div class="mb-3">
+                                            <label class="ai-tool-option">
 
-                                    <label class="form-label-custom">
-                                        AI Tool / Platform
-                                    </label>
+                                                <input
+                                                    type="checkbox"
+                                                    name="prompts[0][ai_tool][]"
+                                                    value="{{ $key }}"
+                                                    {{ in_array($key, $oldFirstAiTools, true) ? 'checked' : '' }}
+                                                >
 
-                                    <div class="ai-tool-dropdown">
+                                                <span>
+                                                    {{ $toolName }}
+                                                </span>
 
-                                        <button
-                                            type="button"
-                                            class="ai-tool-toggle d-flex align-items-center justify-content-between"
-                                        >
+                                            </label>
 
-                                            <span class="selected-tools-text">
-                                                Select AI Tool(s)
-                                            </span>
+                                        @endforeach
 
-                                            <i class="mdi mdi-chevron-down"></i>
-
-                                        </button>
-
-
-                                        <div class="ai-tool-menu">
-
-                                            ${getAiToolOptions(index)}
-
-                                        </div>
 
                                     </div>
 
-
-                                    <div class="selected-ai-badges"></div>
-
-
-                                    <small class="form-help">
-                                        Select one or multiple AI platforms for this prompt.
-                                    </small>
-
                                 </div>
 
 
-                                <!-- PROMPT LABEL -->
-
-                                <div class="mb-3">
-
-                                    <label
-                                        for="prompt_label_${index}"
-                                        class="form-label-custom"
-                                    >
-
-                                        Prompt Step / Title
-
-                                        <span class="text-muted fw-normal">
-                                            (Optional)
-                                        </span>
-
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="prompts[${index}][label]"
-                                        id="prompt_label_${index}"
-                                        class="form-control"
-                                        placeholder="e.g. Step ${index + 1}: Content Generator"
-                                    >
-
-                                </div>
+                                <div class="selected-ai-badges"></div>
 
 
-                                <!-- PROMPT TEXT -->
-
-                                <div class="mb-3">
-
-                                    <label
-                                        for="prompt_text_${index}"
-                                        class="form-label-custom"
-                                    >
-
-                                        Prompt Text
-
-                                        <span class="required-star">
-                                            *
-                                        </span>
-
-                                    </label>
-
-
-                                    <textarea
-                                        name="prompts[${index}][text]"
-                                        id="prompt_text_${index}"
-                                        class="form-control"
-                                        rows="5"
-                                        placeholder="Write your complete prompt here..."
-                                        required
-                                    ></textarea>
-
-```
                                 <small class="form-help">
-                                    Enter the complete prompt that the AI should process.
-                                    For dynamic fields, use placeholders like
-                                    <code>[1]</code>,
-                                    <code>[2]</code>,
-                                    <code>[3]</code>.
-                                    These will automatically become input fields for users.
+
+                                    Select one or multiple AI platforms for
+                                    this prompt.
+
                                 </small>
 
+                            </div>
 
-                                <div
-                                    class="variable-settings-box"
-                                    data-variable-settings="${index}"
+
+                            
+                            {{-- PROMPT LABEL --}}
+                      
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="prompt_label_0"
+                                    class="form-label-custom"
                                 >
 
-                                    <div class="variable-settings-title">
-                                        <i class="mdi mdi-tune-vertical me-1"></i>
-                                        User Input Settings
-                                    </div>
+                                    Prompt Step / Title
 
-                                    <div class="variable-settings-help">
-                                        Enter only an example / dummy value for each placeholder.
-                                    </div>
+                                    <span class="text-muted fw-normal">
+                                        (Optional)
+                                    </span>
 
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    name="prompts[0][label]"
+                                    id="prompt_label_0"
+                                    class="form-control"
+                                    value="{{ old('prompts.0.label') }}"
+                                    placeholder="e.g. Step 1: Catchy Headline Generator"
+                                >
+
+                            </div>
+
+
+                      
+                            {{-- PROMPT TEXT --}}
+                           
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="prompt_text_0"
+                                    class="form-label-custom"
+                                >
+
+                                    Prompt Text
+
+                                    <span class="required-star">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <textarea
+                                    name="prompts[0][text]"
+                                    id="prompt_text_0"
+                                    class="form-control"
+                                    rows="5"
+                                    placeholder="Write your complete prompt here..."
+                                    required
+                                >{{ old('prompts.0.text') }}</textarea>
+
+
+                               <small class="form-help">
+
+    Enter the complete prompt that the AI should process.
+    For dynamic fields, use placeholders like
+    <code>[1]</code>, <code>[2]</code>, <code>[3]</code>.
+    These will automatically become input fields for users.
+
+</small>
+
+                                <div class="variable-settings-box" data-variable-settings="0">
+                                    <div class="variable-settings-title"><i class="mdi mdi-tune-vertical me-1"></i>User Input Settings</div>
+                                    <div class="variable-settings-help">Enter only an example / dummy value for each placeholder.</div>
                                     <div class="variable-settings-list"></div>
-
                                 </div>
 
                             </div>
 
 
-                            <!-- IMAGE -->
+                         
+                            {{-- IMAGE --}}
+                   
 
-                            <div>
+                            <div class="mb-0">
 
                                 <label
-                                    for="img_${index}"
+                                    for="img_0"
                                     class="form-label-custom"
                                 >
 
@@ -1618,8 +696,8 @@ if (!is_array($oldFirstAiTools)) {
 
                                     <input
                                         type="file"
-                                        name="prompts[${index}][image]"
-                                        id="img_${index}"
+                                        name="prompts[0][image]"
+                                        id="img_0"
                                         class="form-control"
                                         accept="image/*"
                                     >
@@ -1628,10 +706,11 @@ if (!is_array($oldFirstAiTools)) {
                                     <button
                                         type="button"
                                         class="btn btn-outline-secondary"
-                                        onclick="clearInput('img_${index}')"
+                                        onclick="clearInput('img_0')"
                                     >
 
                                         <i class="mdi mdi-close"></i>
+
                                         Clear
 
                                     </button>
@@ -1640,168 +719,632 @@ if (!is_array($oldFirstAiTools)) {
 
 
                                 <small class="form-help">
-                                    Upload an example output image if available.
+
+                                    Upload an example output image if
+                                    available.
+
                                 </small>
 
                             </div>
 
                         </div>
-                    `;
+
+                    </div>
 
 
-                    /*
-                    | Add new prompt inside scrollable card
-                    */
+                    {{-- ADD MORE --}}
+                
 
-                    document
-                        .getElementById(
-                            'prompts-container'
-                        )
-                        .insertAdjacentHTML(
-                            'beforeend',
-                            newPromptBox
-                        );
+                    <div class="mb-4 mt-3">
 
+                        <button
+                            type="button"
+                            id="add-more-btn"
+                            class="btn btn-outline-primary btn-sm add-more-btn"
+                        >
 
-                    /*
-                    | Attach variable settings
-                    */
+                            <i class="mdi mdi-plus me-1"></i>
 
-                    attachVariableSettings(
-                        document.getElementById(
-                            `prompt_text_${index}`
-                        ),
-                        document.querySelector(
-                            `[data-variable-settings="${index}"]`
-                        )
-                    );
+                            Add More Prompt
+
+                        </button>
+
+                    </div>
 
 
-                    /*
-                    | Scroll card to newly added prompt
-                    */
+                    <hr class="my-4">
+                    <small class="form-help">
 
-                    const formCard =
-                        document.querySelector(
-                            '.prompt-form-card'
-                        );
+    Enter the complete prompt that the AI should process.
+    For dynamic fields, use placeholders like
+    <code>[1]</code>, <code>[2]</code>, <code>[3]</code>.
+    These will automatically become input fields for users.
 
-                    if (formCard) {
+</small>
 
-                        setTimeout(
-                            function () {
 
-                                formCard.scrollTo({
-                                    top: formCard.scrollHeight,
-                                    behavior: 'smooth'
-                                });
+                  
+                    {{-- SUBMIT --}}
+                   
 
-                            },
-                            50
-                        );
+                    <div
+                        class="d-flex justify-content-end gap-2"
+                    >
 
-                    }
+                        <button
+                            type="reset"
+                            class="btn btn-light"
+                        >
 
-                }
-            );
+                            <i class="mdi mdi-refresh me-1"></i>
+
+                            Reset
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-success text-white"
+                            id="submit-btn"
+                        >
+
+                            <i class="mdi mdi-content-save-outline me-1"></i>
+
+                            Save All Prompts
+
+                        </button>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* VARIABLE SETTINGS */
+const VARIABLE_META_MARKER = '<!--AI_PROMPT_VARIABLES:';
+function stripVariableMeta(text){return String(text||'').replace(/<!--AI_PROMPT_VARIABLES:[\s\S]*?-->\s*$/i,'').trimEnd();}
+function detectPromptVariables(text){const m=String(text||'').match(/\[(\d+)\]/g)||[];return [...new Set(m.map(x=>x.replace(/\[|\]/g,'')))].sort((a,b)=>Number(a)-Number(b));}
+function getVariableMeta(text){const m=String(text||'').match(/<!--AI_PROMPT_VARIABLES:([\s\S]*?)-->\s*$/i);if(!m)return {};try{const x=JSON.parse(decodeURIComponent(m[1]));return x&&typeof x==='object'?x:{}}catch(e){return {}}}
+function escAttr(v){return String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderVariableSettings(box,text){if(!box)return;const list=box.querySelector('.variable-settings-list');if(!list)return;const vars=detectPromptVariables(text);list.innerHTML='';if(!vars.length){box.classList.remove('has-variables');return;}box.classList.add('has-variables');const old=getVariableMeta(text);vars.forEach(v=>{const x=old[v]||{};list.insertAdjacentHTML('beforeend',`<div class="variable-row" data-variable-row="${v}"><div class="variable-number">Variable [${v}]</div><label class="form-label-custom mb-1">Example / Dummy Value</label><input type="text" class="form-control variable-example-input" data-variable="${v}" value="${escAttr(x.example||'')}" placeholder="e.g. young Indian woman"></div>`);});}
+function attachVariableSettings(textarea,box){if(!textarea||!box)return;renderVariableSettings(box,textarea.value);textarea.addEventListener('input',function(){renderVariableSettings(box,stripVariableMeta(this.value));});}
+function collectVariableMeta(box){const meta={};if(!box)return meta;box.querySelectorAll('.variable-row').forEach(row=>{const v=row.dataset.variableRow;meta[v]={example:row.querySelector('.variable-example-input')?.value.trim()||''};});return meta;}
+function validateVariableSettings(box){if(!box||!box.classList.contains('has-variables'))return true;for(const row of box.querySelectorAll('.variable-row')){const v=row.dataset.variableRow,e=row.querySelector('.variable-example-input');if(!e?.value.trim()){e?.focus();alert(`Please enter an example / dummy value for Variable [${v}].`);return false;}}return true;}
+function appendVariableMeta(text,meta){const clean=stripVariableMeta(text);if(!detectPromptVariables(clean).length)return clean;return clean+VARIABLE_META_MARKER+encodeURIComponent(JSON.stringify(meta))+'-->';}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+
+    /*AI TOOLS*/
+
+    const aiTools = @json($availableTools);
+
+
+    /*PROMPT COUNTER */
+
+    let count = 1;
+
+    attachVariableSettings(
+        document.getElementById('prompt_text_0'),
+        document.querySelector('[data-variable-settings="0"]')
+    );
+
+
+    /*GET AI TOOL OPTIONS*/
+
+    function getAiToolOptions(index)
+    {
+        let html = '';
+
+        Object.entries(aiTools).forEach(function ([key, name]) {
+
+            html += `
+
+                <label class="ai-tool-option">
+
+                    <input
+                        type="checkbox"
+                        name="prompts[${index}][ai_tool][]"
+                        value="${key}"
+                    >
+
+                    <span>
+                        ${name}
+                    </span>
+
+                </label>
+
+            `;
+
+        });
+
+        return html;
+    }
+
+
+    /* UPDATE SELECTED AI TOOLS*/
+
+    function updateSelectedTools(dropdown)
+    {
+        const checkedInputs = dropdown.querySelectorAll(
+            'input[type="checkbox"]:checked'
+        );
+
+        const textElement = dropdown.querySelector(
+            '.selected-tools-text'
+        );
+
+        const badgeContainer = dropdown.parentElement.querySelector(
+            '.selected-ai-badges'
+        );
+
+        if (!textElement) {
+            return;
+        }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | FORM SUBMIT PROTECTION + VARIABLE META
-        |--------------------------------------------------------------------------
+        | No selection
         */
 
+        if (checkedInputs.length === 0) {
+
+            textElement.textContent = 'Select AI Tool(s)';
+
+            dropdown.classList.remove('has-selection');
+
+            if (badgeContainer) {
+                badgeContainer.innerHTML = '';
+            }
+
+            return;
+        }
+
+
+        /*
+        | Selected names
+        */
+
+        const selectedNames = [];
+
+
+        checkedInputs.forEach(function (input) {
+
+            const option = input.closest('.ai-tool-option');
+
+            if (!option) {
+                return;
+            }
+
+            const nameElement = option.querySelector('span');
+
+            if (!nameElement) {
+                return;
+            }
+
+            const name = nameElement.textContent.trim();
+
+            selectedNames.push(name);
+
+        });
+
+
+        /*
+        | Update dropdown text
+        */
+
+        textElement.textContent = selectedNames.join(', ');
+
+        dropdown.classList.add('has-selection');
+
+
+        /*
+        | Update badges
+        */
+
+        if (badgeContainer) {
+
+            badgeContainer.innerHTML = '';
+
+            selectedNames.forEach(function (name) {
+
+                const badge = document.createElement('span');
+
+                badge.className = 'badge bg-info text-dark';
+
+                badge.innerHTML =
+                    '<i class="mdi mdi-robot me-1"></i>' +
+                    name;
+
+                badgeContainer.appendChild(badge);
+
+            });
+
+        }
+
+    }
+
+
+    /*INITIALIZE AI DROPDOWNS */
+
+    function initializeAiDropdowns()
+    {
         document
-            .getElementById('prompt-form')
-            .addEventListener(
-                'submit',
-                function (event) {
+            .querySelectorAll('.ai-tool-dropdown')
+            .forEach(function (dropdown) {
 
-                    const textareas =
-                        this.querySelectorAll(
-                            'textarea[name^="prompts["][name$="[text]"]'
-                        );
+                updateSelectedTools(dropdown);
+
+            });
+    }
 
 
-                    for (
-                        const textarea of textareas
-                    ) {
-
-                        const match =
-                            textarea.name.match(
-                                /^prompts\[(\d+)\]\[text\]$/
-                            );
-
-                        if (!match) {
-                            continue;
-                        }
+    initializeAiDropdowns();
 
 
-                        const box =
-                            this.querySelector(
-                                `[data-variable-settings="${match[1]}"]`
-                            );
+    /*AI DROPDOWN TOGGLE*/
+
+    document.addEventListener('click', function (event) {
+
+        const toggle = event.target.closest('.ai-tool-toggle');
 
 
-                        if (
-                            !validateVariableSettings(
-                                box
-                            )
-                        ) {
+        /*Open / close dropdown */
 
-                            event.preventDefault();
+        if (toggle) {
 
-                            return;
-
-                        }
+            const dropdown =
+                toggle.closest('.ai-tool-dropdown');
 
 
-                        textarea.value =
-                            appendVariableMeta(
-                                textarea.value,
-                                collectVariableMeta(box)
-                            );
+            /*
+            | Close other dropdowns
+            */
+
+            document
+                .querySelectorAll('.ai-tool-dropdown.open')
+                .forEach(function (openDropdown) {
+
+                    if (openDropdown !== dropdown) {
+
+                        openDropdown.classList.remove('open');
 
                     }
 
+                });
 
-                    /*
-                    | Prevent double submit
-                    */
 
-                    const submitButton =
-                        document.getElementById(
-                            'submit-btn'
-                        );
+            dropdown.classList.toggle('open');
 
-                    submitButton.disabled = true;
+            return;
+        }
 
-                    submitButton.innerHTML = `
-                        <span
-                            class="spinner-border spinner-border-sm me-1"
-                            role="status"
-                        ></span>
-                        Saving...
-                    `;
 
-                }
+        /*
+        | Checkbox selected
+        */
+
+        const checkbox =
+            event.target.closest(
+                '.ai-tool-option input[type="checkbox"]'
             );
 
-    }
-);
+
+        if (checkbox) {
+
+            const dropdown =
+                checkbox.closest('.ai-tool-dropdown');
+
+            if (dropdown) {
+
+                updateSelectedTools(dropdown);
+
+            }
+
+            return;
+        }
 
 
-/*
-|--------------------------------------------------------------------------
-| DELETE PROMPT BOX
-|--------------------------------------------------------------------------
-*/
+        /*
+        | Click outside
+        */
 
-function deleteBox(boxId) {
+        if (!event.target.closest('.ai-tool-dropdown')) {
 
-    const box =
-        document.getElementById(boxId);
+            document
+                .querySelectorAll('.ai-tool-dropdown.open')
+                .forEach(function (dropdown) {
+
+                    dropdown.classList.remove('open');
+
+                });
+
+        }
+
+    });
+
+
+    /*ADD MORE PROMPT*/
+
+    document
+        .getElementById('add-more-btn')
+        .addEventListener('click', function () {
+
+
+            const index = count;
+
+            count++;
+
+
+            const newPromptBox = `
+
+                <div
+                    class="prompt-card p-4 mb-3"
+                    id="prompt-block-${index}"
+                >
+
+
+                    <!-- PROMPT HEADER -->
+
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-4"
+                    >
+
+                        <span class="badge bg-primary prompt-number">
+
+                            Prompt #${index + 1}
+
+                        </span>
+
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm remove-prompt-btn"
+                            onclick="deleteBox('prompt-block-${index}')"
+                        >
+
+                            <i class="mdi mdi-delete-outline me-1"></i>
+
+                            Remove
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- AI TOOL -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label-custom">
+
+                            AI Tool / Platform
+
+                        </label>
+
+
+                        <div class="ai-tool-dropdown">
+
+
+                            <button
+                                type="button"
+                                class="ai-tool-toggle d-flex align-items-center justify-content-between"
+                            >
+
+                                <span class="selected-tools-text">
+
+                                    Select AI Tool(s)
+
+                                </span>
+
+                                <i class="mdi mdi-chevron-down"></i>
+
+                            </button>
+
+
+                            <div class="ai-tool-menu">
+
+                                ${getAiToolOptions(index)}
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="selected-ai-badges"></div>
+
+
+                        <small class="form-help">
+
+                            Select one or multiple AI platforms for
+                            this prompt.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- PROMPT LABEL -->
+
+                    <div class="mb-3">
+
+                        <label
+                            for="prompt_label_${index}"
+                            class="form-label-custom"
+                        >
+
+                            Prompt Step / Title
+
+                            <span class="text-muted fw-normal">
+                                (Optional)
+                            </span>
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            name="prompts[${index}][label]"
+                            id="prompt_label_${index}"
+                            class="form-control"
+                            placeholder="e.g. Step ${index + 1}: Content Generator"
+                        >
+
+                    </div>
+
+
+                    <!-- PROMPT TEXT -->
+
+                    <div class="mb-3">
+
+                        <label
+                            for="prompt_text_${index}"
+                            class="form-label-custom"
+                        >
+
+                            Prompt Text
+
+                            <span class="required-star">
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <textarea
+                            name="prompts[${index}][text]"
+                            id="prompt_text_${index}"
+                            class="form-control"
+                            rows="5"
+                            placeholder="Write your complete prompt here..."
+                            required
+                        ></textarea>
+
+
+                        <small class="form-help">
+
+                            Enter the complete prompt that the AI
+                            should process.
+
+                        </small>
+
+                        <div class="variable-settings-box" data-variable-settings="${index}">
+                            <div class="variable-settings-title"><i class="mdi mdi-tune-vertical me-1"></i>User Input Settings</div>
+                            <div class="variable-settings-help">Enter only an example / dummy value for each placeholder.</div>
+                            <div class="variable-settings-list"></div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- IMAGE -->
+
+                    <div>
+
+                        <label
+                            for="img_${index}"
+                            class="form-label-custom"
+                        >
+
+                            Example Output Image
+
+                            <span class="text-muted fw-normal">
+                                (Optional)
+                            </span>
+
+                        </label>
+
+
+                        <div class="input-group">
+
+                            <input
+                                type="file"
+                                name="prompts[${index}][image]"
+                                id="img_${index}"
+                                class="form-control"
+                                accept="image/*"
+                            >
+
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary"
+                                onclick="clearInput('img_${index}')"
+                            >
+
+                                <i class="mdi mdi-close"></i>
+
+                                Clear
+
+                            </button>
+
+                        </div>
+
+
+                        <small class="form-help">
+
+                            Upload an example output image if
+                            available.
+
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+
+            document
+                .getElementById('prompts-container')
+                .insertAdjacentHTML(
+                    'beforeend',
+                    newPromptBox
+                );
+
+            attachVariableSettings(
+                document.getElementById(`prompt_text_${index}`),
+                document.querySelector(`[data-variable-settings="${index}"]`)
+            );
+
+        });
+
+
+    /* FORM SUBMIT PROTECTION + VARIABLE META */
+
+    document.getElementById('prompt-form').addEventListener('submit', function (event) {
+        const textareas = this.querySelectorAll('textarea[name^="prompts["][name$="[text]"]');
+        for (const textarea of textareas) {
+            const match = textarea.name.match(/^prompts\[(\d+)\]\[text\]$/);
+            if (!match) continue;
+            const box = this.querySelector(`[data-variable-settings="${match[1]}"]`);
+            if (!validateVariableSettings(box)) { event.preventDefault(); return; }
+            textarea.value = appendVariableMeta(textarea.value, collectVariableMeta(box));
+        }
+        const submitButton=document.getElementById('submit-btn');
+        submitButton.disabled=true;
+        submitButton.innerHTML=`<span class="spinner-border spinner-border-sm me-1" role="status"></span> Saving...`;
+    });
+
+});
+/* DELETE PROMPT BOX*/
+
+function deleteBox(boxId)
+{
+    const box = document.getElementById(boxId);
 
     if (!box) {
         return;
@@ -1813,44 +1356,33 @@ function deleteBox(boxId) {
     */
 
     const promptBoxes =
-        document.querySelectorAll(
-            '#prompts-container .prompt-card'
-        );
+        document.querySelectorAll('.prompt-card');
 
 
     if (promptBoxes.length <= 1) {
 
-        alert(
-            'At least one prompt is required.'
-        );
+        alert('At least one prompt is required.');
 
         return;
-
     }
 
 
     box.remove();
-
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| CLEAR IMAGE
-|--------------------------------------------------------------------------
-*/
+/*CLEAR IMAGE*/
 
-function clearInput(inputId) {
-
-    const input =
-        document.getElementById(inputId);
+function clearInput(inputId)
+{
+    const input = document.getElementById(inputId);
 
     if (input) {
-        input.value = '';
-    }
 
+        input.value = '';
+
+    }
 }
-```
 
 </script>
 
