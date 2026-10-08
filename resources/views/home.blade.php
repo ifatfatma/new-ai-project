@@ -1301,8 +1301,7 @@
 
 
         {{-- Add prompt modal --}}
-        <div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel"
-            aria-hidden="true">
+      <div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
                 <div class="modal-content border-0 shadow-lg rounded-4">
                     <div class="modal-header modern-modal-header">
