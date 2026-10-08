@@ -1369,6 +1369,24 @@
                         </button>
                     </li>
 
+                    @if(session('success'))
+    <div class="container mt-4">
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            {{ session('success') }}
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+
+        </div>
+    </div>
+@endif
+
                     {{-- Explicitly check 'frontend' guard --}}
                     @auth('frontend')
                         <li class="nav-item dropdown">

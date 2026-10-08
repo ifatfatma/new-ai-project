@@ -13,7 +13,7 @@ class Prompt extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'id', 'category_id', 'ai_tool', 'title', 'label', 'prompt_text', 'status', 'copies_count', 'image', 'created_at', 'updated_at', 'user_id', 'deleted_at'
+        'id', 'category_id', 'ai_tool', 'title', 'label', 'prompt_text', 'status', 'copies_count', 'image', 'created_at', 'updated_at', 'user_id', 'deleted_at', 'frontend_user_id'
     ];
 
     public function user()
