@@ -71,7 +71,7 @@ Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])
 
 Route::post('/logout', [FrontendAuthController::class, 'logout'])
     ->name('frontend.logout')
-    ->middleware('auth');
+    ->middleware('auth:frontend');
 
 
 /*

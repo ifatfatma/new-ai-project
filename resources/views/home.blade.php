@@ -121,6 +121,9 @@
             border-radius: 10px;
             box-shadow: 0 6px 18px rgba(249, 115, 22, .22);
             transition: .2s ease;
+            white-space: nowrap !important;
+            min-width: 125px;
+            width: auto !important;
         }
 
         .add-prompt-btn:hover {
@@ -1369,24 +1372,6 @@
                         </button>
                     </li>
 
-                    @if(session('success'))
-    <div class="container mt-4">
-        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3"
-             role="alert">
-
-            <i class="bi bi-check-circle-fill me-2"></i>
-
-            {{ session('success') }}
-
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"></button>
-
-        </div>
-    </div>
-@endif
-
                     {{-- Explicitly check 'frontend' guard --}}
                     @auth('frontend')
                         <li class="nav-item dropdown">
@@ -1441,6 +1426,17 @@
             </div>
         </div>
     </nav>
+
+    @if(session('success'))
+        <div id="successAlert" class="container mt-3">
+            <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3 mb-0"
+                role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
 
     <section class="hero-section text-center">
         <div class="container hero-content">
@@ -2293,6 +2289,22 @@ Use [1], [2], [3] for details that users can customize."
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+            /* Auto-hide session success message after 1 second */
+            document.addEventListener('DOMContentLoaded', function () {
+                const successAlert = document.getElementById('successAlert');
+
+                if (successAlert) {
+                    setTimeout(function () {
+                        successAlert.style.transition = 'opacity 0.3s ease';
+                        successAlert.style.opacity = '0';
+
+                        setTimeout(function () {
+                            successAlert.remove();
+                        }, 300);
+                    }, 1000);
+                }
+            });
+
             /* AI tool multi-select dropdown */
             document.addEventListener('DOMContentLoaded', function () {
                 const dropdown = document.getElementById('aiToolsDropdown');
