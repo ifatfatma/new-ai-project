@@ -14,8 +14,12 @@
         content="{{ csrf_token() }}"
     >
 
+    <meta property="og:image" content="{{ asset('images/seo-banner.jpg') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
-   <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+
+   
 
     @php
         $seo = \App\Models\SeoSetting::first();
