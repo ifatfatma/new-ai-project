@@ -1635,24 +1635,36 @@
                         @endauth
 
 
-                        {{-- Copy Prompt --}}
-                        @auth('frontend')
-                            <button type="button" class="btn prompt-action-btn copy-btn"
-                                onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
-                                <i class="bi bi-clipboard"></i>
-                                <span>Copy</span>
-                            </button>
-                        @else
-                            <a class="btn prompt-action-btn copy-btn" href="{{ route('frontend.login') }}"
-                                title="Login to copy prompt">
-                                <i class="bi bi-clipboard"></i>
-                                <span>Copy</span>
-                            </a>
-                        @endauth
+                        
+    {{-- Copy Prompt --}}
+@auth('frontend')
 
+    <button type="button"
+        class="btn prompt-action-btn copy-btn"
+        onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})"
+        title="Copy Prompt">
 
-                        {{-- Hidden Prompt Text --}}
-                        <textarea id="prompt-text-{{ $prompt->id }}" class="d-none">{{ $displayPromptText }}</textarea>
+        <i class="bi bi-clipboard"></i>
+        <span>Copy</span>
+
+    </button>
+
+    {{-- Prompt text is rendered ONLY for logged-in users --}}
+    <textarea id="prompt-text-{{ $prompt->id }}"
+        class="d-none">{{ $displayPromptText }}</textarea>
+
+@else
+
+    <a class="btn prompt-action-btn copy-btn"
+        href="{{ route('frontend.login') }}"
+        title="Login to copy prompt">
+
+        <i class="bi bi-clipboard"></i>
+        <span>Copy</span>
+
+    </a>
+
+@endauth
 
 
                         {{-- Share Prompt --}}
@@ -1853,20 +1865,28 @@
                             {{-- Modal Footer --}}
                             <div class="modal-footer border-0 pt-0">
 
-                                <button type="button" class="btn copy-btn fw-bold"
-                                    onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
+                               @auth('frontend')
 
-                                    <i class="bi bi-clipboard-check me-1"></i>
-                                    Copy Filled Prompt
+    <button type="button"
+        class="btn copy-btn fw-bold"
+        onclick="copyPrompt('prompt-text-{{ $prompt->id }}', this, {{ $prompt->id }})">
 
-                                </button>
+        <i class="bi bi-clipboard-check me-1"></i>
+        Copy Filled Prompt
 
+    </button>
 
-                                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">
+@else
 
-                                    Close
+    <a href="{{ route('frontend.login') }}"
+        class="btn copy-btn fw-bold text-decoration-none">
 
-                                </button>
+        <i class="bi bi-box-arrow-in-right me-1"></i>
+        Login to Copy
+
+    </a>
+
+@endauth
 
                             </div>
 
