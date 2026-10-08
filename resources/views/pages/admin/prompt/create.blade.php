@@ -42,16 +42,15 @@
     |--------------------------------------------------------------------------
     */
 
-    .prompt-form-card {
+  CSS
+.prompt-form-card {
     border: 1px solid #e5e7eb;
     border-radius: 10px;
     background: #ffffff;
-
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
+    height: calc(100vh - 140px); 
+    overflow-y: auto;          
     overflow-x: hidden;
 }
-
 .prompt-form-card::-webkit-scrollbar {
     width: 7px;
 }
@@ -353,9 +352,9 @@
                         Add New Prompts
                     </h4>
 
-<div class="card prompt-form-card p-4"> <!-- Yahan class lagani hai -->
+<div class="card prompt-form-card p-4"> 
     
-    <!-- Header jo aapne diya -->
+    
     <div class="mb-4">
         <h4 class="card-title mb-2">Add New Prompts</h4>
         <p class="text-muted mb-0">
