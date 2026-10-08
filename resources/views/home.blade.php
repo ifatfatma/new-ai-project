@@ -766,6 +766,576 @@
 }
 
 
+/* =========================================================
+   FRONTEND ADD PROMPT MODAL - MODERN FORM DESIGN
+   ========================================================= */
+
+.frontend-prompt-modal-dialog {
+    max-height: calc(100vh - 30px);
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.frontend-prompt-modal-content {
+    max-height: calc(100vh - 30px);
+    height: auto;
+    overflow: hidden;
+    border: 1px solid rgba(99, 102, 241, .12) !important;
+    border-radius: 18px !important;
+    background: #fff;
+    box-shadow: 0 25px 70px rgba(15, 23, 42, .22) !important;
+}
+
+
+/* ---------------------------------------------------------
+   HEADER
+   --------------------------------------------------------- */
+
+.frontend-prompt-modal-header {
+    flex-shrink: 0;
+    padding: 18px 22px;
+    border: 0 !important;
+    background: linear-gradient(135deg, #0f172a, #312e81);
+    color: #fff;
+    border-radius: 17px 17px 0 0 !important;
+}
+
+.frontend-prompt-header-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    box-shadow: 0 7px 20px rgba(99, 102, 241, .35);
+    font-size: 20px;
+}
+
+.frontend-prompt-modal-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -.2px;
+}
+
+.frontend-prompt-modal-subtitle {
+    color: rgba(255, 255, 255, .62);
+    font-size: 11px;
+}
+
+.frontend-prompt-close {
+    opacity: .9;
+}
+
+.frontend-prompt-close:hover {
+    opacity: 1;
+}
+
+
+/* ---------------------------------------------------------
+   SCROLLABLE BODY
+   --------------------------------------------------------- */
+
+.frontend-prompt-modal-body {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    max-height: calc(100vh - 185px);
+    min-height: 0;
+    padding: 22px !important;
+    background: #f8fafc;
+}
+
+
+/* Custom scrollbar */
+
+.frontend-prompt-modal-body::-webkit-scrollbar {
+    width: 7px;
+}
+
+.frontend-prompt-modal-body::-webkit-scrollbar-track {
+    background: #eef2f7;
+    border-radius: 10px;
+}
+
+.frontend-prompt-modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.frontend-prompt-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.frontend-prompt-modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #eef2f7;
+}
+
+
+/* ---------------------------------------------------------
+   FORM SECTIONS
+   --------------------------------------------------------- */
+
+.frontend-form-section {
+    padding: 18px;
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .035);
+}
+
+.frontend-form-section:last-child {
+    margin-bottom: 0;
+}
+
+.frontend-form-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding-bottom: 14px;
+    margin-bottom: 17px;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.frontend-section-icon {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+    color: #6366f1;
+    border: 1px solid #e0e7ff;
+}
+
+.frontend-form-section-heading h6 {
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.frontend-form-section-heading p {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+
+/* ---------------------------------------------------------
+   FORM FIELDS
+   --------------------------------------------------------- */
+
+.frontend-form-group {
+    margin-bottom: 17px;
+}
+
+.frontend-form-label {
+    display: block;
+    margin-bottom: 7px;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.frontend-optional-label {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.frontend-form-control {
+    min-height: 46px;
+    border: 1px solid #dbe3ef !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+    color: #1e293b;
+    font-size: 13px;
+    box-shadow: none !important;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.frontend-form-control:focus {
+    border-color: #818cf8 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .10) !important;
+}
+
+.frontend-form-control::placeholder,
+.frontend-prompt-textarea::placeholder {
+    color: #94a3b8;
+}
+
+
+/* ---------------------------------------------------------
+   PROMPT TEXTAREA
+   --------------------------------------------------------- */
+
+.frontend-prompt-textarea {
+    min-height: 170px;
+    resize: vertical;
+    padding: 13px 14px;
+    border: 1px solid #dbe3ef !important;
+    border-radius: 11px !important;
+    background: #fff !important;
+    color: #1e293b;
+    font-size: 13px;
+    line-height: 1.65;
+    box-shadow: none !important;
+}
+
+.frontend-prompt-textarea:focus {
+    border-color: #818cf8 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .10) !important;
+}
+
+.frontend-prompt-hint {
+    margin-top: 7px;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.frontend-prompt-hint i {
+    color: #f59e0b;
+}
+
+
+/* ---------------------------------------------------------
+   AI TOOLS DROPDOWN
+   --------------------------------------------------------- */
+
+.frontend-ai-tools-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.frontend-ai-tools-dropdown-btn {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid #dbe3ef;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.frontend-ai-tools-dropdown-btn:hover,
+.frontend-ai-tools-dropdown-btn[aria-expanded="true"] {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .08);
+}
+
+.frontend-ai-tools-dropdown-btn i {
+    color: #64748b;
+    transition: transform .2s;
+}
+
+.frontend-ai-tools-dropdown-btn[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
+
+.frontend-ai-tools-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 1055;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 6px 0;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, .15);
+}
+
+.frontend-ai-tools-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.frontend-ai-tools-dropdown-menu::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+.frontend-ai-tools-dropdown-menu::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.frontend-ai-tool-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 42px;
+    margin: 0;
+    padding: 8px 13px;
+    cursor: pointer;
+    color: #334155;
+    font-size: 13px;
+    transition: background .15s;
+}
+
+.frontend-ai-tool-option:hover {
+    background: #f8f7ff;
+}
+
+.frontend-ai-tool-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.frontend-ai-tool-check {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    background: #fff;
+    color: transparent;
+    font-size: 11px;
+    transition: .15s;
+}
+
+.frontend-ai-tool-option input:checked + .frontend-ai-tool-check {
+    border-color: #6366f1;
+    background: linear-gradient(135deg, #6366f1, #7c3aed);
+    color: #fff;
+}
+
+.frontend-ai-tool-name {
+    font-weight: 600;
+}
+
+.frontend-field-hint {
+    display: block;
+    margin-top: 7px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+
+/* ---------------------------------------------------------
+   IMAGE UPLOAD
+   --------------------------------------------------------- */
+
+.frontend-image-upload-wrapper {
+    position: relative;
+    min-height: 82px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc, #fafaff);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+}
+
+.frontend-image-upload-wrapper:hover {
+    border-color: #818cf8;
+    background: linear-gradient(135deg, #f8faff, #f5f3ff);
+}
+
+.frontend-image-upload-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: #eef2ff;
+    color: #6366f1;
+    font-size: 20px;
+}
+
+.frontend-image-upload-content {
+    min-width: 0;
+}
+
+.frontend-image-upload-title {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.frontend-image-upload-text {
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.frontend-image-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+
+/* ---------------------------------------------------------
+   FOOTER
+   --------------------------------------------------------- */
+
+.frontend-prompt-modal-footer {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    padding: 14px 20px;
+    border-top: 1px solid #e5e7eb !important;
+    background: #fff;
+}
+
+.frontend-cancel-btn {
+    min-height: 42px;
+    padding: 9px 17px;
+    border: 1px solid #dbe3ef;
+    border-radius: 9px;
+    background: #fff;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.frontend-cancel-btn:hover {
+    background: #f8fafc;
+    color: #1e293b;
+    border-color: #cbd5e1;
+}
+
+.frontend-submit-btn {
+    min-height: 42px;
+    padding: 9px 19px;
+    border: 0;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 750;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, .20);
+    transition: .2s ease;
+}
+
+.frontend-submit-btn:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 9px 20px rgba(99, 102, 241, .25);
+}
+
+
+/* ---------------------------------------------------------
+   VALIDATION
+   --------------------------------------------------------- */
+
+.frontend-form-control.is-invalid,
+.frontend-prompt-textarea.is-invalid {
+    border-color: #ef4444 !important;
+}
+
+.frontend-form-control.is-invalid:focus,
+.frontend-prompt-textarea.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, .10) !important;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 576px) {
+
+    .frontend-prompt-modal-dialog {
+        max-height: calc(100vh - 20px);
+        margin: 10px;
+    }
+
+    .frontend-prompt-modal-content {
+        max-height: calc(100vh - 20px);
+        border-radius: 15px !important;
+    }
+
+    .frontend-prompt-modal-header {
+        padding: 15px;
+    }
+
+    .frontend-prompt-header-icon {
+        width: 37px;
+        height: 37px;
+        border-radius: 10px;
+        font-size: 17px;
+    }
+
+    .frontend-prompt-modal-title {
+        font-size: 15px;
+    }
+
+    .frontend-prompt-modal-subtitle {
+        display: none;
+    }
+
+    .frontend-prompt-modal-body {
+        max-height: calc(100vh - 165px);
+        padding: 14px !important;
+    }
+
+    .frontend-form-section {
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .frontend-form-section-heading {
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+    }
+
+    .frontend-section-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .frontend-prompt-textarea {
+        min-height: 150px;
+    }
+
+    .frontend-prompt-modal-footer {
+        padding: 12px 14px;
+    }
+
+    .frontend-cancel-btn,
+    .frontend-submit-btn {
+        min-height: 40px;
+        padding: 8px 13px;
+    }
+}
+
+
+
+
     </style>
 </head>
 
@@ -1300,98 +1870,398 @@
         </div>
 
 
-        {{-- Add prompt modal --}}
-      <div class="modal fade" id="addPromptModal" tabindex="-1" aria-labelledby="addPromptModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-                <div class="modal-content border-0 shadow-lg rounded-4">
-                    <div class="modal-header modern-modal-header">
-                        <h5 class="modal-title fw-bold" id="addPromptModalLabel"><i class="bi bi-stars me-1"></i>Submit
-                            New Prompt</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+       
+{{-- Add prompt modal --}}
+<div class="modal fade"
+    id="addPromptModal"
+    tabindex="-1"
+    aria-labelledby="addPromptModalLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable frontend-prompt-modal-dialog">
+
+        <div class="modal-content frontend-prompt-modal-content">
+
+            {{-- Modal Header --}}
+            <div class="modal-header frontend-prompt-modal-header">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="frontend-prompt-header-icon">
+                        <i class="bi bi-stars"></i>
                     </div>
-                    <form action="{{ route('prompts.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="modal-body p-4">
-                            <div class="mb-3">
-                                <label for="title" class="form-label fw-bold">Prompt Title</label>
-                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title"
-                                    name="title" value="{{ old('title') }}" placeholder="Enter prompt title..."
-                                    required>
-                                @error('title')
-                                <div class="invalid-feedback">{{ $message }}</div>@enderror
-                            </div>
 
-                            <div class="mb-3">
-                                <label for="category_id" class="form-label fw-bold">Category</label>
-                                <select class="form-select @error('category_id') is-invalid @enderror" id="category_id"
-                                    name="category_id" required>
-                                    <option value="">Select Category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('category_id')
-                                <div class="invalid-feedback">{{ $message }}</div>@enderror
-                            </div>
+                    <div>
+                        <h5 class="modal-title frontend-prompt-modal-title mb-1"
+                            id="addPromptModalLabel">
+                            Submit New Prompt
+                        </h5>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">AI Tools / Platforms</label>
-                                @php $oldTools = old('ai_tools', old('ai_tool', []));
-                                    if (!is_array($oldTools))
-                                $oldTools = [$oldTools]; @endphp
-                                <div class="ai-tools-dropdown" id="aiToolsDropdown"
-                                    style="position:relative;width:100%;">
-                                    <button type="button" class="ai-tools-dropdown-btn" id="aiToolsDropdownBtn"
-                                        style="width:100%;min-height:48px;background:#fff;border:1px solid #dbe3ef;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;color:#475569;">
-                                        <span id="selectedToolsText">Select AI Tools</span><i
-                                            class="bi bi-chevron-down"></i>
-                                    </button>
-                                    <div class="ai-tools-dropdown-menu" id="aiToolsDropdownMenu"
-                                        style="display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:1055;background:#fff;border:1px solid #e2e8f0;border-radius:11px;box-shadow:0 18px 40px rgba(15,23,42,.15);padding:6px 0;max-height:260px;overflow-y:auto;">
-                                        @foreach(availableTools() as $key => $url)
-                                            <label class="ai-tool-option"
-                                                style="display:flex;align-items:center;gap:10px;padding:10px 14px;margin:0;cursor:pointer;font-size:14px;color:#334155;">
-                                                <input type="checkbox" name="ai_tools[]" value="{{ $key }}"
-                                                    id="tool_{{ $key }}" {{ in_array($key, $oldTools) ? 'checked' : '' }}>
-                                                <span class="ai-tool-name">{{ ucfirst(str_replace('_', ' ', $key)) }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle"></i> Select Multiple AI
-                                    </small>
-                            </div>
+                        <p class="frontend-prompt-modal-subtitle mb-0">
+                            Share your useful AI prompt with the community
+                        </p>
+                    </div>
 
-                            <div class="mb-3">
-                                <label for="prompt_text" class="form-label fw-bold">Prompt Text</label>
-                                <textarea class="form-control @error('prompt_text') is-invalid @enderror"
-                                    id="prompt_text" name="prompt_text" rows="5"
-                                    placeholder="Write your prompt here...&#10;&#10;Use [1], [2], [3] for details that can be customized."
-                                    required>{{ old('prompt_text') }}</textarea>
-                                @error('prompt_text')
-                                <div class="invalid-feedback">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="image" class="form-label fw-bold">Image <small
-                                        class="text-muted">(Optional)</small></label>
-                                <input type="file" class="form-control @error('image') is-invalid @enderror" id="image"
-                                    name="image" accept="image/*">
-                                @error('image')
-                                <div class="invalid-feedback">{{ $message }}</div>@enderror
-                            </div>
-                        </div>
-                        <div class="modal-footer bg-light border-0">
-                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary px-4 fw-bold"
-                                style="background:linear-gradient(135deg,#6366f1,#4f46e5);border:0;"><i
-                                    class="bi bi-send me-1"></i>Submit Prompt</button>
-                        </div>
-                    </form>
                 </div>
+
+                <button type="button"
+                    class="btn-close btn-close-white frontend-prompt-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+
             </div>
+
+
+            {{-- Form --}}
+            <form action="{{ route('prompts.store') }}"
+                method="POST"
+                enctype="multipart/form-data">
+
+                @csrf
+
+                {{-- Scrollable Body --}}
+                <div class="modal-body frontend-prompt-modal-body">
+
+                    {{-- Basic Information --}}
+                    <div class="frontend-form-section">
+
+                        <div class="frontend-form-section-heading">
+
+                            <div class="frontend-section-icon">
+                                <i class="bi bi-info-circle"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="mb-1">Basic Information</h6>
+                                <p class="mb-0">
+                                    Add the basic details of your prompt.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        {{-- Prompt Title --}}
+                        <div class="frontend-form-group">
+
+                            <label for="title" class="frontend-form-label">
+                                Prompt Title
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <input type="text"
+                                class="form-control frontend-form-control @error('title') is-invalid @enderror"
+                                id="title"
+                                name="title"
+                                value="{{ old('title') }}"
+                                placeholder="Enter prompt title..."
+                                required>
+
+                            @error('title')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+
+
+                        {{-- Category --}}
+                        <div class="frontend-form-group mb-0">
+
+                            <label for="category_id" class="frontend-form-label">
+                                Category
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <select
+                                class="form-select frontend-form-control @error('category_id') is-invalid @enderror"
+                                id="category_id"
+                                name="category_id"
+                                required>
+
+                                <option value="">Select Category</option>
+
+                                @foreach($categories as $category)
+
+                                    <option value="{{ $category->id }}"
+                                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+
+                            @error('category_id')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- AI Tools Section --}}
+                    <div class="frontend-form-section">
+
+                        <div class="frontend-form-section-heading">
+
+                            <div class="frontend-section-icon">
+                                <i class="bi bi-robot"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="mb-1">AI Tools / Platforms</h6>
+                                <p class="mb-0">
+                                    Select the AI tools this prompt is useful for.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        @php
+                            $oldTools = old('ai_tools', old('ai_tool', []));
+
+                            if (!is_array($oldTools)) {
+                                $oldTools = [$oldTools];
+                            }
+                        @endphp
+
+
+                        <div class="frontend-form-group mb-0">
+
+                            <label class="frontend-form-label">
+                                AI Tools / Platforms
+                                <span class="text-danger">*</span>
+                            </label>
+
+
+                            <div class="frontend-ai-tools-dropdown"
+                                id="aiToolsDropdown">
+
+                                <button type="button"
+                                    class="frontend-ai-tools-dropdown-btn"
+                                    id="aiToolsDropdownBtn"
+                                    aria-expanded="false">
+
+                                    <span id="selectedToolsText">
+                                        Select AI Tools
+                                    </span>
+
+                                    <i class="bi bi-chevron-down"></i>
+
+                                </button>
+
+
+                                <div class="frontend-ai-tools-dropdown-menu"
+                                    id="aiToolsDropdownMenu">
+
+                                    @foreach(availableTools() as $key => $url)
+
+                                        <label class="frontend-ai-tool-option">
+
+                                            <input type="checkbox"
+                                                name="ai_tools[]"
+                                                value="{{ $key }}"
+                                                id="tool_{{ $key }}"
+                                                {{ in_array($key, $oldTools) ? 'checked' : '' }}>
+
+                                            <span class="frontend-ai-tool-check">
+                                                <i class="bi bi-check"></i>
+                                            </span>
+
+                                            <span class="frontend-ai-tool-name">
+                                                {{ ucfirst(str_replace('_', ' ', $key)) }}
+                                            </span>
+
+                                        </label>
+
+                                    @endforeach
+
+                                </div>
+
+                            </div>
+
+
+                            <small class="frontend-field-hint">
+                                <i class="bi bi-info-circle me-1"></i>
+                                You can select multiple AI tools.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- Prompt Details --}}
+                    <div class="frontend-form-section">
+
+                        <div class="frontend-form-section-heading">
+
+                            <div class="frontend-section-icon">
+                                <i class="bi bi-pencil-square"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="mb-1">Prompt Details</h6>
+                                <p class="mb-0">
+                                    Write the prompt that users can copy and customize.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="frontend-form-group mb-0">
+
+                            <label for="prompt_text" class="frontend-form-label">
+                                Prompt Text
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <textarea
+                                class="form-control frontend-prompt-textarea @error('prompt_text') is-invalid @enderror"
+                                id="prompt_text"
+                                name="prompt_text"
+                                rows="7"
+                                placeholder="Write your prompt here...
+
+Use [1], [2], [3] for details that users can customize."
+                                required>{{ old('prompt_text') }}</textarea>
+
+                            <div class="frontend-prompt-hint">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                Tip: Use
+                                <strong>[1]</strong>,
+                                <strong>[2]</strong>,
+                                <strong>[3]</strong>
+                                for customizable values.
+                            </div>
+
+                            @error('prompt_text')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- Image Section --}}
+                    <div class="frontend-form-section">
+
+                        <div class="frontend-form-section-heading">
+
+                            <div class="frontend-section-icon">
+                                <i class="bi bi-image"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="mb-1">Prompt Image</h6>
+                                <p class="mb-0">
+                                    Add an image to make your prompt more attractive.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="frontend-form-group mb-0">
+
+                            <label for="image" class="frontend-form-label">
+                                Image
+                                <span class="frontend-optional-label">
+                                    Optional
+                                </span>
+                            </label>
+
+
+                            <div class="frontend-image-upload-wrapper">
+
+                                <div class="frontend-image-upload-icon">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                </div>
+
+                                <div class="frontend-image-upload-content">
+
+                                    <div class="frontend-image-upload-title">
+                                        Choose Prompt Image
+                                    </div>
+
+                                    <div class="frontend-image-upload-text">
+                                        JPG, JPEG, PNG or GIF
+                                    </div>
+
+                                </div>
+
+
+                                <input type="file"
+                                    class="frontend-image-input @error('image') is-invalid @enderror"
+                                    id="image"
+                                    name="image"
+                                    accept="image/*">
+
+                            </div>
+
+
+                            @error('image')
+                                <div class="invalid-feedback d-block">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+
+                            <small class="frontend-field-hint">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Adding an image is optional.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {{-- Modal Footer --}}
+                <div class="modal-footer frontend-prompt-modal-footer">
+
+                    <button type="button"
+                        class="btn frontend-cancel-btn"
+                        data-bs-dismiss="modal">
+
+                        <i class="bi bi-x-lg me-1"></i>
+                        Cancel
+
+                    </button>
+
+
+                    <button type="submit"
+                        class="btn frontend-submit-btn">
+
+                        <i class="bi bi-send me-1"></i>
+                        Submit Prompt
+
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
+
+    </div>
+</div>
+
 
         <footer class="modern-footer">
             <div class="container">
