@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
@@ -6,16 +7,21 @@ use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PromptController;
 use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\ProfileController; // Admin Profile Controller
+use App\Http\Controllers\ProfileController;
 use App\Models\Prompt;
 use App\Models\PromptCopy;
 use App\Http\Controllers\FrontendAuthController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\SavedPromptController;
-use App\Http\Controllers\UserAccountController; // Frontend User Account Controller
+use App\Http\Controllers\UserAccountController;
 
 
+/*
+|--------------------------------------------------------------------------
+| CLEAR / STORAGE LINK
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/clear', function () {
 
@@ -24,23 +30,72 @@ Route::get('/clear', function () {
 
     return Artisan::output();
 });
-// 1. PUBLIC / FRONTEND ROUTES
-Route::get('/', [FrontendController::class, 'index'])->name('home');
-Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])->name('search.suggestions');
-Route::get('/user-prompts/suggestions', [FrontendController::class, 'userSearchSuggestions'])->name('user.prompts.suggestions');
-Route::get('/prompts/{id}', [FrontendController::class, 'show'])->name('prompts.show');
 
-// Frontend Email OTP Login Routes
-Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('frontend.login');
-Route::post('/send-otp', [FrontendAuthController::class, 'sendOtp'])->name('frontend.send.otp');
-Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])->name('frontend.otp.verify.form');
-Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])->name('frontend.otp.verify');
-Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout')->middleware('auth');
 
-// Frontend / Public Prompt Store Route
-Route::post('/prompts/store', [PromptController::class, 'store'])->name('prompts.store')->middleware('auth');
+/*
+|--------------------------------------------------------------------------
+| 1. PUBLIC / FRONTEND ROUTES
+|--------------------------------------------------------------------------
+*/
 
-// Strict User-Only Copy Tracking Route
+Route::get('/', [FrontendController::class, 'index'])
+    ->name('home');
+
+Route::get('/search-suggestions', [FrontendController::class, 'searchSuggestions'])
+    ->name('search.suggestions');
+
+Route::get('/user-prompts/suggestions', [FrontendController::class, 'userSearchSuggestions'])
+    ->name('user.prompts.suggestions');
+
+Route::get('/prompts/{id}', [FrontendController::class, 'show'])
+    ->name('prompts.show');
+
+
+/*
+|--------------------------------------------------------------------------
+| FRONTEND EMAIL OTP LOGIN
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])
+    ->name('frontend.login');
+
+Route::post('/send-otp', [FrontendAuthController::class, 'sendOtp'])
+    ->name('frontend.send.otp');
+
+Route::get('/verify-otp', [FrontendAuthController::class, 'showVerifyForm'])
+    ->name('frontend.otp.verify.form');
+
+Route::post('/verify-otp', [FrontendAuthController::class, 'verifyOtp'])
+    ->name('frontend.otp.verify');
+
+Route::post('/logout', [FrontendAuthController::class, 'logout'])
+    ->name('frontend.logout')
+    ->middleware('auth');
+
+
+/*
+|--------------------------------------------------------------------------
+| FRONTEND PROMPT STORE
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| Frontend user uses "frontend" guard.
+| Therefore auth:frontend is required.
+|
+*/
+
+Route::post('/prompts/store', [FrontendController::class, 'storePrompt'])
+    ->name('prompts.store')
+    ->middleware('auth:frontend');
+
+
+/*
+|--------------------------------------------------------------------------
+| FRONTEND COPY TRACKING
+|--------------------------------------------------------------------------
+*/
+
 Route::post('/prompts/{id}/copy-track', function ($id) {
 
     $user = auth('frontend')->user();
@@ -89,72 +144,211 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
         'total_copies' => (int) $prompt->copies_count
     ]);
 
-})->middleware('auth:frontend')->name('prompts.copy.track');
+})->middleware('auth:frontend')
+  ->name('prompts.copy.track');
 
-// Authenticated Frontend User Routes Group
+
+/*
+|--------------------------------------------------------------------------
+| AUTHENTICATED FRONTEND USER ROUTES
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth:frontend'])->group(function () {
-    Route::get('/my-prompts', [FrontendController::class, 'myPrompts'])->name('user.prompts');
-    Route::get('/my-prompts/{id}/edit', [FrontendController::class, 'editPrompt'])->name('user.prompts.edit');
-    Route::put('/my-prompts/{id}', [FrontendController::class, 'updatePrompt'])->name('user.prompts.update');
-    Route::delete('/my-prompts/{id}', [FrontendController::class, 'destroyPrompt'])->name('user.prompts.destroy');
 
-    // Saved Prompts Routes
-    Route::post('/prompts/{prompt}/save', [SavedPromptController::class, 'toggle'])->name('prompts.save');
-    Route::get('/my-saved-prompts', [SavedPromptController::class, 'index'])->name('user.saved-prompts');
+    /*
+    |--------------------------------------------------------------------------
+    | MY PROMPTS
+    |--------------------------------------------------------------------------
+    */
 
-    // Frontend User Profile Routes
-    Route::get('/my-profile', [UserAccountController::class, 'edit'])->name('user.profile.edit');
-    Route::patch('/my-profile', [UserAccountController::class, 'update'])->name('user.profile.update');
+    Route::get('/my-prompts', [FrontendController::class, 'myPrompts'])
+        ->name('user.prompts');
+
+    Route::get('/my-prompts/{id}/edit', [FrontendController::class, 'editPrompt'])
+        ->name('user.prompts.edit');
+
+    Route::put('/my-prompts/{id}', [FrontendController::class, 'updatePrompt'])
+        ->name('user.prompts.update');
+
+    Route::delete('/my-prompts/{id}', [FrontendController::class, 'destroyPrompt'])
+        ->name('user.prompts.destroy');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAVED PROMPTS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/prompts/{prompt}/save', [SavedPromptController::class, 'toggle'])
+        ->name('prompts.save');
+
+    Route::get('/my-saved-prompts', [SavedPromptController::class, 'index'])
+        ->name('user.saved-prompts');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FRONTEND USER PROFILE
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/my-profile', [UserAccountController::class, 'edit'])
+        ->name('user.profile.edit');
+
+    Route::patch('/my-profile', [UserAccountController::class, 'update'])
+        ->name('user.profile.update');
 });
 
-// 2. ADMIN ROUTES GROUP (/admin)
+
+/*
+|--------------------------------------------------------------------------
+| 2. ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('admin')->group(function () {
 
-    Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/login', [AuthController::class, 'login'])->name('admin.login.submit');
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN LOGIN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/', [AuthController::class, 'showLoginForm'])
+        ->name('login');
+
+    Route::get('/login', [AuthController::class, 'showLoginForm'])
+        ->name('admin.login');
+
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('admin.login.submit');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN AUTHENTICATED ROUTES
+    |--------------------------------------------------------------------------
+    */
 
     Route::middleware('auth')->group(function () {
 
-        Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
-        Route::get('/analytics/copies', [HomeController::class, 'copyAnalytics'])->name('admin.analytics.copies');
-        Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD
+        |--------------------------------------------------------------------------
+        */
 
-        // ADMIN PROFILE ROUTES
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-        Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update');
+        Route::get('/dashboard', [HomeController::class, 'index'])
+            ->name('admin.dashboard');
 
-        // Admin Settings Routes
-        Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
-        Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('admin.settings.profile.update');
-        Route::post('/settings/logo', [SettingsController::class, 'updateLogo'])->name('admin.settings.logo.update');
-        Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('admin.settings.password.update');
-        Route::post('/settings/login-background', [SettingsController::class, 'updateLoginBackground'])->name('admin.settings.login.bg.update');
+        Route::get('/analytics/copies', [HomeController::class, 'copyAnalytics'])
+            ->name('admin.analytics.copies');
 
-        // SEO Settings Routes
-        Route::get('/seo-settings', [SeoSettingController::class, 'edit'])->name('admin.seo.edit');
-        Route::post('/seo-settings', [SeoSettingController::class, 'update'])->name('admin.seo.update');
+        Route::post('/logout', [AuthController::class, 'logout'])
+            ->name('admin.logout');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN PROFILE
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/profile', [ProfileController::class, 'edit'])
+            ->name('profile.edit');
+
+        Route::put('/profile/update', [ProfileController::class, 'update'])
+            ->name('profile.update');
+
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])
+            ->name('profile.password');
+
+        Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])
+            ->name('profile.image.update');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN SETTINGS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/settings', [SettingsController::class, 'index'])
+            ->name('admin.settings.index');
+
+        Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])
+            ->name('admin.settings.profile.update');
+
+        Route::post('/settings/logo', [SettingsController::class, 'updateLogo'])
+            ->name('admin.settings.logo.update');
+
+        Route::post('/settings/password', [SettingsController::class, 'updatePassword'])
+            ->name('admin.settings.password.update');
+
+        Route::post('/settings/login-background', [SettingsController::class, 'updateLoginBackground'])
+            ->name('admin.settings.login.bg.update');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEO SETTINGS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/seo-settings', [SeoSettingController::class, 'edit'])
+            ->name('admin.seo.edit');
+
+        Route::post('/seo-settings', [SeoSettingController::class, 'update'])
+            ->name('admin.seo.update');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN CATEGORIES
+        |--------------------------------------------------------------------------
+        */
 
         Route::resource('categories', CategoryController::class)->names([
-            'index' => 'admin.categories.index',
-            'store' => 'admin.categories.store',
-            'update' => 'admin.categories.update',
+            'index'   => 'admin.categories.index',
+            'store'   => 'admin.categories.store',
+            'update'  => 'admin.categories.update',
             'destroy' => 'admin.categories.destroy',
         ]);
 
-        // Admin Prompts Routes
-        Route::get('/prompts', [PromptController::class, 'index'])->name('admin.prompts.index');
-        Route::get('/prompts/create', [PromptController::class, 'create'])->name('admin.prompts.create');
-        Route::post('/prompts/store', [PromptController::class, 'store'])->name('admin.prompts.store');
-        
-        Route::get('/prompts/{id}', [PromptController::class, 'show'])->name('admin.prompts.show');
-        
-        Route::get('/prompts/{id}/edit', [PromptController::class, 'edit'])->name('admin.prompts.edit');
-        Route::put('/prompts/{id}', [PromptController::class, 'update'])->name('admin.prompts.update');
-        Route::delete('/prompts/{id}', [PromptController::class, 'destroy'])->name('admin.prompts.destroy');
-        Route::post('/prompts/{id}/approve', [PromptController::class, 'approve'])->name('admin.prompts.approve');
-        Route::post('/prompts/{id}/reject', [PromptController::class, 'reject'])->name('admin.prompts.reject');
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN PROMPTS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/prompts', [PromptController::class, 'index'])
+            ->name('admin.prompts.index');
+
+        Route::get('/prompts/create', [PromptController::class, 'create'])
+            ->name('admin.prompts.create');
+
+        Route::post('/prompts/store', [PromptController::class, 'store'])
+            ->name('admin.prompts.store');
+
+        Route::get('/prompts/{id}', [PromptController::class, 'show'])
+            ->name('admin.prompts.show');
+
+        Route::get('/prompts/{id}/edit', [PromptController::class, 'edit'])
+            ->name('admin.prompts.edit');
+
+        Route::put('/prompts/{id}', [PromptController::class, 'update'])
+            ->name('admin.prompts.update');
+
+        Route::delete('/prompts/{id}', [PromptController::class, 'destroy'])
+            ->name('admin.prompts.destroy');
+
+        Route::post('/prompts/{id}/approve', [PromptController::class, 'approve'])
+            ->name('admin.prompts.approve');
+
+        Route::post('/prompts/{id}/reject', [PromptController::class, 'reject'])
+            ->name('admin.prompts.reject');
     });
 });
