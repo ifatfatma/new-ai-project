@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SeoSetting extends Model
 {
     use HasFactory;
-protected $table = 'seo_settings';
+    protected $table = 'seo_settings';
     protected $fillable =  [
         'raw_meta_tags', 
         'meta_description',
