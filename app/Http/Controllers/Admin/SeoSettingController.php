@@ -26,68 +26,52 @@ class SeoSettingController extends Controller
     }
 
     public function update(Request $request)
-    {
-        $request->validate([
-            'meta_description' => 'nullable|string|max:1000',
+{
+    $request->validate([
+        'raw_meta_tags' => 'nullable|string',
+        'og_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+    ]);
 
-            'tools' => 'nullable|array',
-            'tools.*' => 'string',
+    $seo = SeoSetting::first();
 
-            'og_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
-
-        $seo = SeoSetting::first();
-
-        if (!$seo) {
-            $seo = new SeoSetting();
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Meta Description
-        |--------------------------------------------------------------------------
-        */
-
-        $seo->meta_description = $request->input('meta_description');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Selected Tools
-        |--------------------------------------------------------------------------
-        */
-
-        $seo->tools = $request->input('tools', []);
-
-        /*
-        |--------------------------------------------------------------------------
-        | OG Image
-        |--------------------------------------------------------------------------
-        */
-
-        if ($request->hasFile('og_image')) {
-
-            if (
-                $seo->og_image &&
-                Storage::disk('public')->exists($seo->og_image)
-            ) {
-                Storage::disk('public')->delete($seo->og_image);
-            }
-
-            $seo->og_image = $request
-                ->file('og_image')
-                ->store('seo', 'public');
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Save
-        |--------------------------------------------------------------------------
-        */
-
-        $seo->save();
-
-        return redirect()
-            ->back()
-            ->with('success', 'SEO Settings updated successfully!');
+    if (!$seo) {
+        $seo = new SeoSetting();
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Raw HTML Meta Tags
+    |--------------------------------------------------------------------------
+    */
+    $seo->raw_meta_tags = $request->input('raw_meta_tags');
+
+    /*
+    |--------------------------------------------------------------------------
+    | OG Image
+    |--------------------------------------------------------------------------
+    */
+    if ($request->hasFile('og_image')) {
+        if (
+            $seo->og_image &&
+            Storage::disk('public')->exists($seo->og_image)
+        ) {
+            Storage::disk('public')->delete($seo->og_image);
+        }
+
+        $seo->og_image = $request
+            ->file('og_image')
+            ->store('seo', 'public');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save
+    |--------------------------------------------------------------------------
+    */
+    $seo->save();
+
+    return redirect()
+        ->back()
+        ->with('success', 'SEO Settings updated successfully!');
+}
 }
