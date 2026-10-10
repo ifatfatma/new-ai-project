@@ -25,7 +25,7 @@ class SeoSettingController extends Controller
         return view('pages.admin.seo.seo_edit', compact('seo'));
     }
 
-    public function update(Request $request)
+   public function update(Request $request)
 {
     $request->validate([
         'raw_meta_tags' => 'nullable|string',
