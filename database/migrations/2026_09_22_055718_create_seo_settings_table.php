@@ -15,7 +15,7 @@ return new class extends Migration
     $table->text('meta_keywords')->nullable();
     $table->string('og_image')->nullable();
     $table->timestamps();
-    $table->longText('raw_meta_tags')->nullable();
+   
 });
     }
 
