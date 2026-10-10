@@ -3,165 +3,93 @@
 
 <head>
 
+    {{-- Basic Meta Tags --}}
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-
-
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
-    >
-
-    <meta property="og:image" content="{{ asset('images/seo-banner.jpg') }}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-
-
-   
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @php
         $seo = \App\Models\SeoSetting::first();
+
+        $defaultTitle = 'AI Prompt Hub - Discover & Copy Best Prompts';
+        $defaultDescription = 'Find the best AI prompts for ChatGPT, Midjourney, and more.';
+        $defaultKeywords = 'ai prompts, chatgpt prompts, midjourney prompts';
+
+        $pageTitle = trim($__env->yieldContent('title', $seo->meta_title ?? $defaultTitle));
+        $metaDescription = $seo->meta_description ?? $defaultDescription;
+        $metaKeywords = $seo->meta_keywords ?? $defaultKeywords;
+
+        $ogImage = !empty($seo?->og_image)
+            ? asset('storage/' . $seo->og_image)
+            : asset('images/default-og.png');
     @endphp
 
+    {{-- Page Title --}}
+    <title>{{ $pageTitle }}</title>
 
-    <title>
-        @yield(
-            'title',
-            $seo->meta_title ?? 'AI Prompt Hub - Discover & Share Prompts'
-        )
-    </title>
+    {{-- SEO Meta Tags --}}
+    <meta name="description" content="{{ $metaDescription }}">
+    <meta name="keywords" content="{{ $metaKeywords }}">
 
+    {{-- Open Graph: WhatsApp, Facebook and other social platforms --}}
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:secure_url" content="{{ $ogImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="AI Prompt Hub">
 
-    <meta
-        name="description"
-        content="{{ $seo->meta_description ?? 'Find the best AI prompts for ChatGPT, Midjourney, and more.' }}"
-    >
+    {{-- Twitter / X Preview --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    <meta name="twitter:image" content="{{ $ogImage }}">
 
-
-    <meta
-        name="keywords"
-        content="{{ $seo->meta_keywords ?? 'ai prompts, chatgpt prompts, midjourney prompts' }}"
-    >
-
-
-    {{-- =====================================================
-         OPEN GRAPH
-    ====================================================== --}}
-
-    <meta
-        property="og:title"
-        content="{{ $seo->meta_title ?? 'AI Prompt Hub' }}"
-    >
-
-
-    <meta
-        property="og:description"
-        content="{{ $seo->meta_description ?? 'Find the best AI prompts.' }}"
-    >
-
-
-    @if(!empty($seo?->og_image))
-
-        <meta
-            property="og:image"
-            content="{{ asset('storage/' . $seo->og_image) }}"
-        >
-
-    @else
-
-        <meta
-            property="og:image"
-            content="{{ asset('images/default-og.png') }}"
-        >
-
-    @endif
-
-
-    <meta
-        property="og:type"
-        content="website"
-    >
-
-
-    {{-- =====================================================
-         COMMON FRONTEND CSS
-    ====================================================== --}}
-
+    {{-- Common Frontend CSS --}}
     @include('layouts.partials.css')
 
-
-    {{-- =====================================================
-         FONT AWESOME
-    ====================================================== --}}
-
+    {{-- Font Awesome --}}
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     >
 
-
-    {{-- =====================================================
-         PAGE SPECIFIC CSS
-    ====================================================== --}}
-
+    {{-- Page Specific CSS --}}
     @stack('styles')
-   
+
+    {{-- Additional Raw HTML Meta Tags from Admin Settings --}}
+    {{-- Avoid adding duplicate title, description, keywords or OG tags here. --}}
     {!! $seo->raw_meta_tags ?? '' !!}
 
 </head>
 
-
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-
-    {{-- =====================================================
-         NAVBAR
-         Hide navbar when $hideNavbar = true
-    ====================================================== --}}
-
+    {{-- Navbar --}}
     @if(!isset($hideNavbar) || !$hideNavbar)
-
         @include('layouts.partials.nav', [
             'fallback' => 'layouts.partials.header'
         ])
-
     @endif
 
-
-    {{-- =====================================================
-         MAIN CONTENT
-    ====================================================== --}}
-
+    {{-- Main Content --}}
     <main class="flex-grow-1">
-
         @yield('content')
-
     </main>
 
-
-    {{-- =====================================================
-         FOOTER
-    ====================================================== --}}
-
+    {{-- Footer --}}
     @include('layouts.partials.footer')
 
-
-    {{-- =====================================================
-         COMMON FRONTEND JS
-    ====================================================== --}}
-
+    {{-- Common Frontend JS --}}
     @include('layouts.partials.js')
 
-
-    {{-- =====================================================
-         PAGE SPECIFIC JS
-    ====================================================== --}}
-
+    {{-- Page Specific JS --}}
     @stack('scripts')
 
-
 </body>
-
 </html>

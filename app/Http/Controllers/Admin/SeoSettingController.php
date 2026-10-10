@@ -38,18 +38,12 @@ class SeoSettingController extends Controller
         $seo = new SeoSetting();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Raw HTML Meta Tags
-    |--------------------------------------------------------------------------
-    */
-    $seo->raw_meta_tags = $request->input('raw_meta_tags');
+    // Save custom meta tags only if the database supports the column.
+    if (\Illuminate\Support\Facades\Schema::hasColumn('seo_settings', 'raw_meta_tags')) {
+        $seo->raw_meta_tags = $request->input('raw_meta_tags');
+    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | OG Image
-    |--------------------------------------------------------------------------
-    */
+    // Save social sharing image.
     if ($request->hasFile('og_image')) {
         if (
             $seo->og_image &&
@@ -63,11 +57,6 @@ class SeoSettingController extends Controller
             ->store('seo', 'public');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Save
-    |--------------------------------------------------------------------------
-    */
     $seo->save();
 
     return redirect()
