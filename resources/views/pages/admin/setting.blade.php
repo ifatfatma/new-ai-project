@@ -192,47 +192,47 @@
         </div>
 
         {{-- Website SEO Settings --}}
-        <div class="col-md-6 grid-margin stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title text-primary">
-                        <i class="mdi mdi-web me-2"></i> Website SEO Settings
-                    </h4>
-                    <p class="card-description">Manage global meta tags and social share image</p>
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-primary">
+                <i class="mdi mdi-web me-2"></i> Website SEO Settings
+            </h4>
+            <p class="card-description">Manage raw HTML meta tags and social share image</p>
 
-                    <form action="{{ route('admin.seo.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
+            <form action="{{ route('admin.seo.update') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
-                        <div class="form-group mb-3">
-                            <label for="meta_description" class="fw-bold">Meta Description</label>
-                            <textarea class="form-control @error('meta_description') is-invalid @enderror" id="meta_description" name="meta_description" rows="2" placeholder="Brief description...">{{ old('meta_description', $seo->meta_description ?? '') }}</textarea>
-                            @error('meta_description')
-                                <span class="text-danger small">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="row align-items-center mb-3">
-                            <div class="col-md-3 text-center">
-                                @if(!empty($seo->og_image ?? null))
-                                    <img src="{{ asset('storage/' . $seo->og_image) }}" alt="OG" class="shadow-sm rounded border" width="50" height="50" style="object-fit: cover;">
-                                @else
-                                    <span class="text-muted small">No Image</span>
-                                @endif
-                            </div>
-                            <div class="col-md-9">
-                                <label for="og_image" class="fw-bold">Social Share Image (OG)</label>
-                                <input type="file" class="form-control @error('og_image') is-invalid @enderror" id="og_image" name="og_image" accept="image/*">
-                                @error('og_image')
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-sm text-white">Save SEO Settings</button>
-                    </form>
+                <div class="form-group mb-3">
+                    <label for="raw_meta_tags" class="fw-bold">Raw HTML Meta Tags</label>
+                    <textarea class="form-control font-monospace @error('raw_meta_tags') is-invalid @enderror" id="raw_meta_tags" name="raw_meta_tags" rows="6" placeholder="Paste full HTML meta tags block here...">{{ old('raw_meta_tags', $seo->raw_meta_tags ?? '') }}</textarea>
+                    @error('raw_meta_tags')
+                        <span class="text-danger small">{{ $message }}</span>
+                    @enderror
                 </div>
-            </div>
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-3 text-center">
+                        @if(!empty($seo->og_image ?? null))
+                            <img src="{{ asset('storage/' . $seo->og_image) }}" alt="OG" class="shadow-sm rounded border" width="50" height="50" style="object-fit: cover;">
+                        @else
+                            <span class="text-muted small">No Image</span>
+                        @endif
+                    </div>
+                    <div class="col-md-9">
+                        <label for="og_image" class="fw-bold">Social Share Image (OG)</label>
+                        <input type="file" class="form-control @error('og_image') is-invalid @enderror" id="og_image" name="og_image" accept="image/*">
+                        @error('og_image')
+                            <span class="text-danger small">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm text-white">Save SEO Settings</button>
+            </form>
         </div>
+    </div>
+</div>
 
     </div>
 
