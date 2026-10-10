@@ -27,7 +27,7 @@
 
         $ogImage = !empty($seo?->og_image)
             ? asset('storage/' . $seo->og_image)
-            : asset('images/default-og.png');
+            : asset('images/seo.banner.jpeg');
     @endphp
 
     {{-- Page Title --}}
