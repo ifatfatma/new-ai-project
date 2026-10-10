@@ -408,24 +408,33 @@
                             </small>
                         </div>
 
-                        {{-- Current OG Image --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">
-                                Current Social Sharing Image
-                            </label>
+                       {{-- Current OG Image --}}
+<div class="mb-3">
+    <label class="form-label fw-bold">
+        Current Social Sharing Image
+    </label>
 
-                            @if(!empty($seo->og_image ?? null))
-                                <div class="mb-3">
-                                    <img
-                                        src="{{ asset('storage/' . $seo->og_image) }}"
-                                        alt="Current OG Image"
-                                        class="og-preview rounded-3 border"
-                                    >
-                                </div>
-                            @else
-                                <p class="text-muted small">No social sharing image uploaded.</p>
-                            @endif
-                        </div>
+    @if(!empty($seo?->og_image))
+        {{-- Agar database mein custom image uploaded hai --}}
+        <div class="mb-3">
+            <img
+                src="{{ asset('storage/' . $seo->og_image) }}"
+                alt="Current OG Image"
+                class="og-preview rounded-3 border"
+            >
+        </div>
+    @else
+        
+        <div class="mb-3">
+            <img
+                src="{{ asset('images/seo.banner.jpeg') }}"
+                alt="Default Social Banner"
+                class="og-preview rounded-3 border"
+            >
+            <div class="form-text text-muted mt-1">Showing default system banner. Upload a custom image above to replace it.</div>
+        </div>
+    @endif
+</div>
 
                         {{-- New OG Image Preview --}}
                         <div id="ogPreviewWrapper" class="mb-3" style="display: none;">

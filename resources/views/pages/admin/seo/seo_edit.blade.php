@@ -103,20 +103,29 @@
                     </p>
 
                     {{-- Current Image Preview --}}
-                    @if(!empty($seo->og_image))
-                        <div class="mb-3">
-                            <p class="small fw-semibold mb-2">
-                                Current social sharing image:
-                            </p>
+                <div class="mb-3">
+    <p class="small fw-semibold mb-2">
+        Current social sharing image:
+    </p>
 
-                            <img
-                                src="{{ asset('storage/' . $seo->og_image) }}"
-                                alt="Current social sharing image"
-                                class="img-fluid rounded-3 border seo-og-preview"
-                                loading="lazy"
-                            >
-                        </div>
-                    @endif
+    @if(!empty($seo->og_image))
+      
+        <img
+            src="{{ asset('storage/' . $seo->og_image) }}"
+            alt="Current social sharing image"
+            class="img-fluid rounded-3 border seo-og-preview"
+            loading="lazy"
+        >
+    @else
+      
+        <img
+            src="{{ asset('images/seo.banner.jpeg') }}"
+            alt="Default social sharing image"
+            class="img-fluid rounded-3 border seo-og-preview"
+            loading="lazy"
+        >
+    @endif
+</div>
 
                     {{-- New Image Preview --}}
                     <div id="ogImagePreviewWrapper" class="mb-3" style="display: none;">
