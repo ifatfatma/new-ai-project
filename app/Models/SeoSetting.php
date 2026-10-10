@@ -10,6 +10,7 @@ class SeoSetting extends Model
     use HasFactory;
 
     protected $fillable = [
+        'raw_meta_tags', // <--- Yeh yahan add karna zaroori hai
         'meta_description',
         'meta_keywords',
         'tools',
