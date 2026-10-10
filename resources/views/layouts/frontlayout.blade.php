@@ -25,11 +25,27 @@
         $metaDescription = $seo?->meta_description ?? $defaultDescription;
         $metaKeywords = $seo?->meta_keywords ?? $defaultKeywords;
 
-        $ogImage = !empty($seo?->og_image)
-            ? asset('storage/' . $seo->og_image)
-            : asset('images/seo.banner.jpeg');
-    @endphp
+        
+        $ogImageWidth = 1200;
+        $ogImageHeight = 630;
 
+        if (!empty($seo?->og_image)) {
+            $ogImage = asset('storage/' . $seo->og_image);
+            
+            
+            $imagePath = public_path('storage/' . $seo->og_image);
+            if (file_exists($imagePath)) {
+                $size = @getimagesize($imagePath);
+                if ($size) {
+                    $ogImageWidth = $size[0];   // Asli width
+                    $ogImageHeight = $size[1];  // Asli height
+                }
+            }
+        } else {
+            $ogImage = asset('images/seo.banner.jpeg');
+            
+        }
+    @endphp
     {{-- Page Title --}}
     <title>{{ $pageTitle }}</title>
 
@@ -37,16 +53,17 @@
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="keywords" content="{{ $metaKeywords }}">
 
-    {{-- Open Graph: WhatsApp, Facebook, LinkedIn --}}
+    {{-- Open Graph Meta Tags --}}
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:image:secure_url" content="{{ $ogImage }}">
+    <meta property="og:image:width" content="{{ $ogImageWidth }}">
+    <meta property="og:image:height" content="{{ $ogImageHeight }}">
     <meta property="og:image:alt" content="AI Prompt Hub - Discover and copy AI prompts">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="AI Prompt Hub">
-
     {{-- Twitter / X Preview --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $pageTitle }}">
