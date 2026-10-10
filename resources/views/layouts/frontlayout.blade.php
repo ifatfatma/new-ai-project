@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
 
     {{-- Basic Meta Tags --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @php
@@ -17,9 +17,13 @@
         $defaultDescription = 'Find the best AI prompts for ChatGPT, Midjourney, and more.';
         $defaultKeywords = 'ai prompts, chatgpt prompts, midjourney prompts';
 
-        $pageTitle = trim($__env->yieldContent('title', $seo->meta_title ?? $defaultTitle));
-        $metaDescription = $seo->meta_description ?? $defaultDescription;
-        $metaKeywords = $seo->meta_keywords ?? $defaultKeywords;
+        $pageTitle = trim($__env->yieldContent(
+            'title',
+            $seo?->meta_title ?? $defaultTitle
+        ));
+
+        $metaDescription = $seo?->meta_description ?? $defaultDescription;
+        $metaKeywords = $seo?->meta_keywords ?? $defaultKeywords;
 
         $ogImage = !empty($seo?->og_image)
             ? asset('storage/' . $seo->og_image)
@@ -33,13 +37,12 @@
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="keywords" content="{{ $metaKeywords }}">
 
-    {{-- Open Graph: WhatsApp, Facebook and other social platforms --}}
+    {{-- Open Graph: WhatsApp, Facebook, LinkedIn --}}
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:image:secure_url" content="{{ $ogImage }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="AI Prompt Hub - Discover and copy AI prompts">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="AI Prompt Hub">
@@ -49,6 +52,7 @@
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $metaDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
+    <meta name="twitter:image:alt" content="AI Prompt Hub - Discover and copy AI prompts">
 
     {{-- Common Frontend CSS --}}
     @include('layouts.partials.css')
@@ -63,10 +67,11 @@
     @stack('styles')
 
     {{-- Additional Raw HTML Meta Tags from Admin Settings --}}
-    {{-- Avoid adding duplicate title, description, keywords or OG tags here. --}}
-    {!! $seo->raw_meta_tags ?? '' !!}
+    {{-- Avoid duplicate title, description and Open Graph tags here. --}}
+    {!! $seo?->raw_meta_tags ?? '' !!}
 
 </head>
+
 
 <body class="d-flex flex-column min-vh-100 bg-light">
 
