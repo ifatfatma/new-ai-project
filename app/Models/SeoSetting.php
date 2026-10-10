@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class SeoSetting extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
+protected $table = 'seo_settings';
+    protected $fillable =  [
         'raw_meta_tags', 
         'meta_description',
         'meta_keywords',
