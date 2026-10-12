@@ -2783,6 +2783,109 @@ Use [1], [2], [3] for details that users can customize."
                         button.disabled = false;
                     });
             }
+
+
+            
+/* =========================================================
+   ADD PROMPT - IMAGE PREVIEW ON FILE SELECTION
+   ========================================================= */
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const imageInput = document.getElementById('image');
+    const previewBox = document.getElementById('imagePreviewBox');
+    const previewImage = document.getElementById('imagePreview');
+    const fileName = document.getElementById('imageFileName');
+    const fileSize = document.getElementById('imageFileSize');
+    const uploadBox = document.getElementById('imageUploadBox');
+    const removeButton = document.getElementById('removePromptImage');
+
+    if (
+        !imageInput ||
+        !previewBox ||
+        !previewImage ||
+        !fileName ||
+        !fileSize ||
+        !removeButton
+    ) {
+        return;
+    }
+
+    let previewUrl = null;
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(1) + ' KB';
+        }
+
+        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    function clearPreview() {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+            previewUrl = null;
+        }
+
+        previewImage.removeAttribute('src');
+        fileName.textContent = '';
+        fileSize.textContent = '';
+        previewBox.style.display = 'none';
+
+        if (uploadBox) {
+            uploadBox.style.display = 'flex';
+        }
+    }
+
+    imageInput.addEventListener('change', function () {
+        const file = this.files && this.files[0];
+
+        if (!file) {
+            clearPreview();
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            clearPreview();
+            imageInput.value = '';
+            alert('Please select a valid image file.');
+            return;
+        }
+
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        previewUrl = URL.createObjectURL(file);
+
+        previewImage.src = previewUrl;
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+
+        previewBox.style.display = 'block';
+
+        if (uploadBox) {
+            uploadBox.style.display = 'none';
+        }
+    });
+
+    removeButton.addEventListener('click', function () {
+        imageInput.value = '';
+        clearPreview();
+    });
+
+    // Release the temporary preview URL when the modal closes.
+    const modal = document.getElementById('addPromptModal');
+
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function () {
+            imageInput.value = '';
+            clearPreview();
+        });
+    }
+
+});
+
         </script>
 </body>
 
