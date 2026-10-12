@@ -1641,8 +1641,7 @@ document.addEventListener(
             }
         );
 
-
-        /* ==================================================================
+/* ==================================================================
            ADD MORE PROMPT
            ================================================================== */
 
@@ -1680,6 +1679,20 @@ document.addEventListener(
 
                                 </button>
 
+                            </div>
+
+                            <!-- PROMPT TITLE / TOPIC TITLE FOR THIS SPECIFIC PROMPT -->
+                            <div class="mb-3">
+                                <label for="prompt_item_title_${index}" class="form-label-custom">
+                                    Prompt Collection / Topic Title <span class="required-star">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="prompts[${index}][collection_title]"
+                                    id="prompt_item_title_${index}"
+                                    class="form-control"
+                                    placeholder="e.g. SEO Article Blueprint"
+                                    required>
                             </div>
 
 
@@ -1924,7 +1937,7 @@ document.addEventListener(
 
                         const match =
                             textarea.name.match(
-                                /^prompts\[(\d+)\]\[text\]$/
+                                /^prompts\[(\d+)\][text]$/
                             );
 
                         if (!match) {
