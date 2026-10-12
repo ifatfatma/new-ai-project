@@ -1201,6 +1201,136 @@
 }
 
 
+/* Prompt image upload */
+.frontend-image-upload-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 14px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.frontend-image-upload-wrapper:hover {
+    border-color: #6366f1;
+    background: #f1f5ff;
+}
+
+.frontend-image-upload-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    font-size: 27px;
+}
+
+.frontend-image-upload-title {
+    color: #1e293b;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.frontend-image-upload-text {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Selected image preview */
+.frontend-image-preview-box {
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid #dbe3ef;
+    border-radius: 14px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.frontend-image-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.frontend-image-preview-badge {
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#imagePreview {
+    display: block;
+    width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #f1f5f9;
+}
+
+.frontend-image-preview-details {
+    margin-top: 10px;
+}
+
+.frontend-image-file-name {
+    overflow-wrap: anywhere;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.frontend-image-file-size {
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.frontend-image-preview-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.frontend-image-preview-actions label {
+    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+    .frontend-image-upload-wrapper {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .frontend-image-upload-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 23px;
+    }
+
+    .frontend-image-preview-actions > * {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+}
+
+
+
 /* ---------------------------------------------------------
    FOOTER
    --------------------------------------------------------- */
@@ -2191,80 +2321,111 @@ Use [1], [2], [3] for details that users can customize."
                     </div>
 
 
-                    {{-- Image Section --}}
-                    <div class="frontend-form-section">
+{{-- Image Section --}}
+<div class="frontend-form-section">
 
-                        <div class="frontend-form-section-heading">
+    <div class="frontend-form-section-heading">
+        <div class="frontend-section-icon">
+            <i class="bi bi-image"></i>
+        </div>
 
-                            <div class="frontend-section-icon">
-                                <i class="bi bi-image"></i>
-                            </div>
+        <div>
+            <h6 class="mb-1">Prompt Image</h6>
+            <p class="mb-0">
+                Add an image to make your prompt more attractive.
+            </p>
+        </div>
+    </div>
 
-                            <div>
-                                <h6 class="mb-1">Prompt Image</h6>
-                                <p class="mb-0">
-                                    Add an image to make your prompt more attractive.
-                                </p>
-                            </div>
+    <div class="frontend-form-group mb-0">
 
-                        </div>
+        <label for="image" class="frontend-form-label">
+            Image
+            <span class="frontend-optional-label">Optional</span>
+        </label>
 
+        {{-- Image Upload Option --}}
+        <label for="image"
+            class="frontend-image-upload-wrapper"
+            id="imageUploadBox">
 
-                        <div class="frontend-form-group mb-0">
+            <div class="frontend-image-upload-icon">
+                <i class="bi bi-cloud-arrow-up"></i>
+            </div>
 
-                            <label for="image" class="frontend-form-label">
-                                Image
-                                <span class="frontend-optional-label">
-                                    Optional
-                                </span>
-                            </label>
-
-
-                            <div class="frontend-image-upload-wrapper">
-
-                                <div class="frontend-image-upload-icon">
-                                    <i class="bi bi-cloud-arrow-up"></i>
-                                </div>
-
-                                <div class="frontend-image-upload-content">
-
-                                    <div class="frontend-image-upload-title">
-                                        Choose Prompt Image
-                                    </div>
-
-                                    <div class="frontend-image-upload-text">
-                                        JPG, JPEG, PNG or GIF
-                                    </div>
-
-                                </div>
-
-
-                                <input type="file"
-                                    class="frontend-image-input @error('image') is-invalid @enderror"
-                                    id="image"
-                                    name="image"
-                                    accept="image/*">
-
-                            </div>
-
-
-                            @error('image')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-
-
-                            <small class="frontend-field-hint">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Adding an image is optional.
-                            </small>
-
-                        </div>
-
-                    </div>
-
+            <div class="frontend-image-upload-content">
+                <div class="frontend-image-upload-title">
+                    Choose Prompt Image
                 </div>
+
+                <div class="frontend-image-upload-text">
+                    JPG, JPEG, PNG, GIF or WEBP
+                </div>
+            </div>
+
+        </label>
+
+        <input type="file"
+            class="visually-hidden @error('image') is-invalid @enderror"
+            id="image"
+            name="image"
+            accept="image/jpeg,image/png,image/gif,image/webp">
+
+        {{-- Selected Image Preview --}}
+        <div id="imagePreviewBox"
+            class="frontend-image-preview-box"
+            style="display: none;">
+
+            <div class="frontend-image-preview-header">
+                <div>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    <strong>Image Selected</strong>
+                </div>
+
+                <span class="frontend-image-preview-badge">
+                    Ready to upload
+                </span>
+            </div>
+
+            <img id="imagePreview"
+                src=""
+                alt="Selected prompt image preview">
+
+            <div class="frontend-image-preview-details">
+                <div id="imageFileName" class="frontend-image-file-name"></div>
+                <div id="imageFileSize" class="frontend-image-file-size"></div>
+            </div>
+
+            <div class="frontend-image-preview-actions">
+                <label for="image"
+                    class="btn btn-sm btn-outline-primary mb-0">
+                    <i class="bi bi-arrow-repeat me-1"></i>
+                    Change Image
+                </label>
+
+                <button type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    id="removePromptImage">
+                    <i class="bi bi-trash me-1"></i>
+                    Remove Image
+                </button>
+            </div>
+
+        </div>
+
+        @error('image')
+            <div class="invalid-feedback d-block">
+                {{ $message }}
+            </div>
+        @enderror
+
+        <small class="frontend-field-hint">
+            <i class="bi bi-info-circle me-1"></i>
+            Adding an image is optional. Maximum file size: 2 MB.
+        </small>
+
+    </div>
+</div>
 
 
                 {{-- Modal Footer --}}
