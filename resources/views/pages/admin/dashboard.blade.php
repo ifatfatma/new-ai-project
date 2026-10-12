@@ -59,28 +59,40 @@
                 <div class="card-body">
                     <h4 class="card-title">Recent Prompts</h4>
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Title</th>
-                                    <th>Category</th>
-                                    <th>Status</th>
-                                    <th>Created Date</th>
+                                    <th style="width: 6%;">#</th>
+                                    <th style="width: 44%;">Title</th>
+                                    <th style="width: 15%;">Category</th>
+                                    <th style="width: 15%;">Image</th>
+                                    <th style="width: 20%;">Created Date</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($recentPrompts as $key => $prompt)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $prompt->title }}</td>
-                                        <td><span class="badge badge-info">{{ $prompt->category->name ?? 'N/A' }}</span></td>
-                                        <td><span class="badge badge-secondary">{{ $prompt->status ?? 'Active' }}</span></td>
+                                        <td class="text-truncate" style="max-width: 250px;" title="{{ $prompt->title }}">
+                                            {{ $prompt->title }}
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">{{ $prompt->category->name ?? 'N/A' }}</span>
+                                        </td>
+                                        <td>
+                                            @if(!empty($prompt->image))
+                                                <a href="{{ asset('storage/' . $prompt->image) }}" target="_blank" title="View Image">
+                                                    <img src="{{ asset('storage/' . $prompt->image) }}" alt="Preview" style="width: 35px; height: 35px; object-fit: cover; border-radius: 6px; border: 1px solid #dee2e6;">
+                                                </a>
+                                            @else
+                                                <span class="text-muted small">No Image</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $prompt->created_at->format('d M, Y') }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">No prompts found</td>
+                                        <td colspan="5" class="text-center py-4">No prompts found</td>
                                     </tr>
                                 @endforelse
                             </tbody>
