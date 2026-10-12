@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Prompt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class FrontendController extends Controller
 {
@@ -21,34 +23,25 @@ class FrontendController extends Controller
         $query = Prompt::with('category')
             ->where('status', 'approved');
 
-        if ($request->has('search') && $request->search != '') {
-
+        if ($request->filled('search')) {
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
-
                 $q->where('title', 'like', '%' . $search . '%')
                   ->orWhere('prompt_text', 'like', '%' . $search . '%');
-
-            })->where('status', 'approved');
+            });
         }
 
-        if ($request->has('category') && $request->category != '') {
-
-            $query->where(
-                'category_id',
-                $request->category
-            );
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
         }
 
         $prompts = $query
             ->latest()
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
-        return view(
-            'home',
-            compact('prompts', 'categories')
-        );
+        return view('home', compact('prompts', 'categories'));
     }
 
 
@@ -56,132 +49,46 @@ class FrontendController extends Controller
     |--------------------------------------------------------------------------
     | FRONTEND ADD PROMPT
     |--------------------------------------------------------------------------
-    |
-    | Frontend users submit prompts here.
-    | These prompts are saved as PENDING.
-    | Admin can later approve/reject them.
-    |
     */
 
     public function storePrompt(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDATION
-        |--------------------------------------------------------------------------
-        */
-
         $request->validate([
-
-            'title' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'category_id' => [
-                'required',
-                'exists:categories,id',
-            ],
-
-            'prompt_text' => [
-                'required',
-                'string',
-            ],
-
-            'ai_tools' => [
-                'nullable',
-                'array',
-            ],
-
-            'ai_tools.*' => [
-                'string',
-                'max:100',
-            ],
-
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:jpeg,png,jpg,gif,webp',
-                'max:2048',
-            ],
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'prompt_text' => 'required|string',
+            'ai_tools' => 'nullable|array',
+            'ai_tools.*' => 'string|max:100',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
+        $frontendUser = Auth::guard('frontend')->user();
 
-        /*
-        |--------------------------------------------------------------------------
-        | GET LOGGED-IN FRONTEND USER
-        |--------------------------------------------------------------------------
-        */
-
-        $frontendUser = auth('frontend')->user();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | IMAGE UPLOAD
-        |--------------------------------------------------------------------------
-        */
+        if (!$frontendUser) {
+            return redirect()
+                ->route('frontend.login')
+                ->with('error', 'Please login to submit a prompt.');
+        }
 
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-
-            $imagePath = $request
-                ->file('image')
-                ->store('prompts', 'public');
+            $imagePath = $request->file('image')->store('prompts', 'public');
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE PROMPT
-        |--------------------------------------------------------------------------
-        */
-
         Prompt::create([
-
             'title' => $request->title,
-
             'category_id' => $request->category_id,
-
             'prompt_text' => $request->prompt_text,
-
-            'ai_tool' => $request->input(
-                'ai_tools',
-                []
-            ),
-
+            'ai_tool' => $request->input('ai_tools', []),
             'label' => null,
-
             'image' => $imagePath,
-
-            /*
-            |--------------------------------------------------------------------------
-            | Frontend user ID
-            |--------------------------------------------------------------------------
-            */
-
             'frontend_user_id' => $frontendUser->id,
-
-            /*
-            |--------------------------------------------------------------------------
-            | Frontend prompts need admin approval
-            |--------------------------------------------------------------------------
-            */
-
             'status' => 'pending',
         ]);
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | SUCCESS REDIRECT
-        |--------------------------------------------------------------------------
-        */
-
         return redirect()
-            ->route('home')
+            ->route('user.prompts')
             ->with(
                 'success',
                 'Prompt submitted successfully! It is waiting for admin approval.'
@@ -197,15 +104,11 @@ class FrontendController extends Controller
 
     public function searchSuggestions(Request $request)
     {
-        $query = $request->get('query');
+        $query = $request->get('query', '');
 
         $prompts = Prompt::with('category')
             ->where('status', 'approved')
-            ->where(
-                'title',
-                'like',
-                "%{$query}%"
-            )
+            ->where('title', 'like', '%' . $query . '%')
             ->limit(5)
             ->get();
 
@@ -221,20 +124,21 @@ class FrontendController extends Controller
 
     public function userSearchSuggestions(Request $request)
     {
-        $query = $request->get('query');
+        $frontendUser = Auth::guard('frontend')->user();
 
-        $prompts = Prompt::with('category')
-            ->where(
-                'user_id',
-                auth()->id()
-            )
-            ->where(
-                'title',
-                'like',
-                "%{$query}%"
-            )
+        if (!$frontendUser) {
+            return response()->json([]);
+        }
+
+        $query = $request->get('query', '');
+
+        $prompts = Prompt::where(
+            'frontend_user_id',
+            $frontendUser->id
+        )
+            ->where('title', 'like', '%' . $query . '%')
             ->limit(5)
-            ->get();
+            ->get(['id', 'title']);
 
         return response()->json($prompts);
     }
@@ -248,9 +152,7 @@ class FrontendController extends Controller
 
     public function contactUs()
     {
-        return view(
-            'pages.front.contact'
-        );
+        return view('pages.front.contact');
     }
 
 
@@ -263,11 +165,8 @@ class FrontendController extends Controller
     public function submitContact(Request $request)
     {
         $request->validate([
-
             'name' => 'required|string|max:255',
-
             'email' => 'required|email|max:255',
-
             'message' => 'required|string',
         ]);
 
@@ -286,13 +185,16 @@ class FrontendController extends Controller
 
     public function myPrompts(Request $request)
     {
-        $query = Prompt::where(
-            'user_id',
-            auth()->id()
-        );
+        $frontendUser = Auth::guard('frontend')->user();
+
+        if (!$frontendUser) {
+            return redirect()->route('frontend.login');
+        }
+
+        $query = Prompt::with('category')
+            ->where('frontend_user_id', $frontendUser->id);
 
         if ($request->filled('search')) {
-
             $query->where(
                 'title',
                 'like',
@@ -308,7 +210,8 @@ class FrontendController extends Controller
                 END
             ")
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return view(
             'pages.front.user-prompts',
@@ -325,24 +228,17 @@ class FrontendController extends Controller
 
     public function editPrompt($id)
     {
-        $prompt = Prompt::where(
-            'id',
-            $id
-        )
-        ->where(
-            'user_id',
-            auth()->id()
-        )
-        ->firstOrFail();
+        $frontendUser = Auth::guard('frontend')->user();
+
+        $prompt = Prompt::where('id', $id)
+            ->where('frontend_user_id', $frontendUser->id)
+            ->firstOrFail();
 
         $categories = Category::all();
 
         return view(
             'pages.front.edit-prompt',
-            compact(
-                'prompt',
-                'categories'
-            )
+            compact('prompt', 'categories')
         );
     }
 
@@ -353,67 +249,37 @@ class FrontendController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function updatePrompt(
-        Request $request,
-        $id
-    ) {
+    public function updatePrompt(Request $request, $id)
+    {
+        $frontendUser = Auth::guard('frontend')->user();
 
-        $prompt = Prompt::where(
-            'id',
-            $id
-        )
-        ->where(
-            'user_id',
-            auth()->id()
-        )
-        ->firstOrFail();
-
+        $prompt = Prompt::where('id', $id)
+            ->where('frontend_user_id', $frontendUser->id)
+            ->firstOrFail();
 
         $request->validate([
-
             'title' => 'required|string|max:255',
-
             'category_id' => 'required|exists:categories,id',
-
             'prompt_text' => 'required|string',
-
             'ai_tool' => 'nullable|string|max:100',
-
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
-
         $data = [
-
             'title' => $request->title,
-
             'category_id' => $request->category_id,
-
             'prompt_text' => $request->prompt_text,
-
             'ai_tool' => $request->ai_tool,
-
             'status' => 'pending',
-
-            'updated_at' => now(),
         ];
 
-
         if ($request->hasFile('image')) {
-
-            $imagePath = $request
-                ->file('image')
-                ->store(
-                    'prompts',
-                    'public'
-                );
+            $imagePath = $request->file('image')->store('prompts', 'public');
 
             $data['image'] = $imagePath;
         }
 
-
         $prompt->update($data);
-
 
         return redirect()
             ->route('user.prompts')
@@ -432,15 +298,11 @@ class FrontendController extends Controller
 
     public function destroyPrompt($id)
     {
-        $prompt = Prompt::where(
-            'id',
-            $id
-        )
-        ->where(
-            'user_id',
-            auth()->id()
-        )
-        ->firstOrFail();
+        $frontendUser = Auth::guard('frontend')->user();
+
+        $prompt = Prompt::where('id', $id)
+            ->where('frontend_user_id', $frontendUser->id)
+            ->firstOrFail();
 
         $prompt->delete();
 
@@ -461,16 +323,9 @@ class FrontendController extends Controller
 
     public function show($id)
     {
-        $prompt = Prompt::where(
-            'status',
-            'approved'
-        )
-        ->findOrFail($id);
+        $prompt = Prompt::where('status', 'approved')
+            ->findOrFail($id);
 
-        return view(
-            'prompts.show',
-            compact('prompt')
-        );
+        return view('prompts.show', compact('prompt'));
     }
 }
-
