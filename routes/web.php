@@ -302,6 +302,7 @@ Route::prefix('admin')->group(function () {
 
         Route::post('/seo-settings', [SeoSettingController::class, 'update'])
             ->name('admin.seo.update');
+            Route::post('/admin/commands/store', [App\Http\Controllers\Admin\SeoSettingController::class, 'storeCommand'])->name('admin.commands.store');
 
 
         /*
