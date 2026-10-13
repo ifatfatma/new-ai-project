@@ -487,86 +487,204 @@
 </div>
 
 
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+
+{{-- RUN COMMAND SQL --}}
+<div class="card settings-card run-command-card mb-4">
+    <div class="card-body">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
-                <h4 class="card-title fw-bold mb-1">Run Command SQL</h4>
-                <p class="text-muted small mb-0">Manage your System commands and SQL queries here!!.</p>
+                <h4 class="card-title text-primary mb-2">
+                    <i class="mdi mdi-console me-2"></i>
+                    Run Command SQL
+                </h4>
+                <p class="card-description mb-0">
+                    Manage and save your system commands and SQL queries.
+                </p>
             </div>
-            <!-- + Add New Command Button -->
-            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCommandModal">
-                <i class="mdi mdi-plus"></i> Add New Command
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#addCommandModal"
+            >
+                <i class="mdi mdi-plus-circle-outline me-1"></i>
+                Add New Command
             </button>
         </div>
 
-        {{-- Saved Commands Listing --}}
-        <h5 class="fw-bold mb-3">Saved Commands List</h5>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
+        <div class="run-command-list-heading">
+            <h5 class="fw-bold mb-0">
+                <i class="mdi mdi-format-list-bulleted me-2"></i>
+                Saved Commands List
+            </h5>
+        </div>
+
+        <div class="table-responsive run-command-table-wrapper">
+            <table class="table align-middle run-command-table mb-0">
+                <thead>
                     <tr>
-                        <th style="width: 8%;">#</th>
-                        <th style="width: 30%;">Heading</th>
-                        <th style="width: 45%;">Command / SQL</th>
-                        <th style="width: 17%;" class="text-end">Action</th>
+                        <th style="width: 7%;">#</th>
+                        <th style="width: 25%;">Heading</th>
+                        <th style="width: 48%;">Command / SQL</th>
+                        <th style="width: 20%;" class="text-end">Action</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @php $savedCommands = \App\Models\RunCommand::latest()->get(); @endphp
+                    @php
+                        $savedCommands = \App\Models\RunCommand::latest()->get();
+                    @endphp
+
                     @forelse($savedCommands as $key => $item)
                         <tr>
-                            <td>{{ $key + 1 }}</td>
-                            <td><strong>{{ $item->heading }}</strong></td>
-                            <td><code class="bg-light p-2 rounded text-danger d-block">{{ $item->command_sql }}</code></td>
+                            <td class="text-muted">{{ $key + 1 }}</td>
+
+                            <td>
+                                <span class="run-command-heading">
+                                    {{ $item->heading }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <code class="run-command-code">{{ $item->command_sql }}</code>
+                            </td>
+
                             <td class="text-end">
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText('{{ $item->command_sql }}')">
-                                    <i class="mdi mdi-content-copy"></i> Copy
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm run-command-copy"
+                                    data-command="{{ $item->command_sql }}"
+                                >
+                                    <i class="mdi mdi-content-copy me-1"></i>
+                                    Copy
                                 </button>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-3">No commands saved yet.</td>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="run-command-empty">
+                                    <i class="mdi mdi-console-line"></i>
+                                    <h6 class="fw-bold mt-2 mb-1">No Commands Saved</h6>
+                                    <p class="text-muted small mb-0">
+                                        Click "Add New Command" to save your first command.
+                                    </p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
     </div>
 </div>
 
-<!-- Add Command Modal Popup -->
-<div class="modal fade" id="addCommandModal" tabindex="-1" aria-labelledby="addCommandModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+
+{{-- ADD COMMAND MODAL --}}
+<div
+    class="modal fade command-modal"
+    id="addCommandModal"
+    tabindex="-1"
+    aria-labelledby="addCommandModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <form action="{{ route('admin.commands.store') }}" method="POST">
                 @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="addCommandModalLabel">Add New Command / SQL</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Heading / Title</label>
-                        <input type="text" name="heading" class="form-control" placeholder="e.g. Clear Cache Query / Artisan Command" required>
+
+                <div class="modal-header command-modal-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="command-modal-icon">
+                            <i class="mdi mdi-console"></i>
+                        </div>
+
+                        <div>
+                            <h5 class="modal-title fw-bold mb-1" id="addCommandModalLabel">
+                                Add New Command
+                            </h5>
+                            <p class="text-muted small mb-0">
+                                Save a command or SQL query for later use.
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Command / SQL Text</label>
-                        <textarea name="command_sql" class="form-control font-monospace" rows="4" placeholder="Enter php artisan command or SQL query here..." required></textarea>
-                    </div>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="mdi mdi-content-save me-1"></i> Save Command
+
+                <div class="modal-body command-modal-body">
+
+                    <div class="mb-4">
+                        <label for="command_heading" class="form-label fw-bold">
+                            Heading / Title <span class="text-danger">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="command_heading"
+                            name="heading"
+                            class="form-control"
+                            placeholder="e.g. Clear Laravel Cache"
+                            maxlength="255"
+                            value="{{ old('heading') }}"
+                            required
+                        >
+
+                        <div class="form-text">
+                            Enter a short, recognizable name for your command.
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="command_sql" class="form-label fw-bold">
+                            Command / SQL Text <span class="text-danger">*</span>
+                        </label>
+
+                        <textarea
+                            id="command_sql"
+                            name="command_sql"
+                            class="form-control command-code-input"
+                            rows="6"
+                            placeholder="php artisan optimize:clear"
+                            required
+                        >{{ old('command_sql') }}</textarea>
+
+                        <div class="form-text">
+                            Paste the command or SQL query you want to save.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer command-modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="mdi mdi-content-save me-1"></i>
+                        Save Command
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
 </div>
+
 
 
 {{-- Page Styles --}}
@@ -658,6 +776,256 @@
             min-height: 150px;
         }
     }
+
+
+
+/* ==========================================
+   RUN COMMAND SQL - SETTINGS CARD
+========================================== */
+
+.run-command-card {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease;
+}
+
+.run-command-card:hover {
+    box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
+}
+
+.run-command-card .card-body {
+    padding: 24px;
+}
+
+.run-command-card .card-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.run-command-list-heading {
+    padding: 15px 18px;
+    margin-bottom: 0;
+    background: #f8fafc;
+    border: 1px solid #e9ecef;
+    border-bottom: 0;
+    border-radius: 9px 9px 0 0;
+}
+
+.run-command-list-heading h5 {
+    font-size: 15px;
+    color: #343a40;
+}
+
+.run-command-table-wrapper {
+    border: 1px solid #e9ecef;
+    border-radius: 0 0 9px 9px;
+}
+
+.run-command-table {
+    min-width: 650px;
+}
+
+.run-command-table thead th {
+    padding: 14px 12px;
+    color: #64748b;
+    background: #f8fafc;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid #e9ecef;
+    white-space: nowrap;
+}
+
+.run-command-table tbody td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #f0f2f5;
+    vertical-align: middle;
+}
+
+.run-command-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.run-command-table tbody tr:hover {
+    background: #fafbff;
+}
+
+.run-command-heading {
+    display: inline-block;
+    color: #343a40;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.run-command-code {
+    display: block;
+    padding: 10px 12px;
+    max-width: 100%;
+    color: #c0395a;
+    background: #fff5f7;
+    border: 1px solid #ffe1e8;
+    border-radius: 7px;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.run-command-copy {
+    border-radius: 7px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.run-command-empty i {
+    font-size: 35px;
+    color: #94a3b8;
+}
+
+.run-command-empty h6 {
+    color: #475569;
+}
+
+/* ==========================================
+   ADD COMMAND MODAL
+========================================== */
+
+.command-modal .modal-dialog {
+    max-width: 580px;
+    margin: 1rem auto;
+}
+
+.command-modal .modal-content {
+    overflow: hidden;
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.18);
+}
+
+.command-modal-header {
+    display: flex;
+    align-items: center;
+    padding: 22px 24px;
+    background: #fff;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.command-modal-header .modal-title {
+    color: #1e293b;
+    font-size: 18px;
+}
+
+.command-modal-icon {
+    display: flex;
+    flex: 0 0 46px;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    color: #fff;
+    background: linear-gradient(135deg, #0d6efd, #5a8dee);
+    border-radius: 12px;
+    font-size: 24px;
+}
+
+.command-modal-body {
+    padding: 25px 24px;
+    background: #fff;
+}
+
+.command-modal .form-label {
+    display: block;
+    margin-bottom: 9px;
+    color: #334155;
+    font-size: 13px;
+}
+
+.command-modal .form-control {
+    min-height: 44px;
+    padding: 11px 13px;
+    border: 1px solid #dce2ea;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.command-modal .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+}
+
+.command-modal .form-text {
+    margin-top: 7px;
+    color: #8490a2;
+    font-size: 12px;
+}
+
+.command-modal .command-code-input {
+    min-height: 145px;
+    resize: vertical;
+    background: #f8fafc;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.command-modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 17px 24px;
+    background: #f8fafc;
+    border-top: 1px solid #edf0f4;
+}
+
+.command-modal-footer .btn {
+    min-height: 40px;
+    padding: 9px 17px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.command-modal-footer .btn-primary {
+    box-shadow: 0 3px 8px rgba(13, 110, 253, 0.18);
+}
+
+@media (max-width: 767px) {
+    .run-command-card .card-body {
+        padding: 18px;
+    }
+
+    .run-command-card .card-title {
+        font-size: 17px;
+    }
+
+    .command-modal .modal-dialog {
+        margin: 12px;
+    }
+
+    .command-modal-header,
+    .command-modal-body {
+        padding: 18px;
+    }
+
+    .command-modal-header {
+        gap: 10px;
+    }
+
+    .command-modal-icon {
+        flex-basis: 40px;
+        width: 40px;
+        height: 40px;
+        font-size: 21px;
+    }
+
+    .command-modal-footer {
+        padding: 14px 18px;
+    }
+}
+
 </style>
 
 
@@ -712,6 +1080,43 @@
             previewWrapper.style.display = 'block';
         });
     });
+    
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.run-command-copy').forEach(function (button) {
+        button.addEventListener('click', async function () {
+            const command = this.dataset.command || '';
+            const originalHtml = this.innerHTML;
+
+            try {
+                await navigator.clipboard.writeText(command);
+                this.innerHTML = '<i class="mdi mdi-check me-1"></i> Copied!';
+            } catch (error) {
+                const textarea = document.createElement('textarea');
+                textarea.value = command;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+
+                document.body.appendChild(textarea);
+                textarea.select();
+
+                const copied = document.execCommand('copy');
+                textarea.remove();
+
+                if (!copied) {
+                    alert('Copy nahi ho paya. Command ko manually copy karein.');
+                    return;
+                }
+
+                this.innerHTML = '<i class="mdi mdi-check me-1"></i> Copied!';
+            }
+
+            setTimeout(() => {
+                this.innerHTML = originalHtml;
+            }, 1500);
+        });
+    });
+});
 </script>
+
 
 @endsection
