@@ -487,6 +487,88 @@
 </div>
 
 
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="card-title fw-bold mb-1">Run Command SQL</h4>
+                <p class="text-muted small mb-0">System commands aur SQL queries ko yahan save aur manage karein.</p>
+            </div>
+            <!-- + Add New Command Button -->
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCommandModal">
+                <i class="mdi mdi-plus"></i> Add New Command
+            </button>
+        </div>
+
+        {{-- Saved Commands Listing --}}
+        <h5 class="fw-bold mb-3">Saved Commands List</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 8%;">#</th>
+                        <th style="width: 30%;">Heading</th>
+                        <th style="width: 45%;">Command / SQL</th>
+                        <th style="width: 17%;" class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $savedCommands = \App\Models\RunCommand::latest()->get(); @endphp
+                    @forelse($savedCommands as $key => $item)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td><strong>{{ $item->heading }}</strong></td>
+                            <td><code class="bg-light p-2 rounded text-danger d-block">{{ $item->command_sql }}</code></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText('{{ $item->command_sql }}')">
+                                    <i class="mdi mdi-content-copy"></i> Copy
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">No commands saved yet.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Command Modal Popup -->
+<div class="modal fade" id="addCommandModal" tabindex="-1" aria-labelledby="addCommandModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('admin.commands.store') }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="addCommandModalLabel">Add New Command / SQL</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Heading / Title</label>
+                        <input type="text" name="heading" class="form-control" placeholder="e.g. Clear Cache Query / Artisan Command" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Command / SQL Text</label>
+                        <textarea name="command_sql" class="form-control font-monospace" rows="4" placeholder="Enter php artisan command or SQL query here..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="mdi mdi-content-save me-1"></i> Save Command
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 {{-- Page Styles --}}
 <style>
     .settings-page .settings-card {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SeoSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\RunCommand;
 
 class SeoSettingController extends Controller
 {
@@ -62,5 +63,22 @@ class SeoSettingController extends Controller
     return redirect()
         ->back()
         ->with('success', 'SEO Settings updated successfully!');
+}
+
+
+
+public function storeCommand(Request $request)
+{
+    $request->validate([
+        'heading' => 'required|string|max:255',
+        'command_sql' => 'required|string',
+    ]);
+
+    RunCommand::create([
+        'heading' => $request->heading,
+        'command_sql' => $request->command_sql,
+    ]);
+
+    return redirect()->back()->with('success', 'Command / SQL saved successfully!');
 }
 }
