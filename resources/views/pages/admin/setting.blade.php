@@ -492,7 +492,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="card-title fw-bold mb-1">Run Command SQL</h4>
-                <p class="text-muted small mb-0">System commands aur SQL queries ko yahan save aur manage karein.</p>
+                <p class="text-muted small mb-0">Manage your System commands and SQL queries here!!.</p>
             </div>
             <!-- + Add New Command Button -->
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCommandModal">
