@@ -1470,6 +1470,55 @@
 
 
 
+
+
+/* =========================================================
+   GLOBAL RIGHT-SIDE TOAST NOTIFICATIONS
+   ========================================================= */
+#toastContainer {
+    position: fixed;
+    top: 90px;
+    right: 22px;
+    z-index: 20000;
+    width: min(390px, calc(100vw - 28px));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+.app-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px 16px;
+    background: #fff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #10b981;
+    border-radius: 13px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, .16);
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(25px);
+    transition: opacity .25s ease, transform .25s ease;
+    overflow-wrap: anywhere;
+}
+.app-toast.show { opacity: 1; transform: translateX(0); }
+.app-toast.toast-error { border-left-color: #ef4444; }
+.app-toast.toast-warning { border-left-color: #f59e0b; }
+.app-toast.toast-info { border-left-color: #3b82f6; }
+.app-toast-icon { font-size: 21px; line-height: 1.2; flex-shrink: 0; color: #10b981; }
+.toast-error .app-toast-icon { color: #ef4444; }
+.toast-warning .app-toast-icon { color: #f59e0b; }
+.toast-info .app-toast-icon { color: #3b82f6; }
+.app-toast-content { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.55; }
+.app-toast-close { padding: 0; border: 0; background: transparent; color: #94a3b8; font-size: 19px; line-height: 1; cursor: pointer; }
+.app-toast-close:hover { color: #1e293b; }
+@media (max-width: 576px) {
+    #toastContainer { top: 76px; right: 12px; width: calc(100vw - 24px); }
+    .app-toast { padding: 13px; }
+}
+
     </style>
 </head>
 
@@ -1558,16 +1607,7 @@
         </div>
     </nav>
 
-    @if(session('success'))
-        <div id="successAlert" class="container mt-3">
-            <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3 mb-0"
-                role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        </div>
-    @endif
+    <div id="toastContainer" aria-live="polite" aria-atomic="false"></div>
 
     <section class="hero-section text-center">
         <div class="container hero-content">
@@ -2471,22 +2511,6 @@ Use [1], [2], [3] for details that users can customize."
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            /* Auto-hide session success message after 1 second */
-            document.addEventListener('DOMContentLoaded', function () {
-                const successAlert = document.getElementById('successAlert');
-
-                if (successAlert) {
-                    setTimeout(function () {
-                        successAlert.style.transition = 'opacity 0.3s ease';
-                        successAlert.style.opacity = '0';
-
-                        setTimeout(function () {
-                            successAlert.remove();
-                        }, 300);
-                    }, 1000);
-                }
-            });
-
             /* AI tool multi-select dropdown */
             document.addEventListener('DOMContentLoaded', function () {
                 const dropdown = document.getElementById('aiToolsDropdown');
@@ -2573,7 +2597,7 @@ Use [1], [2], [3] for details that users can customize."
                     try { copied = document.execCommand('copy'); } catch (e) { console.error(e); }
                     textarea.remove();
                     if (copied) showCopied();
-                    else window.prompt('Copy this prompt:', text);
+                    else showToast('clipboardErrorToast', 'Automatic copy failed. Please try selecting and copying the text manually.', 'warning');
                 }
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(text).then(showCopied).catch(fallback);
@@ -2597,23 +2621,62 @@ Use [1], [2], [3] for details that users can customize."
                 document.querySelectorAll('.prompt-variable-input[data-prompt-id="' + promptId + '"]').forEach(field => field.value = '');
             }
 
-            function showToast(id, message, success = true) {
-                document.getElementById(id)?.remove();
+            /* Global right-side toast notification system */
+            function showToast(id, message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                if (!container) {
+                    console.warn('Toast container not found:', message);
+                    return;
+                }
+
+                // Backward compatibility with existing true/false calls.
+                if (typeof type === 'boolean') type = type ? 'success' : 'error';
+                if (!['success', 'error', 'warning', 'info'].includes(type)) type = 'info';
+
+                if (id) document.getElementById(id)?.remove();
+
+                const icons = {
+                    success: 'bi-check-circle-fill',
+                    error: 'bi-x-circle-fill',
+                    warning: 'bi-exclamation-triangle-fill',
+                    info: 'bi-info-circle-fill'
+                };
+
                 const toast = document.createElement('div');
-                toast.id = id;
-                const icon = success ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill';
-                toast.innerHTML = '<i class="bi ' + icon + ' me-2"></i><span></span>';
-                toast.querySelector('span').textContent = message;
-                Object.assign(toast.style, {
-                    position: 'fixed', bottom: '25px', right: '25px', zIndex: '99999',
-                    background: success ? 'linear-gradient(135deg,#6366f1,#7c3aed)' : '#334155',
-                    color: '#fff', padding: '13px 18px', borderRadius: '12px',
-                    boxShadow: '0 12px 30px rgba(15,23,42,.22)', fontWeight: '600',
-                    fontSize: '14px', display: 'flex', alignItems: 'center'
-                });
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 2500);
+                toast.className = 'app-toast toast-' + type;
+                toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+                if (id) toast.id = id;
+
+                const icon = document.createElement('i');
+                icon.className = 'bi ' + icons[type] + ' app-toast-icon';
+                const content = document.createElement('div');
+                content.className = 'app-toast-content';
+                content.textContent = String(message ?? '');
+                const close = document.createElement('button');
+                close.type = 'button';
+                close.className = 'app-toast-close';
+                close.innerHTML = '&times;';
+                close.setAttribute('aria-label', 'Dismiss notification');
+
+                toast.append(icon, content, close);
+                container.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+
+                let removeTimer;
+                function removeToast() {
+                    clearTimeout(removeTimer);
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
+                close.addEventListener('click', removeToast);
+                removeTimer = setTimeout(removeToast, 4000);
             }
+
+            @if(session('success'))
+                document.addEventListener('DOMContentLoaded', function () {
+                    showToast('sessionSuccessToast', @json(session('success')), 'success');
+                });
+            @endif
 
             /* Share prompt */
             function sharePrompt(promptId, promptTitle) {
@@ -2628,9 +2691,9 @@ Use [1], [2], [3] for details that users can customize."
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(shareUrl)
                         .then(() => showToast('shareSuccessToast', 'Prompt link copied!'))
-                        .catch(() => window.prompt('Copy this prompt link:', shareUrl));
+                        .catch(() => showToast('shareFallbackToast', 'Unable to copy the link automatically. Please try again.', 'warning'));
                 } else {
-                    window.prompt('Copy this prompt link:', shareUrl);
+                    showToast('shareFallbackToast', 'Link copying is unavailable in this browser. Please try a secure connection.', 'warning');
                 }
             }
 
@@ -2848,7 +2911,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!file.type.startsWith('image/')) {
             clearPreview();
             imageInput.value = '';
-            alert('Please select a valid image file.');
+            showToast('imageValidationToast', 'Please select a valid image file.', 'error');
             return;
         }
 
