@@ -2482,10 +2482,13 @@ Use [1], [2], [3] for details that users can customize."
 
 
                     <button type="submit"
-                        class="btn frontend-submit-btn">
+                        class="btn frontend-submit-btn"
+                        id="submitPromptBtn">
 
-                        <i class="bi bi-send me-1"></i>
-                        Submit Prompt
+                        <span class="submit-prompt-spinner spinner-border spinner-border-sm me-2 d-none"
+                            role="status" aria-hidden="true"></span>
+                        <i class="bi bi-send me-1 submit-prompt-icon"></i>
+                        <span class="submit-prompt-label">Submit Prompt</span>
 
                     </button>
 
@@ -2620,6 +2623,35 @@ Use [1], [2], [3] for details that users can customize."
             function resetPromptVariables(promptId) {
                 document.querySelectorAll('.prompt-variable-input[data-prompt-id="' + promptId + '"]').forEach(field => field.value = '');
             }
+
+            /* Show a spinner while the frontend Add Prompt form is submitting */
+            document.addEventListener('DOMContentLoaded', function () {
+                const promptForm = document.querySelector('#addPromptModal form[enctype="multipart/form-data"]');
+                const submitButton = document.getElementById('submitPromptBtn');
+
+                if (!promptForm || !submitButton) return;
+
+                promptForm.addEventListener('submit', function (event) {
+                    // Prevent accidental double submissions.
+                    if (submitButton.dataset.submitting === 'true') {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    // Native browser validation should pass before this event fires.
+                    submitButton.dataset.submitting = 'true';
+                    submitButton.disabled = true;
+                    submitButton.setAttribute('aria-busy', 'true');
+
+                    const spinner = submitButton.querySelector('.submit-prompt-spinner');
+                    const icon = submitButton.querySelector('.submit-prompt-icon');
+                    const label = submitButton.querySelector('.submit-prompt-label');
+
+                    if (spinner) spinner.classList.remove('d-none');
+                    if (icon) icon.classList.add('d-none');
+                    if (label) label.textContent = 'Submitting...';
+                });
+            });
 
             /* Global right-side toast notification system */
             function showToast(id, message, type = 'success') {
