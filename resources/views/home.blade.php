@@ -1727,7 +1727,8 @@
                             aria-label="View {{ $prompt->title }}">
 
                             <img src="{{ asset('storage/' . $prompt->image) }}" class="prompt-card-image"
-                                alt="{{ $prompt->title }}" loading="lazy">
+    alt="{{ $prompt->title }}" 
+    @if($loop->first) fetchpriority="high" @else loading="lazy" @endif>
 
                             {{-- Floating Prompt Title --}}
                             {{-- Floating Prompt Title --}}
