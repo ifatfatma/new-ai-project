@@ -2,19 +2,23 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PromptController;
-use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\ProfileController;
-use App\Models\Prompt;
-use App\Models\PromptCopy;
-use App\Http\Controllers\FrontendAuthController;
-use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Admin\SeoSettingController;
+use App\Http\Controllers\Admin\RunCommandController;
+
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\FrontendAuthController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SavedPromptController;
 use App\Http\Controllers\UserAccountController;
+
+use App\Models\Prompt;
+use App\Models\PromptCopy;
 
 
 /*
@@ -24,7 +28,6 @@ use App\Http\Controllers\UserAccountController;
 */
 
 Route::get('/clear', function () {
-
     Artisan::call('storage:link');
     Artisan::call('optimize:clear');
 
@@ -34,7 +37,7 @@ Route::get('/clear', function () {
 
 /*
 |--------------------------------------------------------------------------
-| 1. PUBLIC / FRONTEND ROUTES
+| PUBLIC / FRONTEND ROUTES
 |--------------------------------------------------------------------------
 */
 
@@ -78,11 +81,6 @@ Route::post('/logout', [FrontendAuthController::class, 'logout'])
 |--------------------------------------------------------------------------
 | FRONTEND PROMPT STORE
 |--------------------------------------------------------------------------
-|
-| IMPORTANT:
-| Frontend user uses "frontend" guard.
-| Therefore auth:frontend is required.
-|
 */
 
 Route::post('/prompts/store', [FrontendController::class, 'storePrompt'])
@@ -103,7 +101,7 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
     if (!$user) {
         return response()->json([
             'success' => false,
-            'message' => 'Please login to copy and track prompts.'
+            'message' => 'Please login to copy and track prompts.',
         ], 401);
     }
 
@@ -112,7 +110,7 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
     if (!$prompt) {
         return response()->json([
             'success' => false,
-            'message' => 'Prompt not found.'
+            'message' => 'Prompt not found.',
         ], 404);
     }
 
@@ -126,14 +124,13 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
     ]);
 
     if ($copyRecord->wasRecentlyCreated) {
-
         $prompt->increment('copies_count');
 
         return response()->json([
             'success' => true,
             'counted' => true,
             'message' => 'Copy count updated for today!',
-            'total_copies' => (int) $prompt->copies_count
+            'total_copies' => (int) $prompt->copies_count,
         ]);
     }
 
@@ -141,11 +138,11 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
         'success' => true,
         'counted' => false,
         'message' => 'Already counted for today.',
-        'total_copies' => (int) $prompt->copies_count
+        'total_copies' => (int) $prompt->copies_count,
     ]);
 
 })->middleware('auth:frontend')
-  ->name('prompts.copy.track');
+    ->name('prompts.copy.track');
 
 
 /*
@@ -156,12 +153,7 @@ Route::post('/prompts/{id}/copy-track', function ($id) {
 
 Route::middleware(['auth:frontend'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | MY PROMPTS
-    |--------------------------------------------------------------------------
-    */
-
+    // My Prompts
     Route::get('/my-prompts', [FrontendController::class, 'myPrompts'])
         ->name('user.prompts');
 
@@ -175,12 +167,7 @@ Route::middleware(['auth:frontend'])->group(function () {
         ->name('user.prompts.destroy');
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | SAVED PROMPTS
-    |--------------------------------------------------------------------------
-    */
-
+    // Saved Prompts
     Route::post('/prompts/{prompt}/save', [SavedPromptController::class, 'toggle'])
         ->name('prompts.save');
 
@@ -188,12 +175,7 @@ Route::middleware(['auth:frontend'])->group(function () {
         ->name('user.saved-prompts');
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | FRONTEND USER PROFILE
-    |--------------------------------------------------------------------------
-    */
-
+    // Frontend User Profile
     Route::get('/my-profile', [UserAccountController::class, 'edit'])
         ->name('user.profile.edit');
 
@@ -204,18 +186,13 @@ Route::middleware(['auth:frontend'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| 2. ADMIN ROUTES
+| ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
 
 Route::prefix('admin')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN LOGIN
-    |--------------------------------------------------------------------------
-    */
-
+    // Admin Login
     Route::get('/', [AuthController::class, 'showLoginForm'])
         ->name('login');
 
@@ -234,12 +211,7 @@ Route::prefix('admin')->group(function () {
 
     Route::middleware('auth')->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | DASHBOARD
-        |--------------------------------------------------------------------------
-        */
-
+        // Dashboard
         Route::get('/dashboard', [HomeController::class, 'index'])
             ->name('admin.dashboard');
 
@@ -250,12 +222,7 @@ Route::prefix('admin')->group(function () {
             ->name('admin.logout');
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | ADMIN PROFILE
-        |--------------------------------------------------------------------------
-        */
-
+        // Admin Profile
         Route::get('/profile', [ProfileController::class, 'edit'])
             ->name('profile.edit');
 
@@ -293,6 +260,19 @@ Route::prefix('admin')->group(function () {
 
         /*
         |--------------------------------------------------------------------------
+        | RUN COMMAND SQL
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/run-commands', [RunCommandController::class, 'index'])
+            ->name('admin.commands.index');
+
+        Route::post('/commands/store', [RunCommandController::class, 'store'])
+            ->name('admin.commands.store');
+
+
+        /*
+        |--------------------------------------------------------------------------
         | SEO SETTINGS
         |--------------------------------------------------------------------------
         */
@@ -302,7 +282,6 @@ Route::prefix('admin')->group(function () {
 
         Route::post('/seo-settings', [SeoSettingController::class, 'update'])
             ->name('admin.seo.update');
-            Route::post('/admin/commands/store', [App\Http\Controllers\Admin\SeoSettingController::class, 'storeCommand'])->name('admin.commands.store');
 
 
         /*
