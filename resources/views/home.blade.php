@@ -1720,31 +1720,53 @@
                 <article class="prompt-card">
 
                     {{-- Prompt Image with Floating Title --}}
-                 @if($prompt->image)
-    <div class="prompt-card-image-wrapper" data-bs-toggle="modal"
-        data-bs-target="#publicModal{{ $prompt->id }}" role="button" tabindex="0"
-        aria-label="View {{ $prompt->title }}">
+                    @if($prompt->image)
 
-        <img src="{{ asset('storage/' . $prompt->image) }}" 
-             class="prompt-card-image"
-             alt="{{ $prompt->title }}" 
-             @if($loop->first) fetchpriority="high" @else loading="lazy" @endif>
+                        <div class="prompt-card-image-wrapper" data-bs-toggle="modal"
+                            data-bs-target="#publicModal{{ $prompt->id }}" role="button" tabindex="0"
+                            aria-label="View {{ $prompt->title }}">
 
-        {{-- Floating Prompt Title --}}
-        <div class="position-absolute top-0 start-0 m-3">
-            <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm"
-                style="backdrop-filter: blur(4px); font-size: 0.85rem; white-space: nowrap; text-align: left;">
-                <i class="bi bi-stars text-warning me-1"></i>
-                {{ $prompt->title ?? 'AI Prompt' }}
-            </span>
-        </div>
+                            <img src="{{ asset('storage/' . $prompt->image) }}" class="prompt-card-image"
+    alt="{{ $prompt->title }}" 
+    @if($loop->first) fetchpriority="high" @else loading="lazy" @endif>
 
-        <div class="image-view-overlay">
-            <i class="bi bi-eye"></i>
-            <span>View</span>
-        </div>
-    </div>
-@endif
+                            {{-- Floating Prompt Title --}}
+                            {{-- Floating Prompt Title --}}
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm"
+                                    style="backdrop-filter: blur(4px); font-size: 0.85rem; white-space: nowrap; text-align: left;">
+                                    <i class="bi bi-stars text-warning me-1"></i>
+                                    {{ $prompt->title ?? 'AI Prompt' }}
+                                </span>
+                            </div>
+
+                            <div class="image-view-overlay">
+                                <i class="bi bi-eye"></i>
+                                <span>View</span>
+                            </div>
+
+                        </div>
+
+                    @else
+
+                        <div class="prompt-card-no-image" data-bs-toggle="modal" data-bs-target="#publicModal{{ $prompt->id }}"
+                            role="button" tabindex="0" aria-label="View {{ $prompt->title }}">
+
+                            <i class="bi bi-image"></i>
+                            <span>View Prompt</span>
+
+                            {{-- Floating Prompt Title --}}
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm"
+                                    style="backdrop-filter: blur(4px); font-size: 0.85rem; max-width: calc(100% - 20px); white-space: normal; text-align: left;">
+                                    <i class="bi bi-stars text-warning me-1"></i>
+                                    {{ $prompt->title ?? 'AI Prompt' }}
+                                </span>
+                            </div>
+
+                        </div>
+
+                    @endif
 
 
                     {{-- Prompt Actions --}}
